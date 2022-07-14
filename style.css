@@ -1,0 +1,40 @@
+body{
+	background: black;
+	color: white;
+
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1{
+	color: aquamarine;
+	text-align: center;
+}
+
+h2{
+	color:burlywood;
+}
+
+h3{
+	color:aquamarine;
+}
+
+p{
+	text-align: justify;
+	text-justify: inter-word;
+	font-size: 18px;
+}
+
+ul{
+	text-align: center;
+	font-size: 18px;
+}
+
+strong{
+	color: aqua;
+}
+
+a{
+	color:  chartreuse;
+}
