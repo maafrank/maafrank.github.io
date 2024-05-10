@@ -24,3 +24,6 @@ Welcome to the repository for my personal portfolio website, hosted at <a href="
 5. <a href="https://maafrank.github.io/#experience" target="_blank">**Experience**</a>: A detailed look at my professional journey.
 6. <a href="https://maafrank.github.io/#projects" target="_blank">**Projects**</a>: Highlights of my work and contributions to various projects.
 7. <a href="https://maafrank.github.io/#contact" target="_blank">**Contact**</a>: A form to reach out to me directly along with contact information.
+
+
+**Note**: To open links in a new tab, right-click on the link and select "Open link in new tab," or use Ctrl+click (Cmd+click on Mac).
