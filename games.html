@@ -1,0 +1,311 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <!-- meta data -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    
+    <!-- title of site -->
+    <title>Interactive Games - Matthew Frank</title>
+
+    <!-- For favicon png -->
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png"/>
+    
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+
+    <!--flat icon css-->
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+
+    <!--animate.css-->
+    <link rel="stylesheet" href="assets/css/animate.css">
+
+    <!--owl.carousel.css-->
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+    
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="assets/css/bootsnav.css">	
+    
+    <!--style.css-->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!--responsive.css-->
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <style>
+      .games-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 100px 0 80px;
+        color: white;
+        text-align: center;
+      }
+      
+      .games-hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .games-hero p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+      }
+      
+      .back-to-portfolio {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.3);
+      }
+      
+      .back-to-portfolio:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        text-decoration: none;
+      }
+      
+      .games-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+      }
+      
+      .game-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        height: 100%;
+      }
+      
+      .game-card:hover {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      }
+      
+      .game-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #667eea;
+      }
+      
+      .game-card h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      
+      .game-card p {
+        color: #666;
+        margin-bottom: 25px;
+        line-height: 1.6;
+      }
+      
+      .game-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .game-btn:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      
+      .game-btn.coming-soon {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      
+      .game-btn.coming-soon:hover {
+        background: #ccc;
+        box-shadow: none;
+      }
+      
+      .section-heading {
+        margin-bottom: 60px;
+      }
+      
+      .section-heading h2 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      
+      .section-heading .subtitle {
+        font-size: 1.1rem;
+        color: #666;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Games Hero Section -->
+    <section class="games-hero">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Interactive Games</h1>
+            <p>A collection of web-based games showcasing JavaScript programming skills</p>
+            <a href="index.html" class="back-to-portfolio">
+              <i class="fa fa-arrow-left"></i> Back to Portfolio
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Games Section -->
+    <section class="games-section">
+      <div class="container">
+        <div class="section-heading text-center">
+          <h2>Game Collection</h2>
+          <p class="subtitle">Click on any game below to start playing!</p>
+        </div>
+        
+        <!-- First Row of Games -->
+        <div class="row">
+          <!-- Snake Game -->
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-gamepad"></i>
+              </div>
+              <h3>Snake Game</h3>
+              <p>Classic arcade-style Snake game built with HTML5 Canvas. Control the snake, eat food, and grow while avoiding walls and yourself!</p>
+              <a href="snake-game.html" class="game-btn">Play Snake</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-puzzle-piece"></i>
+              </div>
+              <h3>Puzzle Game</h3>
+              <p>An engaging puzzle game that challenges your problem-solving skills. Perfect for exercising your mind!</p>
+              <a href="puzzle-game.html" class="game-btn">Play Puzzle</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-rocket"></i>
+              </div>
+              <h3>Space Shooter</h3>
+              <p>Action-packed space shooter with smooth animations and engaging gameplay mechanics.</p>
+              <a href="space-shooter.html" class="game-btn">Play Space Shooter</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Second Row of Games -->
+        <div class="row">
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-heart"></i>
+              </div>
+              <h3>Memory Game</h3>
+              <p>Test your memory with this card-matching game. Flip cards to find pairs and improve your cognitive skills.</p>
+              <a href="memory-game.html" class="game-btn">Play Memory</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-cube"></i>
+              </div>
+              <h3>Tetris</h3>
+              <p>The beloved block-stacking game reimagined for the web. Clear lines and achieve high scores!</p>
+              <a href="tetris.html" class="game-btn">Play Tetris</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-circle"></i>
+              </div>
+              <h3>Pong</h3>
+              <p>Classic two-player Pong game with modern graphics and smooth ball physics.</p>
+              <a href="pong.html" class="game-btn">Play Pong</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Third Row of Games -->
+        <div class="row">
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-car"></i>
+              </div>
+              <h3>Racing Game</h3>
+              <p>High-speed racing action with smooth controls and challenging tracks. Test your reflexes and driving skills!</p>
+              <a href="racing-game.html" class="game-btn">Play Racing</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-bomb"></i>
+              </div>
+              <h3>Minesweeper</h3>
+              <p>Classic logic puzzle game. Use strategy and deduction to find all mines without triggering them!</p>
+              <a href="#" class="game-btn coming-soon">Coming Soon</a>
+            </div>
+          </div>
+          
+          <div class="col-md-4 col-sm-6">
+            <div class="game-card">
+              <div class="game-icon">
+                <i class="fa fa-shield"></i>
+              </div>
+              <h3>Tower Defense</h3>
+              <p>Strategic defense game with multiple tower types and enemy waves. Plan your defenses and upgrade wisely!</p>
+              <a href="#" class="game-btn coming-soon">Coming Soon</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 text-center" style="margin-top: 40px;">
+            <p style="color: #666; font-size: 1.1rem;">
+              8 amazing games showcasing different programming concepts and techniques!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Include JavaScript -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootsnav.js"></script>
+  </body>
+</html>
