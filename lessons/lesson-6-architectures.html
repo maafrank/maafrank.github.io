@@ -1,0 +1,350 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 6: Deep Learning Architectures - AI/ML Academy</title>
+    <link rel="shortcut icon" type="image/icon" href="../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']]}};</script>
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #667eea; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #667eea; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #5a6fd8; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #667eea; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .arch-showcase { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin: 20px 0; }
+      .arch-card { background: rgba(255,255,255,0.2); padding: 25px; border-radius: 12px; border-left: 4px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+      .arch-card h4 { color: #ffffff; margin-bottom: 15px; font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+      .arch-card p { color: #ffffff; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+      .use-cases { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .use-cases h3 { color: #007bff; margin-bottom: 20px; }
+      .quiz-section { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px 0; }
+      .quiz-header { text-align: center; margin-bottom: 30px; }
+      .quiz-header h2 { color: #667eea; margin-bottom: 10px; }
+      .question { margin-bottom: 30px; padding: 20px; border: 2px solid #f0f2f5; border-radius: 10px; transition: all 0.3s ease; }
+      .question.correct { border-color: #28a745; background: #f8fff9; }
+      .question.incorrect { border-color: #dc3545; background: #fff8f8; }
+      .question h4 { margin-bottom: 20px; color: #333; }
+      .answer-option { display: block; padding: 12px 20px; margin: 8px 0; background: #f8f9fa; border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; user-select: none; }
+      .answer-option:hover { background: #e9ecef; border-color: #667eea; }
+      .answer-option.selected { background: #667eea; color: white; border-color: #667eea; }
+      .answer-option.correct-answer { background: #28a745; color: white; border-color: #28a745; }
+      .answer-option.wrong-answer { background: #dc3545; color: white; border-color: #dc3545; }
+      .quiz-results { text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; margin-top: 30px; display: none; }
+      .quiz-results h3 { margin-bottom: 20px; color: white; }
+      .score-display { font-size: 2.5rem; font-weight: bold; margin: 20px 0; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../ml-academy.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Academy</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-cubes"></i> Deep Learning Architectures</h1>
+          <p>Explore specialized network designs for different AI tasks</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 25-30 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-question-circle"></i> 8 Quiz Questions</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>Beyond Basic Neural Networks</h2>
+          <p>While basic neural networks are powerful, specialized architectures have been developed to excel at specific types of tasks. Each architecture leverages unique properties to handle different data types and problems more effectively.</p>
+          
+          <div class="arch-showcase">
+            <h3>Major Deep Learning Architectures</h3>
+            <div class="arch-grid">
+              <div class="arch-card">
+                <h4>🖼️ Convolutional Neural Networks (CNNs)</h4>
+                <p><strong>Best for:</strong> Image processing, computer vision</p>
+                <p><strong>Key feature:</strong> Convolution layers detect local patterns like edges and textures</p>
+                <p><strong>Examples:</strong> Image classification, object detection, medical imaging</p>
+              </div>
+              <div class="arch-card">
+                <h4>🔄 Recurrent Neural Networks (RNNs)</h4>
+                <p><strong>Best for:</strong> Sequential data, time series</p>
+                <p><strong>Key feature:</strong> Memory cells remember previous inputs</p>
+                <p><strong>Examples:</strong> Language translation, speech recognition, stock prediction</p>
+              </div>
+              <div class="arch-card">
+                <h4>🎯 Transformers</h4>
+                <p><strong>Best for:</strong> Natural language processing</p>
+                <p><strong>Key feature:</strong> Attention mechanism focuses on relevant parts of input</p>
+                <p><strong>Examples:</strong> GPT, BERT, machine translation, chatbots</p>
+              </div>
+            </div>
+          </div>
+
+          <h2>Convolutional Neural Networks (CNNs)</h2>
+          <p>CNNs revolutionized computer vision by mimicking how the human visual cortex processes images.</p>
+          
+          <h3>Key Components:</h3>
+          <div class="use-cases">
+            <h3>CNN Architecture Layers</h3>
+            <ul>
+              <li><strong>Convolutional Layers:</strong> Apply filters to detect features like edges, corners, and textures</li>
+              <li><strong>Pooling Layers:</strong> Reduce spatial dimensions while preserving important information</li>
+              <li><strong>Activation Layers:</strong> Add non-linearity (usually ReLU)</li>
+              <li><strong>Fully Connected Layers:</strong> Final classification or regression based on extracted features</li>
+            </ul>
+          </div>
+
+          <h3>How Convolution Works:</h3>
+          <p>A filter (kernel) slides across the image, performing element-wise multiplication and summing the results. This detects specific patterns at different locations.</p>
+
+          <h2>Recurrent Neural Networks (RNNs)</h2>
+          <p>RNNs can process sequences of varying lengths by maintaining hidden states that act as memory.</p>
+          
+          <h3>RNN Variants:</h3>
+          <div class="arch-grid">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745;">
+              <h4>Long Short-Term Memory (LSTM)</h4>
+              <p>Solves vanishing gradient problem with gates that control information flow</p>
+              <p><strong>Use case:</strong> Long sequences, language modeling</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">
+              <h4>Gated Recurrent Unit (GRU)</h4>
+              <p>Simplified version of LSTM with fewer parameters</p>
+              <p><strong>Use case:</strong> Faster training, smaller datasets</p>
+            </div>
+          </div>
+
+          <h2>Transformers: The Modern Revolution</h2>
+          <p>Transformers use self-attention mechanisms to process all positions in a sequence simultaneously, leading to better performance and faster training.</p>
+          
+          <h3>Key Innovations:</h3>
+          <ul>
+            <li><strong>Self-Attention:</strong> Every word can attend to every other word in the sequence</li>
+            <li><strong>Parallel Processing:</strong> Unlike RNNs, transformers process entire sequences at once</li>
+            <li><strong>Positional Encoding:</strong> Adds position information since there's no inherent sequence order</li>
+          </ul>
+
+          <div class="use-cases">
+            <h3>Transformer Success Stories</h3>
+            <ul>
+              <li><strong>BERT:</strong> Bidirectional encoder for understanding context</li>
+              <li><strong>GPT:</strong> Generative pre-trained transformer for text generation</li>
+              <li><strong>T5:</strong> Text-to-text transfer transformer for various NLP tasks</li>
+              <li><strong>Vision Transformer (ViT):</strong> Applies transformer architecture to images</li>
+            </ul>
+          </div>
+
+          <h2>Specialized Architectures</h2>
+          
+          <h3>Generative Adversarial Networks (GANs)</h3>
+          <p>Two networks compete: a generator creates fake data, and a discriminator tries to detect fakes. This competition improves both networks.</p>
+          
+          <h3>Autoencoders</h3>
+          <p>Compress input data into a lower-dimensional representation, then reconstruct it. Useful for dimensionality reduction and anomaly detection.</p>
+          
+          <h3>ResNet (Residual Networks)</h3>
+          <p>Introduces skip connections that allow training very deep networks (100+ layers) by solving vanishing gradient problems.</p>
+
+          <h2>Choosing the Right Architecture</h2>
+          <div class="arch-grid">
+            <div style="background: #e8f4fd; padding: 20px; border-radius: 10px;">
+              <h4>📸 Computer Vision Tasks</h4>
+              <p><strong>Use CNNs:</strong> ResNet, VGG, Inception for image classification</p>
+              <p><strong>Use R-CNN:</strong> For object detection</p>
+              <p><strong>Use U-Net:</strong> For image segmentation</p>
+            </div>
+            <div style="background: #fff3cd; padding: 20px; border-radius: 10px;">
+              <h4>📝 Natural Language Processing</h4>
+              <p><strong>Use Transformers:</strong> BERT for understanding, GPT for generation</p>
+              <p><strong>Use RNNs/LSTMs:</strong> For sequential prediction tasks</p>
+            </div>
+            <div style="background: #f8d7da; padding: 20px; border-radius: 10px;">
+              <h4>🎵 Audio/Time Series</h4>
+              <p><strong>Use RNNs/LSTMs:</strong> For sequence modeling</p>
+              <p><strong>Use CNNs:</strong> For spectrograms and audio features</p>
+              <p><strong>Use Transformers:</strong> For long-range dependencies</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-section">
+          <div class="quiz-header">
+            <h2><i class="fa fa-question-circle"></i> Knowledge Check</h2>
+            <p>Test your understanding of deep learning architectures</p>
+          </div>
+
+          <div class="question" data-question="1">
+            <h4>1. Which architecture is best suited for image classification tasks?</h4>
+            <div class="answer-option" data-answer="a">A) Recurrent Neural Networks (RNN)</div>
+            <div class="answer-option" data-answer="b">B) Convolutional Neural Networks (CNN)</div>
+            <div class="answer-option" data-answer="c">C) Transformers</div>
+            <div class="answer-option" data-answer="d">D) Linear regression</div>
+          </div>
+
+          <div class="question" data-question="2">
+            <h4>2. What is the main advantage of Transformers over RNNs?</h4>
+            <div class="answer-option" data-answer="a">A) They use less memory</div>
+            <div class="answer-option" data-answer="b">B) They can process sequences in parallel</div>
+            <div class="answer-option" data-answer="c">C) They are simpler to implement</div>
+            <div class="answer-option" data-answer="d">D) They require less data</div>
+          </div>
+
+          <div class="question" data-question="3">
+            <h4>3. What problem do LSTM networks primarily solve?</h4>
+            <div class="answer-option" data-answer="a">A) Overfitting</div>
+            <div class="answer-option" data-answer="b">B) Vanishing gradient problem in long sequences</div>
+            <div class="answer-option" data-answer="c">C) Computational complexity</div>
+            <div class="answer-option" data-answer="d">D) Data preprocessing</div>
+          </div>
+
+          <div class="question" data-question="4">
+            <h4>4. In CNNs, what is the purpose of pooling layers?</h4>
+            <div class="answer-option" data-answer="a">A) Add non-linearity</div>
+            <div class="answer-option" data-answer="b">B) Detect features</div>
+            <div class="answer-option" data-answer="c">C) Reduce spatial dimensions while preserving important information</div>
+            <div class="answer-option" data-answer="d">D) Increase the number of parameters</div>
+          </div>
+
+          <div class="question" data-question="5">
+            <h4>5. What is the key innovation of ResNet architecture?</h4>
+            <div class="answer-option" data-answer="a">A) Attention mechanisms</div>
+            <div class="answer-option" data-answer="b">B) Skip connections (residual connections)</div>
+            <div class="answer-option" data-answer="c">C) Convolution operations</div>
+            <div class="answer-option" data-answer="d">D) Recurrent connections</div>
+          </div>
+
+          <div class="question" data-question="6">
+            <h4>6. Which architecture would you choose for machine translation?</h4>
+            <div class="answer-option" data-answer="a">A) CNN only</div>
+            <div class="answer-option" data-answer="b">B) Simple feedforward network</div>
+            <div class="answer-option" data-answer="c">C) Transformer or sequence-to-sequence RNN</div>
+            <div class="answer-option" data-answer="d">D) Decision tree</div>
+          </div>
+
+          <div class="question" data-question="7">
+            <h4>7. What is the main component that enables Transformers to handle sequences?</h4>
+            <div class="answer-option" data-answer="a">A) Convolutional layers</div>
+            <div class="answer-option" data-answer="b">B) Self-attention mechanism</div>
+            <div class="answer-option" data-answer="c">C) Pooling layers</div>
+            <div class="answer-option" data-answer="d">D) Recurrent connections</div>
+          </div>
+
+          <div class="question" data-question="8">
+            <h4>8. GANs consist of two networks. What are they called?</h4>
+            <div class="answer-option" data-answer="a">A) Encoder and decoder</div>
+            <div class="answer-option" data-answer="b">B) Generator and discriminator</div>
+            <div class="answer-option" data-answer="c">C) Input and output networks</div>
+            <div class="answer-option" data-answer="d">D) Forward and backward networks</div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn-nav btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          </div>
+
+          <div class="quiz-results" id="quiz-results">
+            <h3>Quiz Complete!</h3>
+            <div class="score-display" id="score-display">0/8</div>
+            <p id="score-message">Great job! You understand different neural architectures.</p>
+          </div>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-5-backprop.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Backpropagation
+          </a>
+          <a href="lesson-7-evaluation.html" class="btn-nav btn-primary" id="next-lesson-btn" style="opacity: 0.5; pointer-events: none;">
+            Next Lesson: Model Evaluation <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const correctAnswers = { 1: 'b', 2: 'b', 3: 'b', 4: 'c', 5: 'b', 6: 'c', 7: 'b', 8: 'b' };
+      let selectedAnswers = {};
+
+      document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const questionNum = question.dataset.question;
+          question.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedAnswers[questionNum] = this.dataset.answer;
+        });
+      });
+
+      function submitQuiz() {
+        if (Object.keys(selectedAnswers).length < 8) {
+          alert('Please answer all questions before submitting!');
+          return;
+        }
+
+        let score = 0;
+        for (let i = 1; i <= 8; i++) {
+          const question = document.querySelector(`[data-question="${i}"]`);
+          const userAnswer = selectedAnswers[i];
+          const correctAnswer = correctAnswers[i];
+          const selectedOption = question.querySelector(`[data-answer="${userAnswer}"]`);
+          const correctOption = question.querySelector(`[data-answer="${correctAnswer}"]`);
+          
+          if (userAnswer === correctAnswer) {
+            score++;
+            question.classList.add('correct');
+            selectedOption.classList.add('correct-answer');
+          } else {
+            question.classList.add('incorrect');
+            selectedOption.classList.add('wrong-answer');
+            correctOption.classList.add('correct-answer');
+          }
+        }
+
+        const resultsDiv = document.getElementById('quiz-results');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+        
+        scoreDisplay.textContent = `${score}/8`;
+        
+        if (score >= 7) {
+          scoreMessage.textContent = "Excellent! You understand the different architectures and their use cases.";
+        } else if (score >= 5) {
+          scoreMessage.textContent = "Good work! You're learning about specialized architectures.";
+        } else {
+          scoreMessage.textContent = "Keep studying! Understanding architectures helps choose the right tool for each problem.";
+        }
+        
+        resultsDiv.style.display = 'block';
+        
+        if (score >= 5) {
+          localStorage.setItem('lesson_6_completed', 'true');
+          localStorage.setItem('lesson_6_score', score);
+          const nextBtn = document.getElementById('next-lesson-btn');
+          nextBtn.style.opacity = '1';
+          nextBtn.style.pointerEvents = 'auto';
+        }
+        
+        document.querySelectorAll('.answer-option').forEach(option => {
+          option.style.pointerEvents = 'none';
+        });
+      }
+    </script>
+  </body>
+</html>
