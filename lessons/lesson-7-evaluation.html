@@ -1,0 +1,650 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 7: Model Evaluation & Optimization - AI/ML Academy</title>
+    <link rel="shortcut icon" type="image/icon" href="../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']]}};</script>
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #667eea; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #667eea; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #5a6fd8; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #667eea; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .metrics-showcase { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+      .metric-card { background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; border-left: 4px solid rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.3); }
+      .metric-card h4 { color: #ffffff; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+      .metric-card p { color: #ffffff; margin: 0; font-size: 0.95rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+      .confusion-matrix { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; }
+      .matrix-table { margin: 20px auto; border-collapse: collapse; }
+      .matrix-table td, .matrix-table th { border: 2px solid #dee2e6; padding: 15px; text-align: center; font-weight: bold; }
+      .matrix-table .true-label { background: #e3f2fd; }
+      .matrix-table .pred-label { background: #f3e5f5; }
+      .matrix-table .tp { background: #c8e6c9; }
+      .matrix-table .fp { background: #ffcdd2; }
+      .matrix-table .fn { background: #ffcdd2; }
+      .matrix-table .tn { background: #c8e6c9; }
+      .optimization-section { background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .optimization-section h3 { color: #856404; margin-bottom: 20px; }
+      .quiz-section { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px 0; }
+      .quiz-header { text-align: center; margin-bottom: 30px; }
+      .quiz-header h2 { color: #667eea; margin-bottom: 10px; }
+      .question { margin-bottom: 30px; padding: 20px; border: 2px solid #f0f2f5; border-radius: 10px; transition: all 0.3s ease; }
+      .question.correct { border-color: #28a745; background: #f8fff9; }
+      .question.incorrect { border-color: #dc3545; background: #fff8f8; }
+      .question h4 { margin-bottom: 20px; color: #333; }
+      .answer-option { display: block; padding: 12px 20px; margin: 8px 0; background: #f8f9fa; border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; user-select: none; }
+      .answer-option:hover { background: #e9ecef; border-color: #667eea; }
+      .answer-option.selected { background: #667eea; color: white; border-color: #667eea; }
+      .answer-option.correct-answer { background: #28a745; color: white; border-color: #28a745; }
+      .answer-option.wrong-answer { background: #dc3545; color: white; border-color: #dc3545; }
+      .quiz-results { text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; margin-top: 30px; display: none; }
+      .quiz-results h3 { margin-bottom: 20px; color: white; }
+      .score-display { font-size: 2.5rem; font-weight: bold; margin: 20px 0; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      
+      .interactive-confusion-matrix {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+      }
+      
+      .matrix-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        color: rgba(255,255,255,0.9);
+      }
+      
+      .control-group input[type="number"] {
+        width: 80px;
+        padding: 8px;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 5px;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-align: center;
+        font-size: 1rem;
+      }
+      
+      .control-group input[type="number"]:focus {
+        outline: none;
+        border-color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.2);
+      }
+      
+      .interactive-matrix-table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      
+      .interactive-matrix-table td, .interactive-matrix-table th {
+        border: 2px solid rgba(255,255,255,0.3);
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+      }
+      
+      .interactive-matrix-table .true-label {
+        background: rgba(255,255,255,0.2);
+      }
+      
+      .interactive-matrix-table .pred-label {
+        background: rgba(255,255,255,0.2);
+      }
+      
+      .interactive-matrix-table .tp {
+        background: rgba(40, 167, 69, 0.8);
+        font-size: 1.2rem;
+      }
+      
+      .interactive-matrix-table .fp {
+        background: rgba(220, 53, 69, 0.8);
+        font-size: 1.2rem;
+      }
+      
+      .interactive-matrix-table .fn {
+        background: rgba(220, 53, 69, 0.8);
+        font-size: 1.2rem;
+      }
+      
+      .interactive-matrix-table .tn {
+        background: rgba(40, 167, 69, 0.8);
+        font-size: 1.2rem;
+      }
+      
+      .metrics-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+      
+      .metric-display-card {
+        background: rgba(255,255,255,0.1);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+      
+      .metric-display-card h4 {
+        color: rgba(255,255,255,0.9);
+        margin-bottom: 5px;
+        font-size: 1rem;
+      }
+      
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 5px;
+      }
+      
+      .metric-description {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.7);
+        margin: 0;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../ml-academy.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Academy</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-line-chart"></i> Model Evaluation & Optimization</h1>
+          <p>Learn how to measure performance and improve your models</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 25-30 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-question-circle"></i> 8 Quiz Questions</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>Why Evaluation Matters</h2>
+          <p>Building a model is only half the battle. You need to know: Is it actually good? How can you make it better? Model evaluation provides the answers through systematic measurement of performance.</p>
+          
+          <p>Think of it like being a coach - you need metrics to track player performance, identify weaknesses, and develop training strategies. In ML, evaluation metrics serve the same purpose for your models.</p>
+
+          <h2>Classification Metrics</h2>
+          <p>For problems where you predict categories (spam/not spam, cat/dog, disease/healthy):</p>
+          
+          <div class="metrics-showcase">
+            <h3>Essential Classification Metrics</h3>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <h4>📊 Accuracy</h4>
+                <p><strong>Formula:</strong> (TP + TN) / (TP + TN + FP + FN)</p>
+                <p>Percentage of correct predictions. Simple but can be misleading with imbalanced data.</p>
+              </div>
+              <div class="metric-card">
+                <h4>🎯 Precision</h4>
+                <p><strong>Formula:</strong> TP / (TP + FP)</p>
+                <p>Of all positive predictions, how many were actually correct? Important when false positives are costly.</p>
+              </div>
+              <div class="metric-card">
+                <h4>🔍 Recall (Sensitivity)</h4>
+                <p><strong>Formula:</strong> TP / (TP + FN)</p>
+                <p>Of all actual positives, how many did we correctly identify? Critical when missing positives is dangerous.</p>
+              </div>
+              <div class="metric-card">
+                <h4>⚖️ F1-Score</h4>
+                <p><strong>Formula:</strong> 2 × (Precision × Recall) / (Precision + Recall)</p>
+                <p>Harmonic mean of precision and recall. Balances both metrics.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="interactive-confusion-matrix">
+            <h3>🔢 MNIST Digit "8" Classification Matrix</h3>
+            <p>Adjust the classification results and see how evaluation metrics change for digit recognition:</p>
+            
+            <div class="matrix-controls">
+              <div class="control-group">
+                <label>Correctly Identified "8"s</label>
+                <input type="number" id="tp-input" value="47" min="0" max="100">
+                <small>True Positives: Model said "8", actually was "8"</small>
+              </div>
+              <div class="control-group">
+                <label>Misidentified as "8"</label>
+                <input type="number" id="fp-input" value="8" min="0" max="100">
+                <small>False Positives: Model said "8", actually other digit</small>
+              </div>
+              <div class="control-group">
+                <label>Missed "8"s</label>
+                <input type="number" id="fn-input" value="3" min="0" max="100">
+                <small>False Negatives: Model missed "8", said other digit</small>
+              </div>
+              <div class="control-group">
+                <label>Correctly Rejected Non-"8"s</label>
+                <input type="number" id="tn-input" value="942" min="0" max="1000">
+                <small>True Negatives: Model correctly identified other digits</small>
+              </div>
+            </div>
+            
+            <table class="interactive-matrix-table">
+              <tr>
+                <td></td>
+                <td class="pred-label" colspan="2"><strong>Model Prediction</strong></td>
+              </tr>
+              <tr>
+                <td class="true-label"><strong>Actual Digit</strong></td>
+                <td>Other (0,1,2,3,4,5,6,7,9)</td>
+                <td>Digit "8"</td>
+              </tr>
+              <tr>
+                <td>Other Digits</td>
+                <td class="tn" id="tn-display">942<br><small>Correctly identified other digits</small></td>
+                <td class="fp" id="fp-display">8<br><small>Mistakenly called "8"</small></td>
+              </tr>
+              <tr>
+                <td>Digit "8"</td>
+                <td class="fn" id="fn-display">3<br><small>Missed actual "8"s</small></td>
+                <td class="tp" id="tp-display">47<br><small>Correctly found "8"s</small></td>
+              </tr>
+            </table>
+            
+            <div class="metrics-display">
+              <div class="metric-display-card">
+                <h4>📊 Overall Accuracy</h4>
+                <div class="metric-value" id="accuracy-value">98.9%</div>
+                <p class="metric-description">Correct predictions / All predictions</p>
+              </div>
+              <div class="metric-display-card">
+                <h4>🎯 "8" Precision</h4>
+                <div class="metric-value" id="precision-value">85.5%</div>
+                <p class="metric-description">When model says "8", how often correct?</p>
+              </div>
+              <div class="metric-display-card">
+                <h4>🔍 "8" Recall</h4>
+                <div class="metric-value" id="recall-value">94.0%</div>
+                <p class="metric-description">Of all actual "8"s, how many found?</p>
+              </div>
+              <div class="metric-display-card">
+                <h4>⚖️ F1-Score</h4>
+                <div class="metric-value" id="f1-value">89.5%</div>
+                <p class="metric-description">Balance of precision and recall</p>
+              </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px; border-left: 4px solid rgba(255,255,255,0.5);">
+              <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+                <strong>💡 MNIST Insight:</strong> In digit recognition, high precision means when the model says "8", it's usually right. 
+                High recall means the model catches most of the actual "8"s in the dataset.
+              </p>
+            </div>
+          </div>
+
+          <h2>Regression Metrics</h2>
+          <p>For predicting continuous values (house prices, temperature, stock prices):</p>
+
+          <div class="metrics-grid">
+            <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; border-left: 4px solid #007bff;">
+              <h4>Mean Absolute Error (MAE)</h4>
+              <p>Average absolute difference between predictions and actual values</p>
+              <p><strong>Advantage:</strong> Easy to interpret, same units as target</p>
+            </div>
+            <div style="background: #f8d7da; padding: 20px; border-radius: 10px; border-left: 4px solid #dc3545;">
+              <h4>Mean Squared Error (MSE)</h4>
+              <p>Average squared difference - heavily penalizes large errors</p>
+              <p><strong>Advantage:</strong> Smooth gradient for optimization</p>
+            </div>
+            <div style="background: #d4edda; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745;">
+              <h4>R² Score (Coefficient of Determination)</h4>
+              <p>Proportion of variance explained by the model (0-1 scale)</p>
+              <p><strong>Advantage:</strong> Scale-independent, easy to interpret</p>
+            </div>
+          </div>
+
+          <h2>Cross-Validation: Robust Evaluation</h2>
+          <p>Never trust a model evaluated on just one split of data. Cross-validation provides more reliable performance estimates:</p>
+
+          <h3>K-Fold Cross-Validation Process:</h3>
+          <ol>
+            <li><strong>Split data</strong> into k equal parts (folds)</li>
+            <li><strong>Train</strong> on k-1 folds, test on remaining fold</li>
+            <li><strong>Repeat</strong> k times, using each fold as test set once</li>
+            <li><strong>Average</strong> the k performance scores</li>
+          </ol>
+
+          <h2>Hyperparameter Optimization</h2>
+          <div class="optimization-section">
+            <h3>Fine-Tuning Your Model</h3>
+            <p>Hyperparameters are settings you choose before training (learning rate, number of layers, etc.). Finding optimal values requires systematic search:</p>
+            
+            <h4>Common Hyperparameters:</h4>
+            <ul>
+              <li><strong>Learning Rate:</strong> How big steps to take during optimization</li>
+              <li><strong>Batch Size:</strong> Number of examples processed together</li>
+              <li><strong>Number of Epochs:</strong> How many times to see the full dataset</li>
+              <li><strong>Architecture:</strong> Number of layers, neurons per layer</li>
+              <li><strong>Regularization:</strong> Techniques to prevent overfitting</li>
+            </ul>
+
+            <h4>Search Strategies:</h4>
+            <ul>
+              <li><strong>Grid Search:</strong> Test all combinations of predefined values</li>
+              <li><strong>Random Search:</strong> Randomly sample hyperparameter combinations</li>
+              <li><strong>Bayesian Optimization:</strong> Use previous results to guide search</li>
+            </ul>
+          </div>
+
+          <h2>Preventing Overfitting</h2>
+          <p>Overfitting occurs when models memorize training data but fail on new data. Prevention strategies:</p>
+
+          <div class="metrics-grid">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #6f42c1;">
+              <h4>🛡️ Regularization</h4>
+              <p><strong>L1/L2 Regularization:</strong> Add penalty for large weights</p>
+              <p><strong>Dropout:</strong> Randomly ignore neurons during training</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #e83e8c;">
+              <h4>⏰ Early Stopping</h4>
+              <p>Monitor validation performance and stop training when it stops improving</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #fd7e14;">
+              <h4>📊 Data Augmentation</h4>
+              <p>Create variations of training examples to increase diversity</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #20c997;">
+              <h4>🔄 Cross-Validation</h4>
+              <p>Use multiple train/validation splits to get robust estimates</p>
+            </div>
+          </div>
+
+          <h2>Bias-Variance Tradeoff</h2>
+          <p>Understanding this fundamental tradeoff helps make better modeling decisions:</p>
+          <ul>
+            <li><strong>High Bias:</strong> Model is too simple, misses patterns (underfitting)</li>
+            <li><strong>High Variance:</strong> Model is too complex, memorizes noise (overfitting)</li>
+            <li><strong>Sweet Spot:</strong> Balance complexity to minimize total error</li>
+          </ul>
+
+          <h2>Model Selection Best Practices</h2>
+          <div class="optimization-section">
+            <h3>🎯 Systematic Approach</h3>
+            <ol>
+              <li><strong>Start Simple:</strong> Begin with basic models to establish baselines</li>
+              <li><strong>Add Complexity Gradually:</strong> Increase sophistication step by step</li>
+              <li><strong>Use Validation Sets:</strong> Never optimize on test data</li>
+              <li><strong>Consider Domain Knowledge:</strong> Let expertise guide feature selection</li>
+              <li><strong>Monitor Multiple Metrics:</strong> Don't optimize for just one number</li>
+              <li><strong>Document Everything:</strong> Track experiments for reproducibility</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="quiz-section">
+          <div class="quiz-header">
+            <h2><i class="fa fa-question-circle"></i> Knowledge Check</h2>
+            <p>Test your understanding of model evaluation and optimization</p>
+          </div>
+
+          <div class="question" data-question="1">
+            <h4>1. When is precision more important than recall?</h4>
+            <div class="answer-option" data-answer="a">A) When false negatives are costly</div>
+            <div class="answer-option" data-answer="b">B) When false positives are costly</div>
+            <div class="answer-option" data-answer="c">C) When the dataset is balanced</div>
+            <div class="answer-option" data-answer="d">D) Never - recall is always more important</div>
+          </div>
+
+          <div class="question" data-question="2">
+            <h4>2. What does the F1-score represent?</h4>
+            <div class="answer-option" data-answer="a">A) The arithmetic mean of precision and recall</div>
+            <div class="answer-option" data-answer="b">B) The harmonic mean of precision and recall</div>
+            <div class="answer-option" data-answer="c">C) The maximum of precision and recall</div>
+            <div class="answer-option" data-answer="d">D) The difference between precision and recall</div>
+          </div>
+
+          <div class="question" data-question="3">
+            <h4>3. What is the main advantage of k-fold cross-validation?</h4>
+            <div class="answer-option" data-answer="a">A) It trains models faster</div>
+            <div class="answer-option" data-answer="b">B) It provides more robust performance estimates</div>
+            <div class="answer-option" data-answer="c">C) It requires less data</div>
+            <div class="answer-option" data-answer="d">D) It automatically optimizes hyperparameters</div>
+          </div>
+
+          <div class="question" data-question="4">
+            <h4>4. Which metric heavily penalizes large errors?</h4>
+            <div class="answer-option" data-answer="a">A) Mean Absolute Error (MAE)</div>
+            <div class="answer-option" data-answer="b">B) Mean Squared Error (MSE)</div>
+            <div class="answer-option" data-answer="c">C) Accuracy</div>
+            <div class="answer-option" data-answer="d">D) R² score</div>
+          </div>
+
+          <div class="question" data-question="5">
+            <h4>5. What is overfitting?</h4>
+            <div class="answer-option" data-answer="a">A) Model performs poorly on both training and test data</div>
+            <div class="answer-option" data-answer="b">B) Model performs well on training data but poorly on test data</div>
+            <div class="answer-option" data-answer="c">C) Model is too simple to capture patterns</div>
+            <div class="answer-option" data-answer="d">D) Model trains too quickly</div>
+          </div>
+
+          <div class="question" data-question="6">
+            <h4>6. Which technique randomly ignores neurons during training to prevent overfitting?</h4>
+            <div class="answer-option" data-answer="a">A) L2 regularization</div>
+            <div class="answer-option" data-answer="b">B) Early stopping</div>
+            <div class="answer-option" data-answer="c">C) Dropout</div>
+            <div class="answer-option" data-answer="d">D) Data augmentation</div>
+          </div>
+
+          <div class="question" data-question="7">
+            <h4>7. In a confusion matrix, what does a False Positive represent?</h4>
+            <div class="answer-option" data-answer="a">A) Correctly predicted positive</div>
+            <div class="answer-option" data-answer="b">B) Correctly predicted negative</div>
+            <div class="answer-option" data-answer="c">C) Incorrectly predicted as positive</div>
+            <div class="answer-option" data-answer="d">D) Incorrectly predicted as negative</div>
+          </div>
+
+          <div class="question" data-question="8">
+            <h4>8. What does an R² score of 0.85 mean?</h4>
+            <div class="answer-option" data-answer="a">A) 85% accuracy</div>
+            <div class="answer-option" data-answer="b">B) 85% of variance is explained by the model</div>
+            <div class="answer-option" data-answer="c">C) 15% error rate</div>
+            <div class="answer-option" data-answer="d">D) 85% precision</div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn-nav btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          </div>
+
+          <div class="quiz-results" id="quiz-results">
+            <h3>Quiz Complete!</h3>
+            <div class="score-display" id="score-display">0/8</div>
+            <p id="score-message">Great job! You understand model evaluation and optimization.</p>
+          </div>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-6-architectures.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Architectures
+          </a>
+          <a href="lesson-8-applications.html" class="btn-nav btn-primary" id="next-lesson-btn" style="opacity: 0.5; pointer-events: none;">
+            Next Lesson: Real-World Applications <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Interactive Confusion Matrix
+      function updateConfusionMatrix() {
+        const tp = parseInt(document.getElementById('tp-input').value) || 0;
+        const fp = parseInt(document.getElementById('fp-input').value) || 0;
+        const fn = parseInt(document.getElementById('fn-input').value) || 0;
+        const tn = parseInt(document.getElementById('tn-input').value) || 0;
+        
+        // Update matrix display
+        document.getElementById('tp-display').innerHTML = `${tp}<br><small>True Positive</small>`;
+        document.getElementById('fp-display').innerHTML = `${fp}<br><small>False Positive</small>`;
+        document.getElementById('fn-display').innerHTML = `${fn}<br><small>False Negative</small>`;
+        document.getElementById('tn-display').innerHTML = `${tn}<br><small>True Negative</small>`;
+        
+        // Calculate metrics
+        const total = tp + fp + fn + tn;
+        
+        // Accuracy = (TP + TN) / Total
+        const accuracy = total > 0 ? ((tp + tn) / total * 100) : 0;
+        
+        // Precision = TP / (TP + FP)
+        const precision = (tp + fp) > 0 ? (tp / (tp + fp) * 100) : 0;
+        
+        // Recall = TP / (TP + FN)
+        const recall = (tp + fn) > 0 ? (tp / (tp + fn) * 100) : 0;
+        
+        // F1-Score = 2 * (Precision * Recall) / (Precision + Recall)
+        const f1Score = (precision + recall) > 0 ? (2 * (precision * recall) / (precision + recall)) : 0;
+        
+        // Update metric displays
+        document.getElementById('accuracy-value').textContent = `${accuracy.toFixed(1)}%`;
+        document.getElementById('precision-value').textContent = `${precision.toFixed(1)}%`;
+        document.getElementById('recall-value').textContent = `${recall.toFixed(1)}%`;
+        document.getElementById('f1-value').textContent = `${f1Score.toFixed(1)}%`;
+        
+        // Add visual feedback for extreme values
+        updateMetricColors(accuracy, precision, recall, f1Score);
+      }
+
+      function updateMetricColors(accuracy, precision, recall, f1) {
+        const metrics = [
+          { id: 'accuracy-value', value: accuracy },
+          { id: 'precision-value', value: precision },
+          { id: 'recall-value', value: recall },
+          { id: 'f1-value', value: f1 }
+        ];
+        
+        metrics.forEach(metric => {
+          const element = document.getElementById(metric.id);
+          if (metric.value >= 80) {
+            element.style.color = '#28a745'; // Green for good
+          } else if (metric.value >= 60) {
+            element.style.color = '#ffc107'; // Yellow for moderate
+          } else {
+            element.style.color = '#dc3545'; // Red for poor
+          }
+        });
+      }
+
+      // Initialize confusion matrix demo
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners to all input fields
+        const inputs = ['tp-input', 'fp-input', 'fn-input', 'tn-input'];
+        inputs.forEach(id => {
+          const input = document.getElementById(id);
+          if (input) {
+            input.addEventListener('input', updateConfusionMatrix);
+            input.addEventListener('change', updateConfusionMatrix);
+          }
+        });
+        
+        // Initialize with default values
+        updateConfusionMatrix();
+      });
+
+      const correctAnswers = { 1: 'b', 2: 'b', 3: 'b', 4: 'b', 5: 'b', 6: 'c', 7: 'c', 8: 'b' };
+      let selectedAnswers = {};
+
+      document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const questionNum = question.dataset.question;
+          question.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedAnswers[questionNum] = this.dataset.answer;
+        });
+      });
+
+      function submitQuiz() {
+        if (Object.keys(selectedAnswers).length < 8) {
+          alert('Please answer all questions before submitting!');
+          return;
+        }
+
+        let score = 0;
+        for (let i = 1; i <= 8; i++) {
+          const question = document.querySelector(`[data-question="${i}"]`);
+          const userAnswer = selectedAnswers[i];
+          const correctAnswer = correctAnswers[i];
+          const selectedOption = question.querySelector(`[data-answer="${userAnswer}"]`);
+          const correctOption = question.querySelector(`[data-answer="${correctAnswer}"]`);
+          
+          if (userAnswer === correctAnswer) {
+            score++;
+            question.classList.add('correct');
+            selectedOption.classList.add('correct-answer');
+          } else {
+            question.classList.add('incorrect');
+            selectedOption.classList.add('wrong-answer');
+            correctOption.classList.add('correct-answer');
+          }
+        }
+
+        const resultsDiv = document.getElementById('quiz-results');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+        
+        scoreDisplay.textContent = `${score}/8`;
+        
+        if (score >= 7) {
+          scoreMessage.textContent = "Excellent! You understand how to properly evaluate and optimize models.";
+        } else if (score >= 5) {
+          scoreMessage.textContent = "Good work! You're learning the essential skills for model improvement.";
+        } else {
+          scoreMessage.textContent = "Keep studying! Model evaluation is crucial for building reliable AI systems.";
+        }
+        
+        resultsDiv.style.display = 'block';
+        
+        if (score >= 5) {
+          localStorage.setItem('lesson_7_completed', 'true');
+          localStorage.setItem('lesson_7_score', score);
+          const nextBtn = document.getElementById('next-lesson-btn');
+          nextBtn.style.opacity = '1';
+          nextBtn.style.pointerEvents = 'auto';
+        }
+        
+        document.querySelectorAll('.answer-option').forEach(option => {
+          option.style.pointerEvents = 'none';
+        });
+      }
+    </script>
+  </body>
+</html>
