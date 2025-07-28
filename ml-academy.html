@@ -1,0 +1,646 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <!-- meta data -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    
+    <!-- title of site -->
+    <title>AI/ML Academy - Matthew Frank</title>
+
+    <!-- For favicon png -->
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png"/>
+    
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+
+    <!--flat icon css-->
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+
+    <!--animate.css-->
+    <link rel="stylesheet" href="assets/css/animate.css">
+
+    <!--owl.carousel.css-->
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+    
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="assets/css/bootsnav.css">	
+    
+    <!--style.css-->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!--responsive.css-->
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <!-- MathJax for mathematical notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+
+    <style>
+      .academy-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 100px 0 80px;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .academy-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+      }
+      
+      .academy-hero h1 {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
+      }
+      
+      .academy-hero p {
+        font-size: 1.4rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+      }
+      
+      .back-to-portfolio {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.3);
+        position: relative;
+        z-index: 2;
+      }
+      
+      .back-to-portfolio:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        text-decoration: none;
+      }
+      
+      .academy-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+      }
+      
+      .intro-section {
+        background: white;
+        padding: 60px 0;
+        text-align: center;
+      }
+      
+      .intro-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      .intro-content h2 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      
+      .intro-content p {
+        font-size: 1.2rem;
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+      
+      .lesson-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        height: 100%;
+        border-left: 5px solid #667eea;
+        position: relative;
+      }
+      
+      .lesson-card:hover {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+      }
+      
+      .lesson-number {
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      
+      .lesson-icon {
+        font-size: 3rem;
+        margin: 20px 0;
+        color: #667eea;
+      }
+      
+      .lesson-card h3 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      
+      .lesson-card p {
+        color: #666;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+      
+      .lesson-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .lesson-btn:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
+      }
+      
+      .lesson-btn.completed {
+        background: #28a745;
+      }
+      
+      .lesson-btn.completed:hover {
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+      }
+      
+      .progress-indicator {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 0.9rem;
+      }
+      
+      .progress-bar {
+        width: 60px;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+      
+      .section-heading {
+        margin-bottom: 60px;
+        text-align: center;
+      }
+      
+      .section-heading h2 {
+        font-size: 2.8rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+      
+      .section-heading .subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
+      .stats-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 0;
+        color: white;
+        text-align: center;
+      }
+      
+      .stat-item {
+        margin-bottom: 30px;
+      }
+      
+      .stat-number {
+        font-size: 3rem;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+      }
+      
+      .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+      
+      .prerequisites {
+        background: #e8f4fd;
+        border-left: 4px solid #007bff;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 5px;
+      }
+      
+      .prerequisites h4 {
+        color: #007bff;
+        margin-bottom: 15px;
+      }
+      
+      .prerequisites ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      
+      .prerequisites li {
+        margin-bottom: 8px;
+        color: #333;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Academy Hero Section -->
+    <section class="academy-hero">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>🧠 AI/ML Academy</h1>
+            <p>Master the fundamentals of Artificial Intelligence and Machine Learning</p>
+            <a href="index.html" class="back-to-portfolio">
+              <i class="fa fa-arrow-left"></i> Back to Portfolio
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro-section">
+      <div class="container">
+        <div class="intro-content">
+          <h2>Welcome to the Future of Learning</h2>
+          <p>
+            Dive deep into the world of Artificial Intelligence and Machine Learning through this comprehensive, interactive learning experience. Each lesson builds upon the previous one, taking you from basic concepts to advanced applications.
+          </p>
+          <p>
+            This academy covers everything from neural network fundamentals to real-world implementations, with interactive quizzes and practical examples to reinforce your understanding.
+          </p>
+          
+          <div class="prerequisites">
+            <h4><i class="fa fa-lightbulb-o"></i> Prerequisites</h4>
+            <ul>
+              <li>Basic understanding of mathematics (algebra, calculus)</li>
+              <li>Familiarity with programming concepts</li>
+              <li>Curiosity about how machines learn!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">8</span>
+              <span class="stat-label">Comprehensive Lessons</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">60+</span>
+              <span class="stat-label">Interactive Quiz Questions</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">5-7</span>
+              <span class="stat-label">Hours of Content</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">∞</span>
+              <span class="stat-label">Learning Opportunities</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lessons Section -->
+    <section class="academy-section">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Course Curriculum</h2>
+          <p class="subtitle">Progress through each lesson to build a comprehensive understanding of AI and Machine Learning</p>
+        </div>
+        
+        <!-- First Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 1 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">1</div>
+              <div class="lesson-icon">
+                <i class="fa fa-rocket"></i>
+              </div>
+              <h3>Introduction to AI & ML</h3>
+              <p>Start your journey by understanding what AI and ML are, their differences, types, and real-world applications that shape our daily lives.</p>
+              <a href="lessons/lesson-1-intro.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-1"></div>
+                </div>
+                <span id="progress-text-1">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 2 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">2</div>
+              <div class="lesson-icon">
+                <i class="fa fa-sitemap"></i>
+              </div>
+              <h3>Neural Networks Fundamentals</h3>
+              <p>Explore the building blocks of deep learning: neurons, layers, weights, biases, and activation functions that make networks "think".</p>
+              <a href="lessons/lesson-2-neural-networks.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-2"></div>
+                </div>
+                <span id="progress-text-2">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 3 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">3</div>
+              <div class="lesson-icon">
+                <i class="fa fa-calculator"></i>
+              </div>
+              <h3>The Mathematics Behind ML</h3>
+              <p>Understand the mathematical foundations: linear algebra, calculus, and probability theory that power machine learning algorithms.</p>
+              <a href="lessons/lesson-3-mathematics.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-3"></div>
+                </div>
+                <span id="progress-text-3">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Second Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 4 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">4</div>
+              <div class="lesson-icon">
+                <i class="fa fa-arrow-right"></i>
+              </div>
+              <h3>Forward Propagation</h3>
+              <p>Learn how data flows through neural networks, from input to output, and how predictions are generated through mathematical transformations.</p>
+              <a href="lessons/lesson-4-forward-prop.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-4"></div>
+                </div>
+                <span id="progress-text-4">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 5 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">5</div>
+              <div class="lesson-icon">
+                <i class="fa fa-refresh"></i>
+              </div>
+              <h3>Backpropagation & Training</h3>
+              <p>Discover how neural networks learn through backpropagation, gradient descent, and loss functions to improve their performance.</p>
+              <a href="lessons/lesson-5-backprop.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-5"></div>
+                </div>
+                <span id="progress-text-5">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 6 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">6</div>
+              <div class="lesson-icon">
+                <i class="fa fa-cubes"></i>
+              </div>
+              <h3>Deep Learning Architectures</h3>
+              <p>Explore advanced architectures: Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Transformers.</p>
+              <a href="lessons/lesson-6-architectures.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-6"></div>
+                </div>
+                <span id="progress-text-6">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Third Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 7 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">7</div>
+              <div class="lesson-icon">
+                <i class="fa fa-line-chart"></i>
+              </div>
+              <h3>Model Evaluation & Optimization</h3>
+              <p>Master evaluation metrics, hyperparameter tuning, regularization techniques, and strategies to prevent overfitting.</p>
+              <a href="lessons/lesson-7-evaluation.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-7"></div>
+                </div>
+                <span id="progress-text-7">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 8 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">8</div>
+              <div class="lesson-icon">
+                <i class="fa fa-globe"></i>
+              </div>
+              <h3>Real-World Applications</h3>
+              <p>See AI/ML in action across industries: computer vision, natural language processing, recommendation systems, and autonomous vehicles.</p>
+              <a href="lessons/lesson-8-applications.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-8"></div>
+                </div>
+                <span id="progress-text-8">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Completion Certificate -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card" style="border-left-color: #28a745;">
+              <div class="lesson-number" style="background: #28a745;">🏆</div>
+              <div class="lesson-icon" style="color: #28a745;">
+                <i class="fa fa-certificate"></i>
+              </div>
+              <h3>Complete the Academy</h3>
+              <p>Finish all lessons and quizzes to earn your AI/ML Academy completion certificate and showcase your knowledge!</p>
+              <a href="#" class="lesson-btn" style="background: #6c757d; cursor: not-allowed;" id="certificate-btn">Complete All Lessons</a>
+              <div class="progress-indicator">
+                <span>Overall Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="overall-progress"></div>
+                </div>
+                <span id="overall-progress-text">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 text-center" style="margin-top: 40px;">
+            <p style="color: #666; font-size: 1.2rem;">
+              🎯 <strong>Ready to become an AI/ML expert?</strong> Start with Lesson 1 and work your way through!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Include JavaScript -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootsnav.js"></script>
+    
+    <script>
+      // Progress tracking functionality
+      function updateProgress() {
+        let completedLessons = 0;
+        const totalLessons = 8;
+        
+        for (let i = 1; i <= totalLessons; i++) {
+          const completed = localStorage.getItem(`lesson_${i}_completed`) === 'true';
+          const progressElement = document.getElementById(`progress-${i}`);
+          const progressTextElement = document.getElementById(`progress-text-${i}`);
+          
+          if (completed) {
+            progressElement.style.width = '100%';
+            progressTextElement.textContent = '100%';
+            completedLessons++;
+            
+            // Update button to show completed
+            const button = document.querySelector(`a[href="lessons/lesson-${i}-${getLessonSlug(i)}.html"]`);
+            if (button) {
+              button.classList.add('completed');
+              button.innerHTML = '<i class="fa fa-check"></i> Completed';
+            }
+          }
+        }
+        
+        // Update overall progress
+        const overallProgress = (completedLessons / totalLessons) * 100;
+        document.getElementById('overall-progress').style.width = overallProgress + '%';
+        document.getElementById('overall-progress-text').textContent = Math.round(overallProgress) + '%';
+        
+        // Enable certificate if all lessons completed
+        if (completedLessons === totalLessons) {
+          const certificateBtn = document.getElementById('certificate-btn');
+          certificateBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+          certificateBtn.style.cursor = 'pointer';
+          certificateBtn.textContent = 'Get Certificate';
+          certificateBtn.onclick = function() {
+            alert('Congratulations! You have completed the AI/ML Academy! 🎉\n\nYou have demonstrated mastery of:\n• AI & ML fundamentals\n• Neural network concepts\n• Mathematical foundations\n• Training algorithms\n• Real-world applications\n\nWell done!');
+          };
+        }
+      }
+      
+      function getLessonSlug(lessonNum) {
+        const slugs = ['intro', 'neural-networks', 'mathematics', 'forward-prop', 'backprop', 'architectures', 'evaluation', 'applications'];
+        return slugs[lessonNum - 1];
+      }
+      
+      // Initialize progress on page load
+      document.addEventListener('DOMContentLoaded', updateProgress);
+    </script>
+  </body>
+</html>

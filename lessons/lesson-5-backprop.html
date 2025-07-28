@@ -1,0 +1,1314 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <!-- meta data -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    
+    <!-- title of site -->
+    <title>Lesson 5: Backpropagation & Training - AI/ML Academy</title>
+
+    <!-- For favicon png -->
+    <link rel="shortcut icon" type="image/icon" href="../assets/logo/favicon.png"/>
+    
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="../assets/css/bootsnav.css">	
+    
+    <!--style.css-->
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for mathematical notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+
+    <style>
+      .lesson-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 30px 0;
+      }
+      
+      .lesson-header {
+        text-align: center;
+        color: #333;
+        margin-bottom: 40px;
+        padding: 40px 0;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 15px;
+      }
+      
+      .lesson-header h1 {
+        font-size: 2.8rem;
+        margin-bottom: 15px;
+        color: #667eea;
+      }
+      
+      .lesson-header .lesson-meta {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #666;
+      }
+      
+      .back-link {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #667eea;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        z-index: 10;
+      }
+      
+      .back-link:hover {
+        color: #5a6fd8;
+        text-decoration: none;
+      }
+      
+      .lesson-content {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+      }
+      
+      .lesson-content h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #f0f2f5;
+      }
+      
+      .lesson-content h3 {
+        color: #333;
+        margin: 25px 0 15px 0;
+      }
+      
+      .lesson-content p {
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 20px;
+      }
+      
+      .backprop-diagram {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      
+      .backprop-visual {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+      
+      .layer-node {
+        width: 80px;
+        height: 80px;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        position: relative;
+        color: #333;
+      }
+      
+      .output-layer {
+        background: #dc3545;
+        color: white;
+      }
+      
+      .hidden-layer {
+        background: #ffc107;
+      }
+      
+      .input-layer {
+        background: #28a745;
+        color: white;
+      }
+      
+      .back-arrow {
+        font-size: 2rem;
+        color: rgba(255,255,255,0.8);
+        margin: 0 10px;
+      }
+      
+      .layer-label {
+        font-size: 0.8rem;
+        margin-top: 5px;
+      }
+      
+      .learning-cycle {
+        background: #e8f4fd;
+        border-left: 4px solid #007bff;
+        padding: 25px;
+        border-radius: 10px;
+        margin: 30px 0;
+      }
+      
+      .learning-cycle h3 {
+        color: #007bff;
+        margin-bottom: 20px;
+      }
+      
+      .cycle-step {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 4px solid #28a745;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+      }
+      
+      .cycle-number {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        font-weight: bold;
+        margin-right: 15px;
+        font-size: 1.1rem;
+      }
+      
+      .gradient-descent-visual {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      
+      .hill-diagram {
+        position: relative;
+        height: 200px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      
+      .hill-curve {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: rgba(255,255,255,0.2);
+        clip-path: ellipse(70% 100% at 50% 100%);
+      }
+      
+      .ball {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: #ffc107;
+        border-radius: 50%;
+        top: 80px;
+        left: 45%;
+        animation: rollDown 3s ease-in-out infinite;
+      }
+      
+      @keyframes rollDown {
+        0% { left: 20%; top: 60px; }
+        50% { left: 35%; top: 90px; }
+        100% { left: 50%; top: 110px; }
+      }
+      
+      .math-example {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #667eea;
+      }
+      
+      .math-example h4 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+      
+      .formula-box {
+        background: #333;
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      
+      .loss-functions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+      
+      .loss-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #dc3545;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .loss-card h4 {
+        color: #dc3545;
+        margin-bottom: 15px;
+      }
+      
+      .quiz-section {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin: 30px 0;
+      }
+      
+      .quiz-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      
+      .quiz-header h2 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+      
+      .question {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 2px solid #f0f2f5;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+      
+      .question.correct {
+        border-color: #28a745;
+        background: #f8fff9;
+      }
+      
+      .question.incorrect {
+        border-color: #dc3545;
+        background: #fff8f8;
+      }
+      
+      .question h4 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+      
+      .answer-option {
+        display: block;
+        padding: 12px 20px;
+        margin: 8px 0;
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+      
+      .answer-option:hover {
+        background: #e9ecef;
+        border-color: #667eea;
+      }
+      
+      .answer-option.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+      
+      .answer-option.correct-answer {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+      }
+      
+      .answer-option.wrong-answer {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+      }
+      
+      .quiz-results {
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-top: 30px;
+        display: none;
+      }
+      
+      .quiz-results h3 {
+        margin-bottom: 20px;
+        color: white;
+      }
+      
+      .score-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      
+      .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      
+      .btn-nav {
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .btn-primary:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+      
+      .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+      }
+
+      .interactive-gradient-descent {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+      }
+
+      .controls-section {
+        background: rgba(255,255,255,0.1);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .control-item {
+        margin-bottom: 20px;
+      }
+
+      .control-item label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .control-item input[type="range"] {
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: rgba(255,255,255,0.3);
+        outline: none;
+        margin-bottom: 5px;
+      }
+
+      .control-item input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffc107;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      }
+
+      .control-item small {
+        display: block;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 5px;
+      }
+
+      .control-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 15px;
+      }
+
+      .train-btn {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.4);
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+
+      .train-btn:hover {
+        background: rgba(255,255,255,0.3);
+        border-color: rgba(255,255,255,0.6);
+        transform: translateY(-2px);
+      }
+
+      .train-btn:active {
+        transform: translateY(0);
+      }
+
+      .visualization-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      #hill-canvas {
+        background: rgba(255,255,255,0.95);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        max-width: 100%;
+        height: auto;
+      }
+
+      .training-info {
+        background: rgba(255,255,255,0.1);
+        padding: 20px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .info-row strong {
+        color: #ffc107;
+      }
+
+      .info-row span {
+        font-weight: bold;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 15px;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../ml-academy.html" class="back-link">
+      <i class="fa fa-arrow-left"></i> Back to Academy
+    </a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <!-- Lesson Header -->
+        <div class="lesson-header">
+          <h1><i class="fa fa-refresh"></i> Backpropagation & Training</h1>
+          <p>Discover how neural networks learn through error correction</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 25-30 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-question-circle"></i> 8 Quiz Questions</span>
+          </div>
+        </div>
+
+        <!-- Lesson Content -->
+        <div class="lesson-content">
+          <h2>What is Backpropagation?</h2>
+          <p>
+            <strong>Backpropagation</strong> (short for "backward propagation of errors") is the algorithm that enables neural networks to learn from their mistakes. While forward propagation makes predictions, backpropagation calculates how to adjust the network's weights to improve those predictions.
+          </p>
+          
+          <p>
+            Think of it like learning to throw a basketball. After each shot, you observe how far off you were and adjust your aim accordingly. Backpropagation does the same thing - it calculates how "off" each weight was and adjusts them to reduce future errors.
+          </p>
+
+          <div class="backprop-diagram">
+            <h3>Backpropagation Flow</h3>
+            <div class="backprop-visual">
+              <div class="layer-node output-layer">
+                <span>Output</span>
+                <div class="layer-label">Error Source</div>
+              </div>
+              <div class="back-arrow">←</div>
+              <div class="layer-node hidden-layer">
+                <span>Hidden</span>
+                <div class="layer-label">Adjust Weights</div>
+              </div>
+              <div class="back-arrow">←</div>
+              <div class="layer-node hidden-layer">
+                <span>Hidden</span>
+                <div class="layer-label">Adjust Weights</div>
+              </div>
+              <div class="back-arrow">←</div>
+              <div class="layer-node input-layer">
+                <span>Input</span>
+                <div class="layer-label">Error Propagated</div>
+              </div>
+            </div>
+            <p>Errors flow backward: Output → Hidden Layers → Input</p>
+          </div>
+
+          <h2>The Complete Learning Cycle</h2>
+          
+          <div class="learning-cycle">
+            <h3>How Neural Networks Learn</h3>
+            
+            <div class="cycle-step">
+              <span class="cycle-number">1</span>
+              <strong>Forward Pass:</strong> Input data flows through the network to produce a prediction
+            </div>
+            
+            <div class="cycle-step">
+              <span class="cycle-number">2</span>
+              <strong>Calculate Loss:</strong> Compare the prediction with the actual answer to measure error
+            </div>
+            
+            <div class="cycle-step">
+              <span class="cycle-number">3</span>
+              <strong>Backward Pass:</strong> Calculate gradients (how much each weight contributed to the error)
+            </div>
+            
+            <div class="cycle-step">
+              <span class="cycle-number">4</span>
+              <strong>Update Weights:</strong> Adjust weights in the direction that reduces error
+            </div>
+            
+            <div class="cycle-step">
+              <span class="cycle-number">5</span>
+              <strong>Repeat:</strong> Continue this process thousands of times until the network learns
+            </div>
+          </div>
+
+          <h2>Understanding Loss Functions</h2>
+          <p>Before we can fix errors, we need to measure them. Loss functions quantify how wrong our predictions are:</p>
+
+          <div class="loss-functions">
+            <div class="loss-card">
+              <h4>Mean Squared Error (MSE)</h4>
+              <div style="background: #333; color: #00ff00; padding: 10px; border-radius: 5px; font-family: monospace; margin: 10px 0;">
+                MSE = (1/n) × Σ(actual - predicted)²
+              </div>
+              <p><strong>Used for:</strong> Regression problems (predicting continuous values like house prices)</p>
+              <p><strong>Why it works:</strong> Heavily penalizes large errors, encourages accurate predictions</p>
+            </div>
+            
+            <div class="loss-card">
+              <h4>Cross-Entropy Loss</h4>
+              <div style="background: #333; color: #00ff00; padding: 10px; border-radius: 5px; font-family: monospace; margin: 10px 0;">
+                CE = -Σ y × log(ŷ)
+              </div>
+              <p><strong>Used for:</strong> Classification problems (predicting categories like cat vs dog)</p>
+              <p><strong>Why it works:</strong> Encourages high confidence in correct predictions</p>
+            </div>
+          </div>
+
+          <h2>The Mathematics of Backpropagation</h2>
+          <p>Backpropagation uses the chain rule from calculus to calculate gradients efficiently:</p>
+
+          <div class="math-example">
+            <h4>The Chain Rule in Action</h4>
+            <p>To find how much a weight in an early layer affects the final error, we chain together partial derivatives:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              $$\frac{\partial L}{\partial w^{[1]}} = \frac{\partial L}{\partial a^{[3]}} \times \frac{\partial a^{[3]}}{\partial z^{[3]}} \times \frac{\partial z^{[3]}}{\partial a^{[2]}} \times \frac{\partial a^{[2]}}{\partial z^{[2]}} \times \frac{\partial z^{[2]}}{\partial w^{[1]}}$$
+            </div>
+            <p>This allows us to calculate the gradient for any weight in any layer!</p>
+          </div>
+
+          <h3>Step-by-Step Backpropagation</h3>
+          <div class="math-example">
+            <h4>For the output layer:</h4>
+            <div class="formula-box">
+              # Calculate error gradient
+              dA = prediction - actual_value
+              
+              # Calculate weight gradients
+              dW = (1/m) × dA × previous_layer_output
+              db = (1/m) × sum(dA)
+            </div>
+          </div>
+
+          <div class="math-example">
+            <h4>For hidden layers:</h4>
+            <div class="formula-box">
+              # Propagate error backward
+              dA_prev = W_next.T × dA_current
+              
+              # Apply activation derivative
+              dZ = dA_prev × activation_derivative(Z)
+              
+              # Calculate gradients
+              dW = (1/m) × dZ × previous_layer_output
+              db = (1/m) × sum(dZ)
+            </div>
+          </div>
+
+          <h2>Gradient Descent: The Optimization Engine</h2>
+          <p>
+            Once we know how to adjust each weight (the gradients), gradient descent determines by how much to adjust them.
+          </p>
+
+          <div class="interactive-gradient-descent">
+            <h3>🏔️ Interactive MNIST Training Visualization</h3>
+            <p>Watch how gradient descent trains a digit classifier! The ball represents our model's accuracy rolling down the "error mountain":</p>
+            
+            <div class="controls-section">
+              <div class="control-item">
+                <label>Learning Rate: <span id="learning-rate-display">0.1</span></label>
+                <input type="range" id="learning-rate-slider" min="0.01" max="0.5" step="0.01" value="0.1">
+                <small>How big steps to take</small>
+              </div>
+              <div class="control-buttons">
+                <button class="train-btn" onclick="startTraining()">🚀 Start Training</button>
+                <button class="train-btn" onclick="resetTraining()">🔄 Reset</button>
+                <button class="train-btn" onclick="singleStep()">👆 Single Step</button>
+              </div>
+            </div>
+            
+            <div class="visualization-area">
+              <canvas id="hill-canvas" width="500" height="300"></canvas>
+              <div class="training-info">
+                <div class="info-row">
+                  <strong>Training Progress:</strong> <span id="progress-text">Ready to train MNIST classifier</span>
+                </div>
+                <div class="info-row">
+                  <strong>Current Error:</strong> <span id="error-display">45.0%</span>
+                </div>
+                <div class="info-row">
+                  <strong>MNIST Accuracy:</strong> <span id="accuracy-display">55.0%</span>
+                </div>
+                <div class="info-row">
+                  <strong>Training Step:</strong> <span id="step-display">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>The Update Rule</h3>
+          <div class="math-example">
+            <h4>Weight Update Formula:</h4>
+            <div style="text-align: center; margin: 20px 0;">
+              $$w_{new} = w_{old} - \alpha \times \frac{\partial L}{\partial w}$$
+            </div>
+            <p><strong>Where:</strong></p>
+            <ul>
+              <li><strong>α (alpha):</strong> Learning rate - controls step size</li>
+              <li><strong>∂L/∂w:</strong> Gradient - direction of steepest increase</li>
+              <li>We subtract because we want to go downhill (minimize error)</li>
+            </ul>
+          </div>
+
+          <h2>Learning Rate: The Critical Hyperparameter</h2>
+          <div class="learning-cycle">
+            <h3>Choosing the Right Learning Rate</h3>
+            
+            <div class="cycle-step" style="border-left-color: #dc3545;">
+              <span class="cycle-number" style="background: #dc3545;">⚠️</span>
+              <strong>Too High (α = 0.1):</strong> Takes huge steps, might overshoot the minimum and diverge
+            </div>
+            
+            <div class="cycle-step" style="border-left-color: #28a745;">
+              <span class="cycle-number" style="background: #28a745;">✓</span>
+              <strong>Just Right (α = 0.01):</strong> Makes steady progress toward the minimum
+            </div>
+            
+            <div class="cycle-step" style="border-left-color: #ffc107;">
+              <span class="cycle-number" style="background: #ffc107; color: #333;">⚡</span>
+              <strong>Too Low (α = 0.0001):</strong> Takes tiny steps, learning is very slow
+            </div>
+          </div>
+
+          <h2>Advanced Training Concepts</h2>
+          
+          <h3>Mini-Batch Training</h3>
+          <p>
+            Instead of using one example or all examples at once, we typically use mini-batches (32-256 examples):
+          </p>
+          <ul>
+            <li><strong>Advantages:</strong> More stable updates, efficient use of hardware, faster convergence</li>
+            <li><strong>Process:</strong> Calculate gradients for the batch, then update weights once</li>
+          </ul>
+
+          <h3>Epochs and Iterations</h3>
+          <div class="math-example">
+            <h4>Training Terminology:</h4>
+            <ul>
+              <li><strong>Iteration:</strong> One forward + backward pass on one mini-batch</li>
+              <li><strong>Epoch:</strong> One complete pass through the entire training dataset</li>
+              <li><strong>Example:</strong> 10,000 samples, batch size 100 = 100 iterations per epoch</li>
+            </ul>
+          </div>
+
+          <h2>Common Training Challenges</h2>
+          
+          <h3>Vanishing Gradients</h3>
+          <p>
+            <strong>Problem:</strong> Gradients become very small in deep networks, causing early layers to learn slowly.
+          </p>
+          <p>
+            <strong>Solutions:</strong> Use ReLU activation, proper weight initialization, residual connections.
+          </p>
+
+          <h3>Exploding Gradients</h3>
+          <p>
+            <strong>Problem:</strong> Gradients become very large, causing unstable training.
+          </p>
+          <p>
+            <strong>Solutions:</strong> Gradient clipping, proper weight initialization, batch normalization.
+          </p>
+
+          <h3>Overfitting</h3>
+          <p>
+            <strong>Problem:</strong> Network memorizes training data but fails on new data.
+          </p>
+          <p>
+            <strong>Solutions:</strong> Dropout, regularization, early stopping, more training data.
+          </p>
+
+          <h2>Putting It All Together: A Complete Training Example</h2>
+          <div class="formula-box">
+            # Training Loop Pseudocode
+            for epoch in range(num_epochs):
+                for batch in training_data:
+                    # Forward pass
+                    predictions = forward_pass(batch.inputs)
+                    
+                    # Calculate loss
+                    loss = loss_function(predictions, batch.targets)
+                    
+                    # Backward pass
+                    gradients = backward_pass(loss)
+                    
+                    # Update weights
+                    weights = weights - learning_rate * gradients
+                    
+                # Validate performance
+                validate_model(validation_data)
+          </div>
+
+          <h2>Why Backpropagation Works</h2>
+          <p>
+            Backpropagation is powerful because it:
+          </p>
+          <ul>
+            <li><strong>Efficiently calculates gradients</strong> for millions of parameters</li>
+            <li><strong>Uses the chain rule</strong> to propagate error information backward</li>
+            <li><strong>Automatically finds</strong> the optimal weight adjustments</li>
+            <li><strong>Scales to very deep networks</strong> with proper techniques</li>
+          </ul>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-section">
+          <div class="quiz-header">
+            <h2><i class="fa fa-question-circle"></i> Knowledge Check</h2>
+            <p>Test your understanding of backpropagation and training</p>
+          </div>
+
+          <!-- Question 1 -->
+          <div class="question" data-question="1">
+            <h4>1. What is the main purpose of backpropagation?</h4>
+            <div class="answer-option" data-answer="a">A) To make predictions</div>
+            <div class="answer-option" data-answer="b">B) To calculate gradients and update weights to reduce error</div>
+            <div class="answer-option" data-answer="c">C) To preprocess input data</div>
+            <div class="answer-option" data-answer="d">D) To evaluate model performance</div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="question" data-question="2">
+            <h4>2. In which direction does information flow during backpropagation?</h4>
+            <div class="answer-option" data-answer="a">A) Input to output</div>
+            <div class="answer-option" data-answer="b">B) Output to input (backward)</div>
+            <div class="answer-option" data-answer="c">C) Bidirectional</div>
+            <div class="answer-option" data-answer="d">D) Random direction</div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="question" data-question="3">
+            <h4>3. What mathematical concept enables backpropagation to work efficiently?</h4>
+            <div class="answer-option" data-answer="a">A) Integration</div>
+            <div class="answer-option" data-answer="b">B) The chain rule</div>
+            <div class="answer-option" data-answer="c">C) Matrix addition</div>
+            <div class="answer-option" data-answer="d">D) Linear regression</div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="question" data-question="4">
+            <h4>4. In the weight update rule w_new = w_old - α × ∂L/∂w, why do we subtract the gradient?</h4>
+            <div class="answer-option" data-answer="a">A) To increase the error</div>
+            <div class="answer-option" data-answer="b">B) To move in the direction of steepest descent (minimize error)</div>
+            <div class="answer-option" data-answer="c">C) To normalize the weights</div>
+            <div class="answer-option" data-answer="d">D) It's a mathematical convention</div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="question" data-question="5">
+            <h4>5. What happens if the learning rate is too high?</h4>
+            <div class="answer-option" data-answer="a">A) Training becomes very slow</div>
+            <div class="answer-option" data-answer="b">B) The model might overshoot the minimum and fail to converge</div>
+            <div class="answer-option" data-answer="c">C) The gradients become zero</div>
+            <div class="answer-option" data-answer="d">D) The model achieves perfect accuracy</div>
+          </div>
+
+          <!-- Question 6 -->
+          <div class="question" data-question="6">
+            <h4>6. Which loss function is typically used for binary classification?</h4>
+            <div class="answer-option" data-answer="a">A) Mean Squared Error</div>
+            <div class="answer-option" data-answer="b">B) Cross-entropy loss</div>
+            <div class="answer-option" data-answer="c">C) Hinge loss</div>
+            <div class="answer-option" data-answer="d">D) Absolute error</div>
+          </div>
+
+          <!-- Question 7 -->
+          <div class="question" data-question="7">
+            <h4>7. What is an epoch in neural network training?</h4>
+            <div class="answer-option" data-answer="a">A) One forward pass</div>
+            <div class="answer-option" data-answer="b">B) One backward pass</div>
+            <div class="answer-option" data-answer="c">C) One complete pass through the entire training dataset</div>
+            <div class="answer-option" data-answer="d">D) One weight update</div>
+          </div>
+
+          <!-- Question 8 -->
+          <div class="question" data-question="8">
+            <h4>8. What is the vanishing gradient problem?</h4>
+            <div class="answer-option" data-answer="a">A) Gradients become too large</div>
+            <div class="answer-option" data-answer="b">B) Gradients become very small in deep networks, slowing learning</div>
+            <div class="answer-option" data-answer="c">C) Gradients disappear completely</div>
+            <div class="answer-option" data-answer="d">D) Learning rate becomes zero</div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn-nav btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          </div>
+
+          <div class="quiz-results" id="quiz-results">
+            <h3>Quiz Complete!</h3>
+            <div class="score-display" id="score-display">0/8</div>
+            <p id="score-message">Great job! You understand how neural networks learn.</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation-buttons">
+          <a href="lesson-4-forward-prop.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Forward Propagation
+          </a>
+          <a href="lesson-6-architectures.html" class="btn-nav btn-primary" id="next-lesson-btn" style="opacity: 0.5; pointer-events: none;">
+            Next Lesson: Deep Learning Architectures <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Quiz functionality
+      const correctAnswers = {
+        1: 'b',
+        2: 'b', 
+        3: 'b',
+        4: 'b',
+        5: 'b',
+        6: 'b',
+        7: 'c',
+        8: 'b'
+      };
+
+      let selectedAnswers = {};
+      let quizCompleted = false;
+
+      // Handle answer selection
+      document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const questionNum = question.dataset.question;
+          
+          // Remove previous selection
+          question.querySelectorAll('.answer-option').forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          
+          // Add selection to clicked option
+          this.classList.add('selected');
+          selectedAnswers[questionNum] = this.dataset.answer;
+        });
+      });
+
+      function submitQuiz() {
+        if (Object.keys(selectedAnswers).length < 8) {
+          alert('Please answer all questions before submitting!');
+          return;
+        }
+
+        let score = 0;
+        
+        // Check answers and show results
+        for (let i = 1; i <= 8; i++) {
+          const question = document.querySelector(`[data-question="${i}"]`);
+          const userAnswer = selectedAnswers[i];
+          const correctAnswer = correctAnswers[i];
+          
+          const selectedOption = question.querySelector(`[data-answer="${userAnswer}"]`);
+          const correctOption = question.querySelector(`[data-answer="${correctAnswer}"]`);
+          
+          if (userAnswer === correctAnswer) {
+            score++;
+            question.classList.add('correct');
+            selectedOption.classList.add('correct-answer');
+          } else {
+            question.classList.add('incorrect');
+            selectedOption.classList.add('wrong-answer');
+            correctOption.classList.add('correct-answer');
+          }
+        }
+
+        // Show results
+        const resultsDiv = document.getElementById('quiz-results');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+        
+        scoreDisplay.textContent = `${score}/8`;
+        
+        if (score >= 7) {
+          scoreMessage.textContent = "Excellent! You have mastered the learning process of neural networks.";
+        } else if (score >= 5) {
+          scoreMessage.textContent = "Good work! You understand how backpropagation enables learning.";
+        } else {
+          scoreMessage.textContent = "Keep studying! Backpropagation is complex but crucial to understand.";
+        }
+        
+        resultsDiv.style.display = 'block';
+        
+        // Mark lesson as completed and enable next lesson
+        if (score >= 5) {
+          localStorage.setItem('lesson_5_completed', 'true');
+          localStorage.setItem('lesson_5_score', score);
+          
+          const nextBtn = document.getElementById('next-lesson-btn');
+          nextBtn.style.opacity = '1';
+          nextBtn.style.pointerEvents = 'auto';
+        }
+        
+        quizCompleted = true;
+        
+        // Disable further answer changes
+        document.querySelectorAll('.answer-option').forEach(option => {
+          option.style.pointerEvents = 'none';
+        });
+      }
+
+      // Interactive Gradient Descent Visualization
+      let canvas, ctx;
+      let animationId = null;
+      let isTraining = false;
+      let currentStep = 0;
+      let ballPosition = { x: 50, y: 100 };  // Start at high error position
+      let currentError = 45.0;
+      let learningRate = 0.1;
+      let trainingInterval = null;
+
+      // Initialize canvas when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+          initializeCanvas();
+          updateLearningRateDisplay();
+        }, 100);
+      });
+
+      function initializeCanvas() {
+        canvas = document.getElementById('hill-canvas');
+        if (!canvas) return;
+        
+        ctx = canvas.getContext('2d');
+        drawHill();
+        
+        // Update learning rate display when slider changes
+        const slider = document.getElementById('learning-rate-slider');
+        if (slider) {
+          slider.addEventListener('input', function() {
+            learningRate = parseFloat(this.value);
+            updateLearningRateDisplay();
+          });
+        }
+      }
+
+      function updateLearningRateDisplay() {
+        const display = document.getElementById('learning-rate-display');
+        if (display) {
+          display.textContent = learningRate.toFixed(2);
+        }
+      }
+
+      function drawHill() {
+        if (!ctx) return;
+        
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw gradient background (sky to ground)
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, '#87CEEB');
+        gradient.addColorStop(1, '#228B22');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw hill curve (error surface)
+        ctx.beginPath();
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 4;
+        ctx.moveTo(0, height - 50);
+        
+        // Create a smooth hill curve using quadratic curves
+        for (let x = 0; x <= width; x += 5) {
+          const normalizedX = x / width;
+          // Create a downhill slope (error surface) - high on left, low on right
+          const y = height - 50 - (100 * (1 - normalizedX) + 50 * Math.sin(normalizedX * Math.PI * 2) * (1 - normalizedX));
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+        
+        // Fill the hill
+        ctx.beginPath();
+        ctx.fillStyle = '#8B4513';
+        ctx.moveTo(0, height - 50);
+        for (let x = 0; x <= width; x += 5) {
+          const normalizedX = x / width;
+          // Create a downhill slope (error surface) - high on left, low on right
+          const y = height - 50 - (100 * (1 - normalizedX) + 50 * Math.sin(normalizedX * Math.PI * 2) * (1 - normalizedX));
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw ball
+        drawBall();
+        
+        // Draw labels
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText('High Error', 10, 30);
+        ctx.fillText('Low Error (Global Minimum)', width - 220, 30);
+        
+        // Draw arrow pointing to minimum (right side)
+        ctx.strokeStyle = '#FF4500';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(width - 150, 60);
+        ctx.lineTo(width - 100, height - 80);
+        ctx.stroke();
+        
+        // Arrow head
+        ctx.beginPath();
+        ctx.moveTo(width - 100, height - 80);
+        ctx.lineTo(width - 110, height - 75);
+        ctx.moveTo(width - 100, height - 80);
+        ctx.lineTo(width - 105, height - 90);
+        ctx.stroke();
+      }
+
+      function drawBall() {
+        if (!ctx) return;
+        
+        // Calculate ball position on the hill
+        const x = ballPosition.x;
+        const normalizedX = x / canvas.width;
+        const hillY = canvas.height - 50 - (100 * (1 - normalizedX) + 50 * Math.sin(normalizedX * Math.PI * 2) * (1 - normalizedX));
+        const y = hillY - 15; // Position ball on the hill surface
+        
+        // Draw ball shadow
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.ellipse(x + 2, hillY + 2, 12, 6, 0, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Draw ball
+        const ballGradient = ctx.createRadialGradient(x - 5, y - 5, 2, x, y, 15);
+        ballGradient.addColorStop(0, '#FFD700');
+        ballGradient.addColorStop(1, '#FFA500');
+        
+        ctx.beginPath();
+        ctx.fillStyle = ballGradient;
+        ctx.arc(x, y, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Ball highlight
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.arc(x - 5, y - 5, 4, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+
+      function startTraining() {
+        if (isTraining) return;
+        
+        isTraining = true;
+        updateProgressText('Training MNIST classifier...');
+        
+        trainingInterval = setInterval(() => {
+          singleStep();
+        }, 800);
+      }
+
+      function resetTraining() {
+        if (trainingInterval) {
+          clearInterval(trainingInterval);
+          trainingInterval = null;
+        }
+        
+        isTraining = false;
+        currentStep = 0;
+        ballPosition.x = 50;  // Start at high error position (left side)
+        currentError = 45.0;
+        
+        updateDisplay();
+        updateProgressText('Ready to train MNIST classifier');
+        drawHill();
+      }
+
+      function singleStep() {
+        if (ballPosition.x >= canvas.width - 60) {
+          // Reached minimum
+          if (trainingInterval) {
+            clearInterval(trainingInterval);
+            trainingInterval = null;
+          }
+          isTraining = false;
+          updateProgressText('🎉 Training complete! MNIST classifier optimized');
+          return;
+        }
+        
+        currentStep++;
+        
+        // Move ball based on learning rate
+        const stepSize = learningRate * 100;
+        ballPosition.x = Math.min(ballPosition.x + stepSize, canvas.width - 60);
+        
+        // Update error based on position (closer to minimum = lower error)
+        const progress = ballPosition.x / (canvas.width - 60);
+        currentError = 45.0 * Math.exp(-3 * progress);
+        
+        updateDisplay();
+        drawHill();
+        
+        // Update progress messages
+        if (currentStep % 3 === 0) {
+          const messages = [
+            'Adjusting weights for digit "8" detection...',
+            'Reducing classification errors...',
+            'Fine-tuning feature detectors...',
+            'Optimizing MNIST accuracy...'
+          ];
+          const message = messages[Math.floor(Math.random() * messages.length)];
+          updateProgressText(message);
+        }
+      }
+
+      function updateDisplay() {
+        const errorDisplay = document.getElementById('error-display');
+        const accuracyDisplay = document.getElementById('accuracy-display');
+        const stepDisplay = document.getElementById('step-display');
+        
+        if (errorDisplay) {
+          errorDisplay.textContent = currentError.toFixed(1) + '%';
+        }
+        
+        if (accuracyDisplay) {
+          const accuracy = 100 - currentError;
+          accuracyDisplay.textContent = accuracy.toFixed(1) + '%';
+        }
+        
+        if (stepDisplay) {
+          stepDisplay.textContent = currentStep.toString();
+        }
+      }
+
+      function updateProgressText(text) {
+        const progressText = document.getElementById('progress-text');
+        if (progressText) {
+          progressText.textContent = text;
+        }
+      }
+    </script>
+  </body>
+</html>
