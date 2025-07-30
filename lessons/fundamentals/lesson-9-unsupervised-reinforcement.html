@@ -1,0 +1,544 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 9: Unsupervised & Reinforcement Learning - AI/ML Academy</title>
+    <link rel="shortcut icon" type="image/icon" href="../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #667eea; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #667eea; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #5a6fd8; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #667eea; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .learning-types { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin: 20px 0; }
+      .type-card { background: rgba(255,255,255,0.2); padding: 25px; border-radius: 12px; border-left: 4px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+      .type-card h4 { color: #ffffff; margin-bottom: 15px; font-size: 1.4rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+      .type-card p { color: #ffffff; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+      .type-card ul { color: #ffffff; margin: 0; padding-left: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+      .algorithm-showcase { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .algorithm-showcase h3 { color: #007bff; margin-bottom: 20px; }
+      .rl-section { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; text-align: center; }
+      .environment-grid { display: grid; grid-template-columns: repeat(auto-fit, minItems(250px, 1fr)); gap: 20px; margin: 20px 0; }
+      .env-card { background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107; }
+      .env-card h4 { color: #856404; margin-bottom: 10px; }
+      .comparison-table { background: white; border-radius: 10px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+      .comparison-table table { width: 100%; border-collapse: collapse; }
+      .comparison-table th { background: #667eea; color: white; padding: 15px; text-align: left; }
+      .comparison-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+      .comparison-table tr:nth-child(even) { background: #f8f9fa; }
+      .quiz-section { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px 0; }
+      .quiz-header { text-align: center; margin-bottom: 30px; }
+      .quiz-header h2 { color: #667eea; margin-bottom: 10px; }
+      .question { margin-bottom: 30px; padding: 20px; border: 2px solid #f0f2f5; border-radius: 10px; transition: all 0.3s ease; }
+      .question.correct { border-color: #28a745; background: #f8fff9; }
+      .question.incorrect { border-color: #dc3545; background: #fff8f8; }
+      .question h4 { margin-bottom: 20px; color: #333; }
+      .answer-option { display: block; padding: 12px 20px; margin: 8px 0; background: #f8f9fa; border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; user-select: none; }
+      .answer-option:hover { background: #e9ecef; border-color: #667eea; }
+      .answer-option.selected { background: #667eea; color: white; border-color: #667eea; }
+      .answer-option.correct-answer { background: #28a745; color: white; border-color: #28a745; }
+      .answer-option.wrong-answer { background: #dc3545; color: white; border-color: #dc3545; }
+      .quiz-results { text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; margin-top: 30px; display: none; }
+      .quiz-results h3 { margin-bottom: 20px; color: white; }
+      .score-display { font-size: 2.5rem; font-weight: bold; margin: 20px 0; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../fundamentals-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-cogs"></i> Unsupervised & Reinforcement Learning</h1>
+          <p>Explore learning without labels and decision-making through rewards</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 35-40 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-question-circle"></i> 10 Quiz Questions</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>Beyond Supervised Learning</h2>
+          <p>So far, we've focused on supervised learning where we have labeled data to train our models. But what happens when we don't have labels? Or when we need to make sequential decisions in an environment? This lesson explores two powerful paradigms that expand the horizons of machine learning.</p>
+          
+          <p>Unsupervised learning discovers hidden patterns in data without explicit targets, while reinforcement learning teaches agents to make optimal decisions through trial and error. Together, they represent some of the most exciting frontiers in AI.</p>
+
+          <div class="learning-types">
+            <h3>🎯 The Three Pillars of Machine Learning</h3>
+            <div class="type-grid">
+              <div class="type-card">
+                <h4>📊 Supervised Learning</h4>
+                <p>Learning with labeled examples:</p>
+                <ul>
+                  <li>Input-output pairs provided</li>
+                  <li>Goal: predict labels for new data</li>
+                  <li>Examples: classification, regression</li>
+                  <li>Like learning with a teacher</li>
+                </ul>
+              </div>
+              
+              <div class="type-card">
+                <h4>🔍 Unsupervised Learning</h4>
+                <p>Finding patterns without labels:</p>
+                <ul>
+                  <li>Only input data provided</li>
+                  <li>Goal: discover hidden structure</li>
+                  <li>Examples: clustering, dimensionality reduction</li>
+                  <li>Like learning by exploration</li>
+                </ul>
+              </div>
+              
+              <div class="type-card">
+                <h4>🎮 Reinforcement Learning</h4>
+                <p>Learning through interaction and rewards:</p>
+                <ul>
+                  <li>Agent interacts with environment</li>
+                  <li>Goal: maximize cumulative reward</li>
+                  <li>Examples: game playing, robotics</li>
+                  <li>Like learning through trial and error</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <h2>Unsupervised Learning: Finding Hidden Patterns</h2>
+          
+          <h3>What is Unsupervised Learning?</h3>
+          <p>Unsupervised learning algorithms analyze data to find patterns, structures, or relationships without being given explicit target outputs. It's like being a detective looking for clues in data without knowing what crime was committed.</p>
+          
+          <div class="algorithm-showcase">
+            <h3>🎯 Key Unsupervised Learning Tasks</h3>
+            
+            <h4>1. Clustering</h4>
+            <p><strong>Goal:</strong> Group similar data points together</p>
+            <p><strong>Applications:</strong> Customer segmentation, gene analysis, image segmentation</p>
+            <p><strong>Popular Algorithms:</strong></p>
+            <ul>
+              <li><strong>K-Means:</strong> Partitions data into k clusters based on similarity</li>
+              <li><strong>Hierarchical Clustering:</strong> Creates tree-like cluster structures</li>
+              <li><strong>DBSCAN:</strong> Finds clusters of varying shapes and sizes</li>
+            </ul>
+            
+            <h4>2. Dimensionality Reduction</h4>
+            <p><strong>Goal:</strong> Reduce the number of features while preserving important information</p>
+            <p><strong>Applications:</strong> Data visualization, noise reduction, feature selection</p>
+            <p><strong>Popular Algorithms:</strong></p>
+            <ul>
+              <li><strong>Principal Component Analysis (PCA):</strong> Finds directions of maximum variance</li>
+              <li><strong>t-SNE:</strong> Great for visualizing high-dimensional data</li>
+              <li><strong>Autoencoders:</strong> Neural networks that compress and reconstruct data</li>
+            </ul>
+            
+            <h4>3. Association Rule Learning</h4>
+            <p><strong>Goal:</strong> Find relationships between different items</p>
+            <p><strong>Applications:</strong> Market basket analysis, recommendation systems</p>
+            <p><strong>Example:</strong> "People who buy bread and milk also buy eggs" (support, confidence, lift)</p>
+            
+            <h4>4. Anomaly Detection</h4>
+            <p><strong>Goal:</strong> Identify unusual or outlier data points</p>
+            <p><strong>Applications:</strong> Fraud detection, network security, quality control</p>
+            <p><strong>Methods:</strong> Statistical methods, isolation forests, one-class SVMs</p>
+          </div>
+
+          <h3>Deep Dive: K-Means Clustering</h3>
+          <p>K-Means is one of the most popular clustering algorithms. Here's how it works:</p>
+          
+          <ol>
+            <li><strong>Initialize:</strong> Choose k cluster centers randomly</li>
+            <li><strong>Assign:</strong> Assign each point to the nearest cluster center</li>
+            <li><strong>Update:</strong> Move cluster centers to the mean of assigned points</li>
+            <li><strong>Repeat:</strong> Continue until cluster centers stabilize</li>
+          </ol>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <h4>🔧 Choosing the Right Number of Clusters (k)</h4>
+            <ul>
+              <li><strong>Elbow Method:</strong> Plot inertia vs k, look for the "elbow"</li>
+              <li><strong>Silhouette Analysis:</strong> Measures how similar points are within clusters vs between clusters</li>
+              <li><strong>Domain Knowledge:</strong> Sometimes you know how many groups to expect</li>
+            </ul>
+          </div>
+
+          <h2>Reinforcement Learning: Learning Through Interaction</h2>
+          
+          <h3>The RL Framework</h3>
+          <p>Reinforcement Learning is inspired by how humans and animals learn through trial and error. An <strong>agent</strong> interacts with an <strong>environment</strong>, taking <strong>actions</strong> and receiving <strong>rewards</strong> or penalties, with the goal of maximizing cumulative reward.</p>
+          
+          <div class="rl-section">
+            <h3>🎮 The RL Loop</h3>
+            <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 30px; margin: 30px 0;">
+              <div style="background: rgba(255,255,255,0.25); padding: 20px; border-radius: 50%; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; text-align: center;">
+                <div>
+                  <div style="font-size: 2rem;">🤖</div>
+                  <div>Agent</div>
+                </div>
+              </div>
+              <div style="font-size: 2rem; color: white;">↔️</div>
+              <div style="background: rgba(255,255,255,0.25); padding: 20px; border-radius: 50%; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; text-align: center;">
+                <div>
+                  <div style="font-size: 2rem;">🌍</div>
+                  <div>Environment</div>
+                </div>
+              </div>
+            </div>
+            <p style="color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+              Agent observes <strong>state</strong> → takes <strong>action</strong> → receives <strong>reward</strong> + new <strong>state</strong>
+            </p>
+          </div>
+
+          <h3>Key RL Concepts</h3>
+          
+          <div class="type-grid">
+            <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; border-left: 4px solid #007bff;">
+              <h4>📊 State (S)</h4>
+              <p>The current situation or configuration of the environment that the agent can observe</p>
+              <p><strong>Example:</strong> Chess board position, robot's location</p>
+            </div>
+            <div style="background: #d4edda; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745;">
+              <h4>⚡ Action (A)</h4>
+              <p>The set of possible moves or decisions the agent can make</p>
+              <p><strong>Example:</strong> Move chess piece, turn left/right</p>
+            </div>
+            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">
+              <h4>🏆 Reward (R)</h4>
+              <p>The feedback signal indicating how good/bad an action was</p>
+              <p><strong>Example:</strong> +1 for winning, -1 for losing, 0 for neutral</p>
+            </div>
+            <div style="background: #f8d7da; padding: 20px; border-radius: 10px; border-left: 4px solid #dc3545;">
+              <h4>🎯 Policy (π)</h4>
+              <p>The strategy that defines how the agent chooses actions given states</p>
+              <p><strong>Example:</strong> If state X, then take action Y</p>
+            </div>
+          </div>
+
+          <h3>Popular RL Algorithms</h3>
+          
+          <div class="algorithm-showcase">
+            <h3>🎯 Value-Based Methods</h3>
+            <h4>Q-Learning</h4>
+            <p>Learns the value of taking each action in each state (Q-values)</p>
+            <ul>
+              <li><strong>Q-Table:</strong> Stores Q(state, action) values</li>
+              <li><strong>Bellman Equation:</strong> Q(s,a) = R + γ × max Q(s', a')</li>
+              <li><strong>Exploration vs Exploitation:</strong> ε-greedy strategy</li>
+            </ul>
+            
+            <h4>Deep Q-Networks (DQN)</h4>
+            <p>Uses neural networks to approximate Q-values for complex state spaces</p>
+            <ul>
+              <li>Handles high-dimensional states (like images)</li>
+              <li>Experience replay and target networks for stability</li>
+              <li>Famous for mastering Atari games</li>
+            </ul>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <h4>🎮 Policy-Based Methods</h4>
+            <h4>Policy Gradient Methods</h4>
+            <p>Directly optimize the policy without learning value functions</p>
+            <ul>
+              <li><strong>REINFORCE:</strong> Basic policy gradient algorithm</li>
+              <li><strong>Actor-Critic:</strong> Combines policy gradients with value estimation</li>
+              <li><strong>PPO (Proximal Policy Optimization):</strong> Stable and efficient modern method</li>
+            </ul>
+          </div>
+
+          <h2>Real-World Applications</h2>
+          
+          <div class="type-grid">
+            <div class="env-card">
+              <h4>🤖 Robotics</h4>
+              <p><strong>Unsupervised:</strong> Learning to walk without explicit movement instructions</p>
+              <p><strong>RL:</strong> Robot navigation, manipulation, and control</p>
+            </div>
+            <div class="env-card">
+              <h4>🎮 Game AI</h4>
+              <p><strong>Unsupervised:</strong> Discovering game strategies from gameplay data</p>
+              <p><strong>RL:</strong> AlphaGo, OpenAI Five, game-playing agents</p>
+            </div>
+            <div class="env-card">
+              <h4>💰 Finance</h4>
+              <p><strong>Unsupervised:</strong> Market regime detection, anomaly detection</p>
+              <p><strong>RL:</strong> Algorithmic trading, portfolio optimization</p>
+            </div>
+            <div class="env-card">
+              <h4>🏥 Healthcare</h4>
+              <p><strong>Unsupervised:</strong> Patient clustering, drug discovery</p>
+              <p><strong>RL:</strong> Treatment optimization, drug dosing</p>
+            </div>
+          </div>
+
+          <h2>Comparing Learning Paradigms</h2>
+          
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>Supervised Learning</th>
+                  <th>Unsupervised Learning</th>
+                  <th>Reinforcement Learning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Data Type</strong></td>
+                  <td>Labeled (input-output pairs)</td>
+                  <td>Unlabeled (input only)</td>
+                  <td>Sequential (state-action-reward)</td>
+                </tr>
+                <tr>
+                  <td><strong>Goal</strong></td>
+                  <td>Predict labels for new data</td>
+                  <td>Discover hidden patterns</td>
+                  <td>Maximize cumulative reward</td>
+                </tr>
+                <tr>
+                  <td><strong>Feedback</strong></td>
+                  <td>Immediate (labels)</td>
+                  <td>None (self-evaluation)</td>
+                  <td>Delayed (rewards)</td>
+                </tr>
+                <tr>
+                  <td><strong>Examples</strong></td>
+                  <td>Email spam, image recognition</td>
+                  <td>Customer segmentation, data compression</td>
+                  <td>Game playing, robot control</td>
+                </tr>
+                <tr>
+                  <td><strong>Challenges</strong></td>
+                  <td>Requires labeled data</td>
+                  <td>Hard to evaluate quality</td>
+                  <td>Credit assignment, exploration</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Challenges and Limitations</h2>
+          
+          <h3>Unsupervised Learning Challenges</h3>
+          <ul>
+            <li><strong>Evaluation:</strong> Hard to measure success without ground truth</li>
+            <li><strong>Interpretation:</strong> Discovered patterns may not be meaningful</li>
+            <li><strong>Parameter Selection:</strong> Choosing number of clusters, dimensions</li>
+            <li><strong>Scalability:</strong> Some algorithms don't scale to large datasets</li>
+          </ul>
+
+          <h3>Reinforcement Learning Challenges</h3>
+          <ul>
+            <li><strong>Sample Efficiency:</strong> May need many interactions to learn</li>
+            <li><strong>Exploration vs Exploitation:</strong> Balancing trying new things vs using known good actions</li>
+            <li><strong>Credit Assignment:</strong> Which past actions led to current rewards?</li>
+            <li><strong>Sparse Rewards:</strong> Learning when rewards are infrequent</li>
+            <li><strong>Safety:</strong> Ensuring safe exploration in real-world applications</li>
+          </ul>
+
+          <h2>The Future: Combining Paradigms</h2>
+          <p>Modern AI systems often combine multiple learning paradigms:</p>
+          
+          <ul>
+            <li><strong>Self-Supervised Learning:</strong> Creates labels from unlabeled data (like predicting next word)</li>
+            <li><strong>Semi-Supervised Learning:</strong> Uses both labeled and unlabeled data</li>
+            <li><strong>Multi-Agent RL:</strong> Multiple agents learning and interacting</li>
+            <li><strong>Meta-Learning:</strong> Learning how to learn quickly on new tasks</li>
+            <li><strong>Representation Learning:</strong> Learning good features for downstream tasks</li>
+          </ul>
+        </div>
+
+        <div class="quiz-section">
+          <div class="quiz-header">
+            <h2><i class="fa fa-question-circle"></i> Knowledge Check</h2>
+            <p>Test your understanding of unsupervised and reinforcement learning</p>
+          </div>
+
+          <div class="question" data-question="1">
+            <h4>1. What is the main difference between supervised and unsupervised learning?</h4>
+            <div class="answer-option" data-answer="a">A) Supervised learning is faster</div>
+            <div class="answer-option" data-answer="b">B) Unsupervised learning doesn't use labeled data</div>
+            <div class="answer-option" data-answer="c">C) Supervised learning uses more data</div>
+            <div class="answer-option" data-answer="d">D) Unsupervised learning is more accurate</div>
+          </div>
+
+          <div class="question" data-question="2">
+            <h4>2. Which algorithm is commonly used for clustering?</h4>
+            <div class="answer-option" data-answer="a">A) Linear Regression</div>
+            <div class="answer-option" data-answer="b">B) Decision Trees</div>
+            <div class="answer-option" data-answer="c">C) K-Means</div>
+            <div class="answer-option" data-answer="d">D) Logistic Regression</div>
+          </div>
+
+          <div class="question" data-question="3">
+            <h4>3. What is the goal of dimensionality reduction?</h4>
+            <div class="answer-option" data-answer="a">A) Increase the number of features</div>
+            <div class="answer-option" data-answer="b">B) Reduce features while preserving important information</div>
+            <div class="answer-option" data-answer="c">C) Make data more complex</div>
+            <div class="answer-option" data-answer="d">D) Remove all correlations</div>
+          </div>
+
+          <div class="question" data-question="4">
+            <h4>4. In reinforcement learning, what does an agent receive after taking an action?</h4>
+            <div class="answer-option" data-answer="a">A) Only a new state</div>
+            <div class="answer-option" data-answer="b">B) Only a reward</div>
+            <div class="answer-option" data-answer="c">C) A reward and a new state</div>
+            <div class="answer-option" data-answer="d">D) Nothing</div>
+          </div>
+
+          <div class="question" data-question="5">
+            <h4>5. What is a policy in reinforcement learning?</h4>
+            <div class="answer-option" data-answer="a">A) The environment's rules</div>
+            <div class="answer-option" data-answer="b">B) The agent's strategy for choosing actions</div>
+            <div class="answer-option" data-answer="c">C) The reward function</div>
+            <div class="answer-option" data-answer="d">D) The state space</div>
+          </div>
+
+          <div class="question" data-question="6">
+            <h4>6. Which method is used to choose the optimal number of clusters in K-Means?</h4>
+            <div class="answer-option" data-answer="a">A) Cross-validation</div>
+            <div class="answer-option" data-answer="b">B) Elbow method</div>
+            <div class="answer-option" data-answer="c">C) Gradient descent</div>
+            <div class="answer-option" data-answer="d">D) Backpropagation</div>
+          </div>
+
+          <div class="question" data-question="7">
+            <h4>7. What is Q-Learning used for?</h4>
+            <div class="answer-option" data-answer="a">A) Supervised classification</div>
+            <div class="answer-option" data-answer="b">B) Clustering data points</div>
+            <div class="answer-option" data-answer="c">C) Learning action values in reinforcement learning</div>
+            <div class="answer-option" data-answer="d">D) Reducing dimensionality</div>
+          </div>
+
+          <div class="question" data-question="8">
+            <h4>8. What is the exploration vs exploitation trade-off?</h4>
+            <div class="answer-option" data-answer="a">A) Choosing between different algorithms</div>
+            <div class="answer-option" data-answer="b">B) Balancing trying new actions vs using known good actions</div>
+            <div class="answer-option" data-answer="c">C) Deciding on model complexity</div>
+            <div class="answer-option" data-answer="d">D) Selecting features</div>
+          </div>
+
+          <div class="question" data-question="9">
+            <h4>9. Which technique is used for anomaly detection?</h4>
+            <div class="answer-option" data-answer="a">A) K-Means clustering</div>
+            <div class="answer-option" data-answer="b">B) Linear regression</div>
+            <div class="answer-option" data-answer="c">C) Isolation forests</div>
+            <div class="answer-option" data-answer="d">D) Decision trees</div>
+          </div>
+
+          <div class="question" data-question="10">
+            <h4>10. What type of feedback does reinforcement learning use?</h4>
+            <div class="answer-option" data-answer="a">A) Immediate labels</div>
+            <div class="answer-option" data-answer="b">B) No feedback</div>
+            <div class="answer-option" data-answer="c">C) Delayed rewards</div>
+            <div class="answer-option" data-answer="d">D) Continuous supervision</div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn-nav btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          </div>
+
+          <div class="quiz-results" id="quiz-results">
+            <h3>🎉 Lesson Complete!</h3>
+            <div class="score-display" id="score-display">0/10</div>
+            <p id="score-message">Great work on completing this advanced lesson!</p>
+          </div>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-8-applications.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Real-World Applications
+          </a>
+          <a href="../fundamentals-course.html" class="btn-nav btn-primary">
+            <i class="fa fa-graduation-cap"></i> Back to Course
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const correctAnswers = { 1: 'b', 2: 'c', 3: 'b', 4: 'c', 5: 'b', 6: 'b', 7: 'c', 8: 'b', 9: 'c', 10: 'c' };
+      let selectedAnswers = {};
+
+      document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const questionNum = question.dataset.question;
+          question.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedAnswers[questionNum] = this.dataset.answer;
+        });
+      });
+
+      function submitQuiz() {
+        if (Object.keys(selectedAnswers).length < 10) {
+          alert('Please answer all questions before submitting!');
+          return;
+        }
+
+        let score = 0;
+        for (let i = 1; i <= 10; i++) {
+          const question = document.querySelector(`[data-question="${i}"]`);
+          const userAnswer = selectedAnswers[i];
+          const correctAnswer = correctAnswers[i];
+          const selectedOption = question.querySelector(`[data-answer="${userAnswer}"]`);
+          const correctOption = question.querySelector(`[data-answer="${correctAnswer}"]`);
+          
+          if (userAnswer === correctAnswer) {
+            score++;
+            question.classList.add('correct');
+            selectedOption.classList.add('correct-answer');
+          } else {
+            question.classList.add('incorrect');
+            selectedOption.classList.add('wrong-answer');
+            correctOption.classList.add('correct-answer');
+          }
+        }
+
+        const resultsDiv = document.getElementById('quiz-results');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+        
+        scoreDisplay.textContent = `${score}/10`;
+        
+        if (score >= 8) {
+          scoreMessage.textContent = "Outstanding! You have mastered unsupervised and reinforcement learning concepts. You understand how to find patterns in unlabeled data and how agents learn through interaction.";
+        } else if (score >= 6) {
+          scoreMessage.textContent = "Great job! You have a solid understanding of these advanced learning paradigms and are ready to explore their applications.";
+        } else {
+          scoreMessage.textContent = "Good effort! These are challenging concepts - consider reviewing the material and try again to strengthen your understanding.";
+        }
+        
+        resultsDiv.style.display = 'block';
+        
+        if (score >= 6) {
+          localStorage.setItem('lesson_9_completed', 'true');
+          localStorage.setItem('lesson_9_score', score);
+        }
+        
+        document.querySelectorAll('.answer-option').forEach(option => {
+          option.style.pointerEvents = 'none';
+        });
+      }
+    </script>
+  </body>
+</html>
