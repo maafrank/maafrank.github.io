@@ -1,0 +1,901 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 2: Technical Analysis & Indicators - Quantitative Trading Course</title>
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #28a745; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #28a745; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #1e7e34; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #28a745; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .code-section { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .code-example { background: #2d3748; border-radius: 10px; padding: 20px; margin: 20px 0; overflow-x: auto; }
+      .code-example pre { margin: 0; background: none !important; padding: 0 !important; }
+      .code-example code { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+      .output-box { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4299e1; }
+      .exercise-box { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .exercise-box h3 { color: #007bff; margin-bottom: 20px; }
+      .indicator-info { background: #d4edda; border-left: 4px solid #28a745; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .indicator-info h3 { color: #28a745; margin-bottom: 20px; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      .warning-box { background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .warning-box h4 { color: #721c24; margin-bottom: 10px; }
+      .ta-category { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #28a745; }
+      .ta-category h4 { color: #28a745; margin-bottom: 15px; }
+      .signal-example { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .signal-example h4 { color: #856404; margin-bottom: 10px; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../quant-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-area-chart"></i> Technical Analysis & Indicators</h1>
+          <p>Master the art and science of technical analysis for algorithmic trading</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 60-75 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Intermediate Level</span>
+            <span><i class="fa fa-line-chart"></i> Hands-on Analysis</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>Introduction to Technical Analysis</h2>
+          <p>Technical analysis is the study of past market data, primarily price and volume, to forecast future price direction. Unlike fundamental analysis, which examines a company's financial health, technical analysis focuses purely on price patterns and market psychology.</p>
+          
+          <div class="indicator-info">
+            <h3><i class="fa fa-info-circle"></i> Core Principles of Technical Analysis</h3>
+            <ul>
+              <li><strong>Price Discounts Everything:</strong> All known information is reflected in the current price</li>
+              <li><strong>Price Moves in Trends:</strong> Prices tend to move in identifiable trends that persist</li>
+              <li><strong>History Repeats:</strong> Market patterns and behaviors tend to repeat over time</li>
+              <li><strong>Volume Confirms Price:</strong> Volume should support price movements for validity</li>
+              <li><strong>Support and Resistance:</strong> Prices tend to bounce off key levels</li>
+            </ul>
+          </div>
+
+          <h2>Setting Up Technical Analysis Environment</h2>
+          <p>Let's set up our Python environment with the necessary libraries for technical analysis.</p>
+          
+          <div class="code-section">
+            <h3>🛠️ Technical Analysis Setup</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Install required packages
+# pip install yfinance pandas numpy matplotlib seaborn plotly
+# pip install ta-lib or pip install TA-Lib (for advanced indicators)
+# Alternative: pip install pandas-ta
+
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from datetime import datetime, timedelta
+import warnings
+warnings.filterwarnings('ignore')
+
+# Alternative TA library if ta-lib installation fails
+try:
+    import talib
+    print("✅ TA-Lib successfully imported")
+    TALIB_AVAILABLE = True
+except ImportError:
+    print("⚠️  TA-Lib not available, using pandas-based calculations")
+    TALIB_AVAILABLE = False
+
+# Set up plotting
+plt.style.use('seaborn-v0_8')
+sns.set_palette("husl")
+
+print("Technical Analysis environment ready!")
+print("Libraries loaded and configured for trading analysis")</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Output:</strong><br>
+              ✅ TA-Lib successfully imported<br>
+              Technical Analysis environment ready!<br>
+              Libraries loaded and configured for trading analysis
+            </div>
+          </div>
+
+          <h2>Fetching and Preparing Data</h2>
+          <p>Let's get market data and prepare it for technical analysis.</p>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Fetch data for technical analysis
+def get_stock_data_for_ta(symbol, period="1y", interval="1d"):
+    """
+    Fetch and prepare stock data for technical analysis
+    """
+    print(f"Fetching {symbol} data for technical analysis...")
+    
+    # Get stock data
+    stock = yf.Ticker(symbol)
+    data = stock.history(period=period, interval=interval)
+    
+    if data.empty:
+        print(f"❌ No data available for {symbol}")
+        return None
+    
+    # Add basic calculated columns
+    data['Price_Change'] = data['Close'] - data['Open']
+    data['Price_Change_Pct'] = (data['Close'] - data['Open']) / data['Open'] * 100
+    data['High_Low_Pct'] = (data['High'] - data['Low']) / data['Low'] * 100
+    
+    # Add day classification
+    data['Green_Day'] = data['Close'] > data['Open']
+    data['Red_Day'] = data['Close'] < data['Open']
+    
+    print(f"✅ Successfully fetched {len(data)} days of data")
+    print(f"Date range: {data.index[0].date()} to {data.index[-1].date()}")
+    
+    return data
+
+# Get Apple stock data for analysis
+symbol = "AAPL"
+aapl_data = get_stock_data_for_ta(symbol, period="1y")
+
+# Display basic information
+print(f"\n=== {symbol} Basic Statistics ===")
+print(f"Current Price: ${aapl_data['Close'].iloc[-1]:.2f}")
+print(f"52-Week High: ${aapl_data['High'].max():.2f}")
+print(f"52-Week Low: ${aapl_data['Low'].min():.2f}")
+print(f"Average Volume: {aapl_data['Volume'].mean():,.0f}")
+print(f"Green Days: {aapl_data['Green_Day'].sum()} ({aapl_data['Green_Day'].mean()*100:.1f}%)")
+print(f"Red Days: {aapl_data['Red_Day'].sum()} ({aapl_data['Red_Day'].mean()*100:.1f}%)")
+
+# Show recent data
+print(f"\n=== Recent {symbol} Data ===")
+print(aapl_data[['Open', 'High', 'Low', 'Close', 'Volume', 'Price_Change_Pct']].tail())</code></pre>
+          </div>
+
+          <h2>Moving Averages - The Foundation</h2>
+          <p>Moving averages are the most fundamental technical indicators. They smooth out price action to identify trends.</p>
+
+          <div class="ta-category">
+            <h4>Types of Moving Averages</h4>
+            <ul>
+              <li><strong>Simple Moving Average (SMA):</strong> Equal weight to all periods</li>
+              <li><strong>Exponential Moving Average (EMA):</strong> More weight to recent prices</li>
+              <li><strong>Weighted Moving Average (WMA):</strong> Linear weighting scheme</li>
+            </ul>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Calculate moving averages
+def calculate_moving_averages(data):
+    """Calculate various moving averages"""
+    
+    # Simple Moving Averages
+    data['SMA_20'] = data['Close'].rolling(window=20).mean()
+    data['SMA_50'] = data['Close'].rolling(window=50).mean()
+    data['SMA_200'] = data['Close'].rolling(window=200).mean()
+    
+    # Exponential Moving Averages
+    data['EMA_12'] = data['Close'].ewm(span=12).mean()
+    data['EMA_26'] = data['Close'].ewm(span=26).mean()
+    data['EMA_50'] = data['Close'].ewm(span=50).mean()
+    
+    # Moving average signals
+    data['SMA_Signal'] = np.where(data['Close'] > data['SMA_20'], 1, 
+                                 np.where(data['Close'] < data['SMA_20'], -1, 0))
+    
+    # Golden Cross and Death Cross
+    data['Golden_Cross'] = (data['SMA_50'] > data['SMA_200']) & (data['SMA_50'].shift(1) <= data['SMA_200'].shift(1))
+    data['Death_Cross'] = (data['SMA_50'] < data['SMA_200']) & (data['SMA_50'].shift(1) >= data['SMA_200'].shift(1))
+    
+    return data
+
+# Calculate moving averages for Apple
+aapl_data = calculate_moving_averages(aapl_data)
+
+# Plot moving averages
+def plot_moving_averages(data, symbol, days=180):
+    """Plot price with moving averages"""
+    
+    recent_data = data.tail(days)
+    
+    fig = go.Figure()
+    
+    # Candlestick chart
+    fig.add_trace(go.Candlestick(
+        x=recent_data.index,
+        open=recent_data['Open'],
+        high=recent_data['High'],
+        low=recent_data['Low'],
+        close=recent_data['Close'],
+        name='Price'
+    ))
+    
+    # Moving averages
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['SMA_20'],
+        line=dict(color='blue', width=2), name='SMA 20'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['SMA_50'],
+        line=dict(color='orange', width=2), name='SMA 50'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['SMA_200'],
+        line=dict(color='red', width=2), name='SMA 200'
+    ))
+    
+    # Highlight golden/death crosses
+    golden_crosses = recent_data[recent_data['Golden_Cross']]
+    death_crosses = recent_data[recent_data['Death_Cross']]
+    
+    if not golden_crosses.empty:
+        fig.add_trace(go.Scatter(
+            x=golden_crosses.index, y=golden_crosses['Close'],
+            mode='markers', marker=dict(size=10, color='gold', symbol='triangle-up'),
+            name='Golden Cross'
+        ))
+    
+    if not death_crosses.empty:
+        fig.add_trace(go.Scatter(
+            x=death_crosses.index, y=death_crosses['Close'],
+            mode='markers', marker=dict(size=10, color='black', symbol='triangle-down'),
+            name='Death Cross'
+        ))
+    
+    fig.update_layout(
+        title=f'{symbol} Price with Moving Averages',
+        yaxis_title='Price ($)',
+        xaxis_title='Date',
+        height=600,
+        xaxis_rangeslider_visible=False
+    )
+    
+    fig.show()
+
+# Plot moving averages
+print("Creating moving averages chart...")
+plot_moving_averages(aapl_data, symbol)
+
+# Analyze moving average signals
+current_price = aapl_data['Close'].iloc[-1]
+sma_20 = aapl_data['SMA_20'].iloc[-1]
+sma_50 = aapl_data['SMA_50'].iloc[-1]
+sma_200 = aapl_data['SMA_200'].iloc[-1]
+
+print(f"\n=== Moving Average Analysis for {symbol} ===")
+print(f"Current Price: ${current_price:.2f}")
+print(f"SMA 20: ${sma_20:.2f} ({'Above' if current_price > sma_20 else 'Below'})")
+print(f"SMA 50: ${sma_50:.2f} ({'Above' if current_price > sma_50 else 'Below'})")
+print(f"SMA 200: ${sma_200:.2f} ({'Above' if current_price > sma_200 else 'Below'})")
+
+# Trend analysis
+if sma_20 > sma_50 > sma_200:
+    trend = "Strong Uptrend"
+elif sma_20 < sma_50 < sma_200:
+    trend = "Strong Downtrend"
+elif sma_20 > sma_50:
+    trend = "Short-term Uptrend"
+elif sma_20 < sma_50:
+    trend = "Short-term Downtrend"
+else:
+    trend = "Sideways/Consolidation"
+
+print(f"Overall Trend: {trend}")
+
+# Recent signals
+recent_golden = aapl_data['Golden_Cross'].tail(30).sum()
+recent_death = aapl_data['Death_Cross'].tail(30).sum()
+
+print(f"Golden Crosses (last 30 days): {recent_golden}")
+print(f"Death Crosses (last 30 days): {recent_death}")</code></pre>
+          </div>
+
+          <h2>Momentum Indicators</h2>
+          <p>Momentum indicators help identify the strength and speed of price movements.</p>
+
+          <div class="code-section">
+            <h3>📈 RSI and Momentum Oscillators</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Calculate RSI (Relative Strength Index)
+def calculate_rsi(data, period=14):
+    """Calculate RSI indicator"""
+    delta = data['Close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi
+
+# Calculate MACD (Moving Average Convergence Divergence)
+def calculate_macd(data, fast=12, slow=26, signal=9):
+    """Calculate MACD indicator"""
+    ema_fast = data['Close'].ewm(span=fast).mean()
+    ema_slow = data['Close'].ewm(span=slow).mean()
+    macd = ema_fast - ema_slow
+    macd_signal = macd.ewm(span=signal).mean()
+    macd_histogram = macd - macd_signal
+    return macd, macd_signal, macd_histogram
+
+# Calculate Stochastic Oscillator
+def calculate_stochastic(data, k_period=14, d_period=3):
+    """Calculate Stochastic Oscillator"""
+    low_min = data['Low'].rolling(window=k_period).min()
+    high_max = data['High'].rolling(window=k_period).max()
+    k_percent = 100 * ((data['Close'] - low_min) / (high_max - low_min))
+    d_percent = k_percent.rolling(window=d_period).mean()
+    return k_percent, d_percent
+
+# Apply momentum indicators to Apple data
+print("Calculating momentum indicators...")
+
+aapl_data['RSI'] = calculate_rsi(aapl_data)
+aapl_data['MACD'], aapl_data['MACD_Signal'], aapl_data['MACD_Histogram'] = calculate_macd(aapl_data)
+aapl_data['Stoch_K'], aapl_data['Stoch_D'] = calculate_stochastic(aapl_data)
+
+# RSI signals
+aapl_data['RSI_Overbought'] = aapl_data['RSI'] > 70
+aapl_data['RSI_Oversold'] = aapl_data['RSI'] < 30
+
+# MACD signals
+aapl_data['MACD_Bullish'] = (aapl_data['MACD'] > aapl_data['MACD_Signal']) & (aapl_data['MACD'].shift(1) <= aapl_data['MACD_Signal'].shift(1))
+aapl_data['MACD_Bearish'] = (aapl_data['MACD'] < aapl_data['MACD_Signal']) & (aapl_data['MACD'].shift(1) >= aapl_data['MACD_Signal'].shift(1))
+
+# Plot momentum indicators
+def plot_momentum_indicators(data, symbol, days=180):
+    """Plot momentum indicators"""
+    
+    recent_data = data.tail(days)
+    
+    fig = make_subplots(
+        rows=4, cols=1,
+        subplot_titles=(f'{symbol} Price', 'RSI', 'MACD', 'Stochastic'),
+        vertical_spacing=0.08,
+        row_heights=[0.4, 0.2, 0.2, 0.2]
+    )
+    
+    # Price chart
+    fig.add_trace(go.Candlestick(
+        x=recent_data.index,
+        open=recent_data['Open'],
+        high=recent_data['High'],
+        low=recent_data['Low'],
+        close=recent_data['Close'],
+        name='Price'
+    ), row=1, col=1)
+    
+    # RSI
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['RSI'],
+        line=dict(color='purple', width=2), name='RSI'
+    ), row=2, col=1)
+    
+    # RSI levels
+    fig.add_hline(y=70, line_dash="dash", line_color="red", opacity=0.7, row=2, col=1)
+    fig.add_hline(y=30, line_dash="dash", line_color="green", opacity=0.7, row=2, col=1)
+    fig.add_hline(y=50, line_dash="dot", line_color="gray", opacity=0.5, row=2, col=1)
+    
+    # MACD
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['MACD'],
+        line=dict(color='blue', width=2), name='MACD'
+    ), row=3, col=1)
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['MACD_Signal'],
+        line=dict(color='red', width=2), name='Signal'
+    ), row=3, col=1)
+    
+    fig.add_trace(go.Bar(
+        x=recent_data.index, y=recent_data['MACD_Histogram'],
+        name='Histogram', opacity=0.7
+    ), row=3, col=1)
+    
+    # Stochastic
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['Stoch_K'],
+        line=dict(color='blue', width=2), name='%K'
+    ), row=4, col=1)
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['Stoch_D'],
+        line=dict(color='red', width=2), name='%D'
+    ), row=4, col=1)
+    
+    # Stochastic levels
+    fig.add_hline(y=80, line_dash="dash", line_color="red", opacity=0.7, row=4, col=1)
+    fig.add_hline(y=20, line_dash="dash", line_color="green", opacity=0.7, row=4, col=1)
+    
+    fig.update_layout(
+        title=f'{symbol} Technical Analysis Dashboard',
+        height=1000,
+        xaxis_rangeslider_visible=False,
+        showlegend=False
+    )
+    
+    fig.show()
+
+# Create momentum indicators chart
+print("Creating momentum indicators dashboard...")
+plot_momentum_indicators(aapl_data, symbol)
+
+# Current momentum analysis
+current_rsi = aapl_data['RSI'].iloc[-1]
+current_macd = aapl_data['MACD'].iloc[-1]
+current_macd_signal = aapl_data['MACD_Signal'].iloc[-1]
+current_stoch_k = aapl_data['Stoch_K'].iloc[-1]
+
+print(f"\n=== Current Momentum Analysis for {symbol} ===")
+print(f"RSI: {current_rsi:.2f} ({'Overbought' if current_rsi > 70 else 'Oversold' if current_rsi < 30 else 'Neutral'})")
+print(f"MACD: {current_macd:.4f} ({'Above' if current_macd > current_macd_signal else 'Below'} signal line)")
+print(f"Stochastic %K: {current_stoch_k:.2f} ({'Overbought' if current_stoch_k > 80 else 'Oversold' if current_stoch_k < 20 else 'Neutral'})")
+
+# Recent signals
+recent_macd_bullish = aapl_data['MACD_Bullish'].tail(10).sum()
+recent_macd_bearish = aapl_data['MACD_Bearish'].tail(10).sum()
+
+print(f"Recent MACD bullish signals (last 10 days): {recent_macd_bullish}")
+print(f"Recent MACD bearish signals (last 10 days): {recent_macd_bearish}")</code></pre>
+            </div>
+          </div>
+
+          <h2>Volume Analysis</h2>
+          <p>Volume is a crucial component that confirms price movements and indicates the strength of trends.</p>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Volume analysis functions
+def calculate_volume_indicators(data):
+    """Calculate volume-based indicators"""
+    
+    # Volume Moving Average
+    data['Volume_MA_20'] = data['Volume'].rolling(window=20).mean()
+    
+    # On-Balance Volume (OBV)
+    data['OBV'] = (np.sign(data['Close'].diff()) * data['Volume']).fillna(0).cumsum()
+    
+    # Volume Rate of Change
+    data['Volume_ROC'] = data['Volume'].pct_change(periods=10) * 100
+    
+    # Price Volume Trend (PVT)
+    data['PVT'] = ((data['Close'].diff() / data['Close'].shift(1)) * data['Volume']).fillna(0).cumsum()
+    
+    # Volume signals
+    data['High_Volume'] = data['Volume'] > data['Volume_MA_20'] * 1.5
+    data['Low_Volume'] = data['Volume'] < data['Volume_MA_20'] * 0.5
+    
+    return data
+
+# Calculate volume indicators
+aapl_data = calculate_volume_indicators(aapl_data)
+
+# Volume breakout analysis
+def analyze_volume_breakouts(data, symbol):
+    """Analyze volume breakouts and their significance"""
+    
+    print(f"=== Volume Analysis for {symbol} ===")
+    
+    # Recent high volume days
+    recent_high_volume = data[data['High_Volume']].tail(10)
+    
+    print(f"Recent high volume days: {len(recent_high_volume)}")
+    
+    if not recent_high_volume.empty:
+        print("\nRecent high volume sessions:")
+        for date, row in recent_high_volume.iterrows():
+            price_change = row['Price_Change_Pct']
+            volume_multiple = row['Volume'] / row['Volume_MA_20']
+            print(f"  {date.date()}: {price_change:+.2f}% price change, {volume_multiple:.1f}x average volume")
+    
+    # Volume-price correlation
+    correlation = data['Volume'].corr(data['Price_Change_Pct'].abs())
+    print(f"\nVolume-Price Change Correlation: {correlation:.3f}")
+    
+    # OBV trend analysis
+    obv_trend = "Up" if data['OBV'].iloc[-1] > data['OBV'].iloc[-20] else "Down"
+    print(f"OBV Trend (20 days): {obv_trend}")
+    
+    return recent_high_volume
+
+# Analyze volume
+high_volume_days = analyze_volume_breakouts(aapl_data, symbol)
+
+# Plot volume analysis
+def plot_volume_analysis(data, symbol, days=90):
+    """Plot volume analysis charts"""
+    
+    recent_data = data.tail(days)
+    
+    fig = make_subplots(
+        rows=3, cols=1,
+        subplot_titles=(f'{symbol} Price & Volume', 'On-Balance Volume (OBV)', 'Volume Rate of Change'),
+        vertical_spacing=0.1,
+        row_heights=[0.5, 0.25, 0.25]
+    )
+    
+    # Price and Volume
+    fig.add_trace(go.Candlestick(
+        x=recent_data.index,
+        open=recent_data['Open'],
+        high=recent_data['High'],
+        low=recent_data['Low'],
+        close=recent_data['Close'],
+        name='Price',
+        yaxis='y'
+    ), row=1, col=1)
+    
+    # Volume bars (colored by price direction)
+    colors = ['red' if close < open else 'green' 
+              for close, open in zip(recent_data['Close'], recent_data['Open'])]
+    
+    fig.add_trace(go.Bar(
+        x=recent_data.index,
+        y=recent_data['Volume'],
+        name='Volume',
+        marker_color=colors,
+        yaxis='y2',
+        opacity=0.7
+    ), row=1, col=1)
+    
+    # Volume MA
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['Volume_MA_20'],
+        line=dict(color='blue', width=2), name='Volume MA 20',
+        yaxis='y2'
+    ), row=1, col=1)
+    
+    # OBV
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['OBV'],
+        line=dict(color='purple', width=2), name='OBV'
+    ), row=2, col=1)
+    
+    # Volume ROC
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['Volume_ROC'],
+        line=dict(color='orange', width=2), name='Volume ROC'
+    ), row=3, col=1)
+    
+    fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, row=3, col=1)
+    
+    # Update layout
+    fig.update_layout(
+        title=f'{symbol} Volume Analysis',
+        height=800,
+        xaxis_rangeslider_visible=False,
+        showlegend=False,
+        yaxis=dict(domain=[0.4, 1.0]),
+        yaxis2=dict(domain=[0.4, 1.0], overlaying='y', side='right')
+    )
+    
+    fig.show()
+
+# Create volume analysis chart
+print("Creating volume analysis dashboard...")
+plot_volume_analysis(aapl_data, symbol)</code></pre>
+          </div>
+
+          <h2>Support and Resistance Analysis</h2>
+          <p>Support and resistance levels are key price levels where buying or selling pressure tends to emerge.</p>
+
+          <div class="signal-example">
+            <h4><i class="fa fa-exclamation-circle"></i> Support & Resistance Concepts</h4>
+            <ul>
+              <li><strong>Support:</strong> Price level where buying interest emerges to prevent further decline</li>
+              <li><strong>Resistance:</strong> Price level where selling pressure emerges to prevent further rise</li>
+              <li><strong>Breakout:</strong> When price moves decisively through support or resistance</li>
+              <li><strong>False Breakout:</strong> When price briefly breaks a level but quickly reverses</li>
+            </ul>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Support and Resistance Analysis
+def find_support_resistance_levels(data, window=20, min_touches=2):
+    """
+    Find support and resistance levels using pivot points
+    """
+    # Calculate pivot points
+    pivots_high = data['High'][(data['High'].shift(1) < data['High']) & 
+                              (data['High'].shift(-1) < data['High'])]
+    pivots_low = data['Low'][(data['Low'].shift(1) > data['Low']) & 
+                            (data['Low'].shift(-1) > data['Low'])]
+    
+    # Group similar levels
+    def group_levels(levels, tolerance=0.02):
+        """Group price levels that are within tolerance of each other"""
+        if len(levels) == 0:
+            return []
+        
+        levels_sorted = sorted(levels)
+        groups = []
+        current_group = [levels_sorted[0]]
+        
+        for level in levels_sorted[1:]:
+            if abs(level - current_group[-1]) / current_group[-1] <= tolerance:
+                current_group.append(level)
+            else:
+                if len(current_group) >= min_touches:
+                    groups.append(np.mean(current_group))
+                current_group = [level]
+        
+        if len(current_group) >= min_touches:
+            groups.append(np.mean(current_group))
+        
+        return groups
+    
+    # Find significant levels
+    resistance_levels = group_levels(pivots_high.tolist())
+    support_levels = group_levels(pivots_low.tolist())
+    
+    return support_levels, resistance_levels
+
+# Calculate Bollinger Bands
+def calculate_bollinger_bands(data, period=20, std_dev=2):
+    """Calculate Bollinger Bands"""
+    sma = data['Close'].rolling(window=period).mean()
+    std = data['Close'].rolling(window=period).std()
+    
+    upper_band = sma + (std * std_dev)
+    lower_band = sma - (std * std_dev)
+    
+    # Band squeeze indicator
+    band_width = (upper_band - lower_band) / sma
+    squeeze = band_width < band_width.rolling(window=20).mean() * 0.8
+    
+    return upper_band, sma, lower_band, squeeze
+
+# Apply support/resistance analysis
+print("Analyzing support and resistance levels...")
+
+support_levels, resistance_levels = find_support_resistance_levels(aapl_data)
+aapl_data['BB_Upper'], aapl_data['BB_Middle'], aapl_data['BB_Lower'], aapl_data['BB_Squeeze'] = calculate_bollinger_bands(aapl_data)
+
+print(f"Found {len(support_levels)} support levels")
+print(f"Found {len(resistance_levels)} resistance levels")
+
+# Current price analysis vs levels
+current_price = aapl_data['Close'].iloc[-1]
+print(f"\nCurrent price: ${current_price:.2f}")
+
+# Find nearest support and resistance
+if support_levels:
+    nearest_support = max([level for level in support_levels if level < current_price], default=None)
+    if nearest_support:
+        support_distance = (current_price - nearest_support) / current_price * 100
+        print(f"Nearest support: ${nearest_support:.2f} ({support_distance:.1f}% below)")
+
+if resistance_levels:
+    nearest_resistance = min([level for level in resistance_levels if level > current_price], default=None)
+    if nearest_resistance:
+        resistance_distance = (nearest_resistance - current_price) / current_price * 100
+        print(f"Nearest resistance: ${nearest_resistance:.2f} ({resistance_distance:.1f}% above)")
+
+# Plot support and resistance
+def plot_support_resistance(data, symbol, support_levels, resistance_levels, days=180):
+    """Plot support and resistance levels"""
+    
+    recent_data = data.tail(days)
+    
+    fig = go.Figure()
+    
+    # Candlestick chart
+    fig.add_trace(go.Candlestick(
+        x=recent_data.index,
+        open=recent_data['Open'],
+        high=recent_data['High'],
+        low=recent_data['Low'],
+        close=recent_data['Close'],
+        name='Price'
+    ))
+    
+    # Bollinger Bands
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['BB_Upper'],
+        line=dict(color='gray', width=1, dash='dash'),
+        name='BB Upper'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['BB_Middle'],
+        line=dict(color='blue', width=1),
+        name='BB Middle'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=recent_data.index, y=recent_data['BB_Lower'],
+        line=dict(color='gray', width=1, dash='dash'),
+        name='BB Lower',
+        fill='tonexty', fillcolor='rgba(173,216,230,0.2)'
+    ))
+    
+    # Add support levels
+    for level in support_levels:
+        if recent_data['Low'].min() <= level <= recent_data['High'].max():
+            fig.add_hline(y=level, line_dash="solid", line_color="green", 
+                         opacity=0.7, annotation_text=f"Support: ${level:.2f}")
+    
+    # Add resistance levels
+    for level in resistance_levels:
+        if recent_data['Low'].min() <= level <= recent_data['High'].max():
+            fig.add_hline(y=level, line_dash="solid", line_color="red", 
+                         opacity=0.7, annotation_text=f"Resistance: ${level:.2f}")
+    
+    fig.update_layout(
+        title=f'{symbol} Support & Resistance Analysis',
+        yaxis_title='Price ($)',
+        height=600,
+        xaxis_rangeslider_visible=False,
+        showlegend=False
+    )
+    
+    fig.show()
+
+# Create support/resistance chart
+print("Creating support and resistance chart...")
+plot_support_resistance(aapl_data, symbol, support_levels, resistance_levels)</code></pre>
+          </div>
+
+          <div class="exercise-box">
+            <h3><i class="fa fa-code"></i> Hands-On Exercise</h3>
+            <p>Apply technical analysis to different stocks and timeframes!</p>
+            
+            <h4>Exercise 1: Multi-Stock Technical Analysis</h4>
+            <p>Analyze technical indicators for multiple stocks:</p>
+            <ul>
+              <li>Choose 3 stocks from different sectors</li>
+              <li>Calculate RSI, MACD, and moving averages for each</li>
+              <li>Compare their technical signals</li>
+              <li>Identify which stock shows the strongest bullish/bearish signals</li>
+            </ul>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Your multi-stock analysis
+def analyze_multiple_stocks(symbols, period="6mo"):
+    """Analyze multiple stocks with technical indicators"""
+    
+    results = {}
+    
+    for symbol in symbols:
+        print(f"\nAnalyzing {symbol}...")
+        
+        # Your code here:
+        # 1. Fetch data for the symbol
+        # 2. Calculate all technical indicators
+        # 3. Determine current signals
+        # 4. Store results
+        
+        pass
+    
+    # Your comparison code here:
+    # 1. Compare RSI levels
+    # 2. Compare MACD signals
+    # 3. Compare trend strength
+    # 4. Rank stocks by technical strength
+    
+    return results
+
+# Test your analysis
+test_symbols = ['AAPL', 'GOOGL', 'TSLA']  # Add your choices
+analysis_results = analyze_multiple_stocks(test_symbols)</code></pre>
+            </div>
+            
+            <h4>Exercise 2: Custom Trading Signal</h4>
+            <p>Create a comprehensive trading signal combining multiple indicators:</p>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Create a custom trading signal
+def generate_trading_signals(data):
+    """
+    Generate buy/sell signals based on multiple technical indicators
+    
+    Signal Rules:
+    BUY when:
+    - Price above SMA 20
+    - RSI between 30-70 (not overbought/oversold)
+    - MACD above signal line
+    - Volume above average
+    
+    SELL when opposite conditions
+    """
+    
+    # Your signal logic here
+    buy_signals = (
+        # Your buy conditions
+    )
+    
+    sell_signals = (
+        # Your sell conditions
+    )
+    
+    data['Signal'] = 0  # 0 = hold, 1 = buy, -1 = sell
+    data.loc[buy_signals, 'Signal'] = 1
+    data.loc[sell_signals, 'Signal'] = -1
+    
+    return data
+
+# Test your signal system
+aapl_with_signals = generate_trading_signals(aapl_data.copy())
+
+# Analyze signal performance
+buy_dates = aapl_with_signals[aapl_with_signals['Signal'] == 1].index
+sell_dates = aapl_with_signals[aapl_with_signals['Signal'] == -1].index
+
+print(f"Generated {len(buy_dates)} buy signals and {len(sell_dates)} sell signals")
+
+# Plot signals on chart (your implementation here)</code></pre>
+            </div>
+          </div>
+
+          <div class="warning-box">
+            <h4><i class="fa fa-exclamation-triangle"></i> Important Considerations</h4>
+            <ul>
+              <li><strong>No Holy Grail:</strong> No single indicator works perfectly in all market conditions</li>
+              <li><strong>Confirmation:</strong> Use multiple indicators to confirm signals</li>
+              <li><strong>False Signals:</strong> Technical indicators can generate false signals</li>
+              <li><strong>Market Context:</strong> Consider overall market conditions and news</li>
+              <li><strong>Risk Management:</strong> Always use stop losses and position sizing</li>
+              <li><strong>Backtesting:</strong> Test your strategies on historical data first</li>
+            </ul>
+          </div>
+
+          <h2>Key Takeaways</h2>
+          <p>You've mastered the fundamentals of technical analysis for algorithmic trading:</p>
+          <ul>
+            <li><strong>Moving Averages:</strong> Trend identification and golden/death cross signals</li>
+            <li><strong>Momentum Indicators:</strong> RSI, MACD, and Stochastic for timing entries</li>
+            <li><strong>Volume Analysis:</strong> Confirming price movements with volume patterns</li>
+            <li><strong>Support & Resistance:</strong> Key price levels for risk management</li>
+            <li><strong>Multiple Confirmations:</strong> Combining indicators for stronger signals</li>
+            <li><strong>Python Implementation:</strong> Calculating and visualizing indicators programmatically</li>
+          </ul>
+          
+          <p>Next, we'll explore time series analysis and learn how to predict future price movements using advanced statistical techniques!</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-1-financial-markets.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Financial Markets & Data
+          </a>
+          <a href="lesson-3-time-series.html" class="btn-nav btn-primary">
+            Next: Time Series Analysis <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+      // Mark lesson as completed when user scrolls to bottom
+      window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+          localStorage.setItem('quant_lesson_2_completed', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>
