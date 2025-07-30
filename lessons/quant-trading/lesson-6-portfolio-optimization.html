@@ -1,0 +1,1393 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 6: Portfolio Optimization - Quantitative Trading Course</title>
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #28a745; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #28a745; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #1e7e34; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #28a745; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .code-section { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .code-example { background: #2d3748; border-radius: 10px; padding: 20px; margin: 20px 0; overflow-x: auto; }
+      .code-example pre { margin: 0; background: none !important; padding: 0 !important; }
+      .code-example code { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+      .output-box { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4299e1; }
+      .exercise-box { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .exercise-box h3 { color: #007bff; margin-bottom: 20px; }
+      .portfolio-info { background: #d4edda; border-left: 4px solid #28a745; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .portfolio-info h3 { color: #28a745; margin-bottom: 20px; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      .markowitz-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .markowitz-box h3 { color: #856404; margin-bottom: 20px; }
+      .optimization-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+      .optimization-card { background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745; }
+      .optimization-card h4 { color: #28a745; margin-bottom: 15px; }
+      .efficient-frontier { background: #d1ecf1; border-left: 4px solid #0c5460; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .efficient-frontier h3 { color: #0c5460; margin-bottom: 20px; }
+      .warning-box { background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .warning-box h4 { color: #721c24; margin-bottom: 10px; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../quant-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-pie-chart"></i> Portfolio Optimization</h1>
+          <p>Build diversified, risk-efficient portfolios using modern portfolio theory and machine learning</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 85-100 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-cogs"></i> Mathematical Optimization</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>Modern Portfolio Theory Foundation</h2>
+          <p>Portfolio optimization is the mathematical framework for constructing portfolios that maximize expected return for a given level of risk, or minimize risk for a given level of expected return. Developed by Harry Markowitz in 1952, this theory revolutionized how we think about diversification and risk management.</p>
+          
+          <div class="portfolio-info">
+            <h3><i class="fa fa-lightbulb-o"></i> Core Portfolio Theory Concepts</h3>
+            <ul>
+              <li><strong>Diversification:</strong> "Don't put all eggs in one basket" - reduce risk through uncorrelated assets</li>
+              <li><strong>Efficient Frontier:</strong> Set of optimal portfolios for each level of risk</li>
+              <li><strong>Risk-Return Tradeoff:</strong> Higher returns generally require accepting higher risk</li>
+              <li><strong>Correlation Benefits:</strong> Combining assets with low correlation reduces portfolio risk</li>
+              <li><strong>Sharpe Ratio:</strong> Measure of risk-adjusted returns (return per unit of risk)</li>
+              <li><strong>Capital Allocation:</strong> Optimal mix of risky assets and risk-free assets</li>
+            </ul>
+          </div>
+
+          <h2>Mathematical Framework</h2>
+          <p>Portfolio optimization relies on mathematical optimization to find optimal asset weights.</p>
+
+          <div class="markowitz-box">
+            <h3><i class="fa fa-calculator"></i> Markowitz Optimization Problem</h3>
+            <p><strong>Minimize:</strong> Portfolio Variance = w'Σw</p>
+            <p><strong>Subject to:</strong></p>
+            <ul>
+              <li>w'μ ≥ μ_target (expected return constraint)</li>
+              <li>w'1 = 1 (weights sum to 1)</li>
+              <li>w_i ≥ 0 (long-only constraint, optional)</li>
+            </ul>
+            <p><strong>Where:</strong> w = weights, Σ = covariance matrix, μ = expected returns, 1 = vector of ones</p>
+          </div>
+
+          <h2>Portfolio Optimization Framework Setup</h2>
+          <p>Let's build a comprehensive portfolio optimization system with multiple approaches.</p>
+          
+          <div class="code-section">
+            <h3>🏗️ Portfolio Optimization Framework</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Comprehensive portfolio optimization framework
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# Optimization libraries
+from scipy.optimize import minimize
+from scipy import linalg
+import cvxpy as cp  # For convex optimization
+from sklearn.covariance import LedoitWolf
+from sklearn.preprocessing import StandardScaler
+
+# Statistical libraries
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set random seed
+np.random.seed(42)
+
+print("Portfolio Optimization Framework Initialized!")
+print("Ready to build optimal portfolios with mathematical precision")
+
+class PortfolioOptimizer:
+    """
+    Comprehensive portfolio optimization system with multiple approaches
+    """
+    
+    def __init__(self, risk_free_rate=0.02):
+        self.risk_free_rate = risk_free_rate
+        self.assets = None
+        self.returns = None
+        self.expected_returns = None
+        self.cov_matrix = None
+        self.correlation_matrix = None
+        self.optimal_portfolios = {}
+    
+    def load_data(self, symbols, period="3y", return_method='simple'):
+        """Load and prepare asset data for optimization"""
+        
+        print(f"Loading data for {len(symbols)} assets...")
+        
+        # Fetch data
+        data = {}
+        for symbol in symbols:
+            try:
+                stock = yf.Ticker(symbol)
+                hist = stock.history(period=period)
+                if return_method == 'simple':
+                    hist['Returns'] = hist['Close'].pct_change()
+                else:  # log returns
+                    hist['Returns'] = np.log(hist['Close'] / hist['Close'].shift(1))
+                data[symbol] = hist
+                print(f"✅ {symbol}: {len(hist)} days")
+            except Exception as e:
+                print(f"❌ {symbol}: {str(e)}")
+        
+        # Create returns matrix
+        returns_data = pd.DataFrame()
+        for symbol, hist in data.items():
+            returns_data[symbol] = hist['Returns']
+        
+        self.returns = returns_data.dropna()
+        self.assets = list(self.returns.columns)
+        
+        # Calculate expected returns (multiple methods)
+        self.expected_returns = self.calculate_expected_returns()
+        
+        # Calculate covariance matrix (with shrinkage)
+        self.cov_matrix = self.calculate_covariance_matrix()
+        
+        # Calculate correlation matrix
+        self.correlation_matrix = self.returns.corr()
+        
+        print(f"✅ Portfolio data prepared:")
+        print(f"   Assets: {len(self.assets)}")
+        print(f"   Observations: {len(self.returns)}")
+        print(f"   Date range: {self.returns.index[0].date()} to {self.returns.index[-1].date()}")
+        
+        return self.returns
+    
+    def calculate_expected_returns(self, method='historical_mean'):
+        """Calculate expected returns using various methods"""
+        
+        if method == 'historical_mean':
+            return self.returns.mean() * 252
+        
+        elif method == 'exponential_smoothing':
+            # Exponentially weighted returns (more weight to recent data)
+            return self.returns.ewm(halflife=126).mean().iloc[-1] * 252
+        
+        elif method == 'capm':
+            # Simple CAPM-based expected returns (using SPY as market proxy)
+            # This is a simplified implementation
+            return self.returns.mean() * 252  # Fallback to historical mean
+        
+        else:
+            return self.returns.mean() * 252
+    
+    def calculate_covariance_matrix(self, method='ledoit_wolf'):
+        """Calculate covariance matrix with shrinkage"""
+        
+        if method == 'sample':
+            return self.returns.cov() * 252
+        
+        elif method == 'ledoit_wolf':
+            # Ledoit-Wolf shrinkage estimator
+            lw = LedoitWolf()
+            cov_shrunk = lw.fit(self.returns).covariance_
+            return pd.DataFrame(cov_shrunk * 252, 
+                              index=self.assets, columns=self.assets)
+        
+        elif method == 'exponential':
+            # Exponentially weighted covariance
+            return self.returns.ewm(halflife=126).cov().iloc[-len(self.assets):] * 252
+    
+    def portfolio_performance(self, weights):
+        """Calculate portfolio performance metrics"""
+        
+        weights = np.array(weights)
+        
+        # Expected return
+        portfolio_return = np.sum(weights * self.expected_returns)
+        
+        # Portfolio variance and volatility
+        portfolio_variance = np.dot(weights.T, np.dot(self.cov_matrix, weights))
+        portfolio_volatility = np.sqrt(portfolio_variance)
+        
+        # Sharpe ratio
+        sharpe_ratio = (portfolio_return - self.risk_free_rate) / portfolio_volatility
+        
+        return {
+            'return': portfolio_return,
+            'volatility': portfolio_volatility,
+            'sharpe_ratio': sharpe_ratio,
+            'variance': portfolio_variance
+        }
+
+# Initialize optimizer
+portfolio_optimizer = PortfolioOptimizer(risk_free_rate=0.02)
+
+# Load sample portfolio data
+symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'JPM', 'JNJ', 'PG', 'XOM', 'GLD']
+returns_data = portfolio_optimizer.load_data(symbols, period="3y")
+
+# Display portfolio statistics
+print(f"\n=== Portfolio Universe Statistics ===")
+print(f"Expected Returns (Annualized):")
+for asset, ret in portfolio_optimizer.expected_returns.items():
+    vol = np.sqrt(portfolio_optimizer.cov_matrix.loc[asset, asset])
+    sharpe = (ret - 0.02) / vol
+    print(f"  {asset}: {ret:.1%} return, {vol:.1%} volatility, {sharpe:.2f} Sharpe")
+
+print(f"\nCorrelation Matrix (selected pairs):")
+corr = portfolio_optimizer.correlation_matrix
+for i in range(min(5, len(corr))):
+    for j in range(i+1, min(5, len(corr))):
+        asset1, asset2 = corr.index[i], corr.index[j]
+        correlation = corr.loc[asset1, asset2]
+        print(f"  {asset1}-{asset2}: {correlation:.3f}")</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Output:</strong><br>
+              Portfolio Optimization Framework Initialized!<br>
+              Loading data for 10 assets...<br>
+              ✅ Portfolio data prepared: 10 assets, ~750 observations
+            </div>
+          </div>
+
+          <h2>Classical Portfolio Optimization Methods</h2>
+          <p>Let's implement the foundational portfolio optimization approaches.</p>
+
+          <div class="optimization-grid">
+            <div class="optimization-card">
+              <h4>📈 Maximum Sharpe Ratio</h4>
+              <p>Find the portfolio with the highest risk-adjusted return</p>
+            </div>
+            
+            <div class="optimization-card">
+              <h4>🛡️ Minimum Variance</h4>
+              <p>Construct the lowest-risk portfolio possible</p>
+            </div>
+            
+            <div class="optimization-card">
+              <h4>⚖️ Risk Parity</h4>
+              <p>Equal risk contribution from each asset</p>
+            </div>
+            
+            <div class="optimization-card">
+              <h4>📊 Mean-Variance Efficient</h4>
+              <p>Optimal portfolios along the efficient frontier</p>
+            </div>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Classical optimization methods
+def optimize_maximum_sharpe(optimizer):
+    """Find portfolio with maximum Sharpe ratio"""
+    
+    print("Optimizing for Maximum Sharpe Ratio...")
+    
+    n_assets = len(optimizer.assets)
+    
+    # Objective function: maximize Sharpe ratio (minimize negative Sharpe)
+    def objective(weights):
+        perf = optimizer.portfolio_performance(weights)
+        return -perf['sharpe_ratio']  # Negative because we minimize
+    
+    # Constraints
+    constraints = [
+        {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}  # Weights sum to 1
+    ]
+    
+    # Bounds (long-only)
+    bounds = tuple((0, 1) for _ in range(n_assets))
+    
+    # Initial guess (equal weights)
+    x0 = np.array([1/n_assets] * n_assets)
+    
+    # Optimize
+    result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+    
+    if result.success:
+        optimal_weights = result.x
+        performance = optimizer.portfolio_performance(optimal_weights)
+        
+        print("✅ Maximum Sharpe Portfolio:")
+        print(f"   Expected Return: {performance['return']:.2%}")
+        print(f"   Volatility: {performance['volatility']:.2%}")
+        print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+        
+        return optimal_weights, performance
+    else:
+        print("❌ Optimization failed")
+        return None, None
+
+def optimize_minimum_variance(optimizer):
+    """Find minimum variance portfolio"""
+    
+    print("\nOptimizing for Minimum Variance...")
+    
+    n_assets = len(optimizer.assets)
+    
+    # Objective function: minimize portfolio variance
+    def objective(weights):
+        return optimizer.portfolio_performance(weights)['variance']
+    
+    # Constraints
+    constraints = [
+        {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}
+    ]
+    
+    # Bounds
+    bounds = tuple((0, 1) for _ in range(n_assets))
+    
+    # Initial guess
+    x0 = np.array([1/n_assets] * n_assets)
+    
+    # Optimize
+    result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+    
+    if result.success:
+        optimal_weights = result.x
+        performance = optimizer.portfolio_performance(optimal_weights)
+        
+        print("✅ Minimum Variance Portfolio:")
+        print(f"   Expected Return: {performance['return']:.2%}")
+        print(f"   Volatility: {performance['volatility']:.2%}")
+        print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+        
+        return optimal_weights, performance
+    else:
+        print("❌ Optimization failed")
+        return None, None
+
+def optimize_risk_parity(optimizer):
+    """Risk parity portfolio - equal risk contribution"""
+    
+    print("\nOptimizing for Risk Parity...")
+    
+    n_assets = len(optimizer.assets)
+    cov_matrix = optimizer.cov_matrix.values
+    
+    # Risk contribution function
+    def risk_contributions(weights):
+        portfolio_vol = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+        marginal_contrib = np.dot(cov_matrix, weights) / portfolio_vol
+        risk_contrib = weights * marginal_contrib / portfolio_vol
+        return risk_contrib
+    
+    # Objective: minimize sum of squared deviations from equal risk contribution
+    def objective(weights):
+        risk_contrib = risk_contributions(weights)
+        target_contrib = 1 / n_assets
+        return np.sum((risk_contrib - target_contrib) ** 2)
+    
+    # Constraints
+    constraints = [
+        {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}
+    ]
+    
+    # Bounds
+    bounds = tuple((0.001, 1) for _ in range(n_assets))  # Small minimum to avoid division by zero
+    
+    # Initial guess (inverse volatility weights)
+    vols = np.sqrt(np.diag(cov_matrix))
+    x0 = (1 / vols) / np.sum(1 / vols)
+    
+    # Optimize
+    result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+    
+    if result.success:
+        optimal_weights = result.x
+        performance = optimizer.portfolio_performance(optimal_weights)
+        risk_contrib = risk_contributions(optimal_weights)
+        
+        print("✅ Risk Parity Portfolio:")
+        print(f"   Expected Return: {performance['return']:.2%}")
+        print(f"   Volatility: {performance['volatility']:.2%}")
+        print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+        print("   Risk Contributions:")
+        for i, asset in enumerate(optimizer.assets):
+            print(f"     {asset}: {risk_contrib[i]:.1%}")
+        
+        return optimal_weights, performance
+    else:
+        print("❌ Optimization failed")
+        return None, None
+
+# Run optimizations
+max_sharpe_weights, max_sharpe_perf = optimize_maximum_sharpe(portfolio_optimizer)
+min_var_weights, min_var_perf = optimize_minimum_variance(portfolio_optimizer)
+risk_parity_weights, risk_parity_perf = optimize_risk_parity(portfolio_optimizer)
+
+# Store results
+portfolio_optimizer.optimal_portfolios = {
+    'max_sharpe': {'weights': max_sharpe_weights, 'performance': max_sharpe_perf},
+    'min_variance': {'weights': min_var_weights, 'performance': min_var_perf},
+    'risk_parity': {'weights': risk_parity_weights, 'performance': risk_parity_perf}
+}
+
+# Display portfolio allocations
+def display_portfolio_allocations(optimizer):
+    """Display portfolio allocations in a readable format"""
+    
+    print(f"\n=== Portfolio Allocations ===")
+    
+    portfolios = optimizer.optimal_portfolios
+    
+    # Create allocation table
+    allocation_df = pd.DataFrame()
+    
+    for portfolio_name, portfolio_data in portfolios.items():
+        if portfolio_data['weights'] is not None:
+            allocation_df[portfolio_name] = portfolio_data['weights']
+    
+    allocation_df.index = optimizer.assets
+    allocation_df = allocation_df.round(3)
+    
+    print(allocation_df)
+    
+    # Summary statistics
+    print(f"\n=== Portfolio Performance Summary ===")
+    print(f"{'Portfolio':<15} {'Return':<10} {'Volatility':<12} {'Sharpe':<8}")
+    print("-" * 50)
+    
+    for name, data in portfolios.items():
+        if data['performance'] is not None:
+            perf = data['performance']
+            print(f"{name:<15} {perf['return']:<10.2%} {perf['volatility']:<12.2%} {perf['sharpe_ratio']:<8.3f}")
+
+# Display results
+display_portfolio_allocations(portfolio_optimizer)</code></pre>
+          </div>
+
+          <h2>Efficient Frontier Construction</h2>
+          <p>The efficient frontier shows the set of optimal portfolios for each level of risk. Let's construct and visualize it.</p>
+
+          <div class="efficient-frontier">
+            <h3><i class="fa fa-line-chart"></i> Efficient Frontier Theory</h3>
+            <p>The efficient frontier represents the best possible risk-return combinations. Any portfolio below the frontier is suboptimal, while portfolios above it are mathematically impossible given the asset universe.</p>
+          </div>
+
+          <div class="code-section">
+            <h3>📈 Efficient Frontier Analysis</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Efficient frontier construction
+def construct_efficient_frontier(optimizer, n_portfolios=50):
+    """Construct the efficient frontier"""
+    
+    print("Constructing efficient frontier...")
+    
+    # Get return range for frontier
+    min_ret = optimizer.expected_returns.min()
+    max_ret = optimizer.expected_returns.max()
+    target_returns = np.linspace(min_ret, max_ret, n_portfolios)
+    
+    n_assets = len(optimizer.assets)
+    efficient_portfolios = []
+    
+    for target_return in target_returns:
+        
+        # Objective: minimize portfolio variance
+        def objective(weights):
+            return optimizer.portfolio_performance(weights)['variance']
+        
+        # Constraints
+        constraints = [
+            {'type': 'eq', 'fun': lambda x: np.sum(x) - 1},  # Weights sum to 1
+            {'type': 'eq', 'fun': lambda x: np.sum(x * optimizer.expected_returns) - target_return}  # Target return
+        ]
+        
+        # Bounds
+        bounds = tuple((0, 1) for _ in range(n_assets))
+        
+        # Initial guess
+        x0 = np.array([1/n_assets] * n_assets)
+        
+        # Optimize
+        try:
+            result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+            
+            if result.success:
+                weights = result.x
+                perf = optimizer.portfolio_performance(weights)
+                efficient_portfolios.append({
+                    'weights': weights,
+                    'return': perf['return'],
+                    'volatility': perf['volatility'],
+                    'sharpe_ratio': perf['sharpe_ratio']
+                })
+        except:
+            continue
+    
+    print(f"✅ Constructed efficient frontier with {len(efficient_portfolios)} portfolios")
+    return efficient_portfolios
+
+# Construct efficient frontier
+efficient_portfolios = construct_efficient_frontier(portfolio_optimizer, n_portfolios=30)
+
+# Generate random portfolios for comparison
+def generate_random_portfolios(optimizer, n_portfolios=5000):
+    """Generate random portfolios for comparison"""
+    
+    print(f"Generating {n_portfolios} random portfolios for comparison...")
+    
+    n_assets = len(optimizer.assets)
+    random_portfolios = []
+    
+    for _ in range(n_portfolios):
+        # Generate random weights
+        weights = np.random.random(n_assets)
+        weights /= np.sum(weights)  # Normalize to sum to 1
+        
+        # Calculate performance
+        perf = optimizer.portfolio_performance(weights)
+        random_portfolios.append({
+            'weights': weights,
+            'return': perf['return'],
+            'volatility': perf['volatility'],
+            'sharpe_ratio': perf['sharpe_ratio']
+        })
+    
+    return random_portfolios
+
+# Generate random portfolios
+random_portfolios = generate_random_portfolios(portfolio_optimizer, n_portfolios=3000)
+
+# Visualize efficient frontier
+def plot_efficient_frontier(optimizer, efficient_portfolios, random_portfolios):
+    """Plot efficient frontier with random portfolios and optimal points"""
+    
+    fig = go.Figure()
+    
+    # Random portfolios (scatter)
+    random_vols = [p['volatility'] for p in random_portfolios]
+    random_rets = [p['return'] for p in random_portfolios]
+    random_sharpes = [p['sharpe_ratio'] for p in random_portfolios]
+    
+    fig.add_trace(go.Scatter(
+        x=random_vols,
+        y=random_rets,
+        mode='markers',
+        marker=dict(
+            size=3,
+            color=random_sharpes,
+            colorscale='Viridis',
+            colorbar=dict(title="Sharpe Ratio"),
+            opacity=0.6
+        ),
+        name='Random Portfolios',
+        text=[f'Sharpe: {s:.3f}' for s in random_sharpes],
+        hovertemplate='<b>Random Portfolio</b><br>' +
+                      'Return: %{y:.2%}<br>' +
+                      'Volatility: %{x:.2%}<br>' +
+                      '%{text}<extra></extra>'
+    ))
+    
+    # Efficient frontier
+    efficient_vols = [p['volatility'] for p in efficient_portfolios]
+    efficient_rets = [p['return'] for p in efficient_portfolios]
+    
+    fig.add_trace(go.Scatter(
+        x=efficient_vols,
+        y=efficient_rets,
+        mode='lines+markers',
+        line=dict(color='red', width=3),
+        marker=dict(size=6, color='red'),
+        name='Efficient Frontier',
+        hovertemplate='<b>Efficient Portfolio</b><br>' +
+                      'Return: %{y:.2%}<br>' +
+                      'Volatility: %{x:.2%}<extra></extra>'
+    ))
+    
+    # Mark special portfolios
+    portfolios = optimizer.optimal_portfolios
+    
+    # Maximum Sharpe
+    if portfolios['max_sharpe']['performance']:
+        perf = portfolios['max_sharpe']['performance']
+        fig.add_trace(go.Scatter(
+            x=[perf['volatility']],
+            y=[perf['return']],
+            mode='markers',
+            marker=dict(size=15, color='gold', symbol='star', line=dict(color='black', width=2)),
+            name='Max Sharpe',
+            hovertemplate='<b>Maximum Sharpe Portfolio</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<br>' +
+                          f'Sharpe: {perf["sharpe_ratio"]:.3f}<extra></extra>'
+        ))
+    
+    # Minimum Variance
+    if portfolios['min_variance']['performance']:
+        perf = portfolios['min_variance']['performance']
+        fig.add_trace(go.Scatter(
+            x=[perf['volatility']],
+            y=[perf['return']],
+            mode='markers',
+            marker=dict(size=15, color='blue', symbol='diamond', line=dict(color='black', width=2)),
+            name='Min Variance',
+            hovertemplate='<b>Minimum Variance Portfolio</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<br>' +
+                          f'Sharpe: {perf["sharpe_ratio"]:.3f}<extra></extra>'
+        ))
+    
+    # Risk Parity
+    if portfolios['risk_parity']['performance']:
+        perf = portfolios['risk_parity']['performance']
+        fig.add_trace(go.Scatter(
+            x=[perf['volatility']],
+            y=[perf['return']],
+            mode='markers',
+            marker=dict(size=15, color='green', symbol='square', line=dict(color='black', width=2)),
+            name='Risk Parity',
+            hovertemplate='<b>Risk Parity Portfolio</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<br>' +
+                          f'Sharpe: {perf["sharpe_ratio"]:.3f}<extra></extra>'
+        ))
+    
+    # Individual assets
+    for asset in optimizer.assets:
+        ret = optimizer.expected_returns[asset]
+        vol = np.sqrt(optimizer.cov_matrix.loc[asset, asset])
+        sharpe = (ret - optimizer.risk_free_rate) / vol
+        
+        fig.add_trace(go.Scatter(
+            x=[vol],
+            y=[ret],
+            mode='markers+text',
+            marker=dict(size=8, color='black', symbol='circle'),
+            text=[asset],
+            textposition='top center',
+            name=asset,
+            showlegend=False,
+            hovertemplate=f'<b>{asset}</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<br>' +
+                          f'Sharpe: {sharpe:.3f}<extra></extra>'
+        ))
+    
+    # Capital Allocation Line (CAL) from risk-free rate through Max Sharpe portfolio
+    if portfolios['max_sharpe']['performance']:
+        max_sharpe_perf = portfolios['max_sharpe']['performance']
+        # Extend line beyond the max Sharpe portfolio
+        cal_vols = np.linspace(0, max_sharpe_perf['volatility'] * 1.5, 100)
+        cal_rets = optimizer.risk_free_rate + (cal_vols * max_sharpe_perf['sharpe_ratio'])
+        
+        fig.add_trace(go.Scatter(
+            x=cal_vols,
+            y=cal_rets,
+            mode='lines',
+            line=dict(color='orange', width=2, dash='dash'),
+            name='Capital Allocation Line',
+            hovertemplate='<b>Capital Allocation Line</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<extra></extra>'
+        ))
+    
+    fig.update_layout(
+        title='Efficient Frontier and Portfolio Optimization',
+        xaxis_title='Volatility (Risk)',
+        yaxis_title='Expected Return',
+        xaxis=dict(tickformat='.1%'),
+        yaxis=dict(tickformat='.1%'),
+        height=700,
+        hovermode='closest'
+    )
+    
+    fig.show()
+
+# Plot efficient frontier
+print("Creating efficient frontier visualization...")
+plot_efficient_frontier(portfolio_optimizer, efficient_portfolios, random_portfolios)</code></pre>
+            </div>
+          </div>
+
+          <h2>Advanced Portfolio Optimization Techniques</h2>
+          <p>Modern portfolio optimization goes beyond mean-variance to address real-world constraints and market conditions.</p>
+
+          <div class="code-section">
+            <h3>🚀 Advanced Optimization Methods</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Advanced portfolio optimization techniques
+def black_litterman_optimization(optimizer, views=None, confidence=None):
+    """
+    Black-Litterman portfolio optimization
+    Incorporates investor views into the optimization process
+    """
+    
+    print("Implementing Black-Litterman optimization...")
+    
+    # Market cap weights (proxy using equal weights for simplicity)
+    n_assets = len(optimizer.assets)
+    market_weights = np.array([1/n_assets] * n_assets)
+    
+    # Risk aversion parameter (typical range: 2-4)
+    risk_aversion = 3.0
+    
+    # Market-implied returns (reverse optimization)
+    market_returns = risk_aversion * np.dot(optimizer.cov_matrix.values, market_weights)
+    
+    # If no views provided, use market-implied returns
+    if views is None or confidence is None:
+        bl_returns = market_returns
+    else:
+        # Incorporate views (simplified implementation)
+        # In practice, this would involve more complex matrix operations
+        bl_returns = market_returns  # Placeholder
+    
+    # Optimize with Black-Litterman returns
+    def objective(weights):
+        portfolio_return = np.sum(weights * bl_returns)
+        portfolio_variance = np.dot(weights.T, np.dot(optimizer.cov_matrix.values, weights))
+        return -(portfolio_return - 0.5 * risk_aversion * portfolio_variance)
+    
+    # Constraints
+    constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}]
+    bounds = tuple((0, 1) for _ in range(n_assets))
+    x0 = market_weights
+    
+    result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+    
+    if result.success:
+        bl_weights = result.x
+        performance = optimizer.portfolio_performance(bl_weights)
+        
+        print("✅ Black-Litterman Portfolio:")
+        print(f"   Expected Return: {performance['return']:.2%}")
+        print(f"   Volatility: {performance['volatility']:.2%}")
+        print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+        
+        return bl_weights, performance
+    else:
+        print("❌ Black-Litterman optimization failed")
+        return None, None
+
+def hierarchical_risk_parity(optimizer):
+    """
+    Hierarchical Risk Parity (HRP) using machine learning clustering
+    """
+    
+    print("Implementing Hierarchical Risk Parity...")
+    
+    from scipy.cluster.hierarchy import linkage, dendrogram, cut_tree
+    from scipy.spatial.distance import squareform
+    
+    # Calculate distance matrix from correlation
+    corr_matrix = optimizer.correlation_matrix
+    distance_matrix = np.sqrt(0.5 * (1 - corr_matrix))
+    
+    # Hierarchical clustering
+    condensed_distances = squareform(distance_matrix, checks=False)
+    linkage_matrix = linkage(condensed_distances, method='ward')
+    
+    # Get clusters
+    n_clusters = min(4, len(optimizer.assets) // 2)  # Reasonable number of clusters
+    clusters = cut_tree(linkage_matrix, n_clusters=n_clusters).flatten()
+    
+    # Calculate HRP weights
+    def calculate_hrp_weights(cov_matrix, clusters):
+        """Calculate HRP weights recursively"""
+        
+        n_assets = len(cov_matrix)
+        weights = np.ones(n_assets) / n_assets
+        
+        # Group assets by clusters
+        unique_clusters = np.unique(clusters)
+        cluster_weights = {}
+        
+        for cluster_id in unique_clusters:
+            cluster_assets = np.where(clusters == cluster_id)[0]
+            if len(cluster_assets) > 1:
+                # Calculate inverse variance weights within cluster
+                cluster_cov = cov_matrix.iloc[cluster_assets, cluster_assets]
+                inv_var = 1 / np.diag(cluster_cov)
+                cluster_weights[cluster_id] = inv_var / inv_var.sum()
+            else:
+                cluster_weights[cluster_id] = np.array([1.0])
+        
+        # Calculate cluster-level weights (inverse cluster variance)
+        cluster_vars = []
+        for cluster_id in unique_clusters:
+            cluster_assets = np.where(clusters == cluster_id)[0]
+            if len(cluster_assets) > 1:
+                cluster_cov = cov_matrix.iloc[cluster_assets, cluster_assets]
+                cluster_var = np.dot(cluster_weights[cluster_id], 
+                                   np.dot(cluster_cov, cluster_weights[cluster_id]))
+            else:
+                cluster_var = cov_matrix.iloc[cluster_assets[0], cluster_assets[0]]
+            cluster_vars.append(cluster_var)
+        
+        cluster_vars = np.array(cluster_vars)
+        inv_cluster_vars = 1 / cluster_vars
+        cluster_allocation = inv_cluster_vars / inv_cluster_vars.sum()
+        
+        # Combine cluster and within-cluster weights
+        final_weights = np.zeros(n_assets)
+        for i, cluster_id in enumerate(unique_clusters):
+            cluster_assets = np.where(clusters == cluster_id)[0]
+            for j, asset_idx in enumerate(cluster_assets):
+                final_weights[asset_idx] = (cluster_allocation[i] * 
+                                          cluster_weights[cluster_id][j])
+        
+        return final_weights
+    
+    hrp_weights = calculate_hrp_weights(optimizer.cov_matrix, clusters)
+    performance = optimizer.portfolio_performance(hrp_weights)
+    
+    print("✅ Hierarchical Risk Parity Portfolio:")
+    print(f"   Expected Return: {performance['return']:.2%}")
+    print(f"   Volatility: {performance['volatility']:.2%}")
+    print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+    print(f"   Number of clusters: {n_clusters}")
+    
+    return hrp_weights, performance, clusters
+
+def robust_optimization(optimizer, uncertainty_set='box'):
+    """
+    Robust portfolio optimization accounting for parameter uncertainty
+    """
+    
+    print("Implementing Robust Portfolio Optimization...")
+    
+    n_assets = len(optimizer.assets)
+    
+    # Estimate parameter uncertainty
+    returns_std = optimizer.returns.std()
+    uncertainty_level = 0.1  # 10% uncertainty in expected returns
+    
+    if uncertainty_set == 'box':
+        # Box uncertainty set - worst-case optimization
+        
+        def objective(weights):
+            # Worst-case expected return (subtract uncertainty)
+            worst_case_returns = optimizer.expected_returns - uncertainty_level * returns_std * 252
+            portfolio_return = np.sum(weights * worst_case_returns)
+            portfolio_variance = np.dot(weights.T, np.dot(optimizer.cov_matrix.values, weights))
+            
+            # Maximize worst-case Sharpe ratio
+            if np.sqrt(portfolio_variance) > 0:
+                sharpe = (portfolio_return - optimizer.risk_free_rate) / np.sqrt(portfolio_variance)
+                return -sharpe
+            else:
+                return 1e6  # Large penalty for zero variance
+        
+        # Constraints
+        constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}]
+        bounds = tuple((0, 1) for _ in range(n_assets))
+        x0 = np.array([1/n_assets] * n_assets)
+        
+        result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+        
+        if result.success:
+            robust_weights = result.x
+            performance = optimizer.portfolio_performance(robust_weights)
+            
+            print("✅ Robust Portfolio (Box Uncertainty):")
+            print(f"   Expected Return: {performance['return']:.2%}")
+            print(f"   Volatility: {performance['volatility']:.2%}")
+            print(f"   Sharpe Ratio: {performance['sharpe_ratio']:.3f}")
+            
+            return robust_weights, performance
+        else:
+            print("❌ Robust optimization failed")
+            return None, None
+
+# Run advanced optimizations
+print("\n" + "="*60)
+print("ADVANCED PORTFOLIO OPTIMIZATION")
+print("="*60)
+
+# Black-Litterman
+bl_weights, bl_perf = black_litterman_optimization(portfolio_optimizer)
+
+# Hierarchical Risk Parity
+hrp_weights, hrp_perf, clusters = hierarchical_risk_parity(portfolio_optimizer)
+
+# Robust Optimization
+robust_weights, robust_perf = robust_optimization(portfolio_optimizer)
+
+# Add to portfolio collection
+portfolio_optimizer.optimal_portfolios.update({
+    'black_litterman': {'weights': bl_weights, 'performance': bl_perf},
+    'hrp': {'weights': hrp_weights, 'performance': hrp_perf},
+    'robust': {'weights': robust_weights, 'performance': robust_perf}
+})
+
+# Compare all portfolios
+def compare_all_portfolios(optimizer):
+    """Compare all optimized portfolios"""
+    
+    print(f"\n=== Complete Portfolio Comparison ===")
+    
+    comparison_data = []
+    
+    for name, data in optimizer.optimal_portfolios.items():
+        if data['performance'] is not None:
+            perf = data['performance']
+            comparison_data.append({
+                'Portfolio': name.replace('_', ' ').title(),
+                'Return': f"{perf['return']:.2%}",
+                'Volatility': f"{perf['volatility']:.2%}",
+                'Sharpe': f"{perf['sharpe_ratio']:.3f}"
+            })
+    
+    comparison_df = pd.DataFrame(comparison_data)
+    print(comparison_df.to_string(index=False))
+    
+    return comparison_df
+
+# Compare all portfolios
+comparison_results = compare_all_portfolios(portfolio_optimizer)</code></pre>
+            </div>
+          </div>
+
+          <h2>Portfolio Backtesting and Performance Analysis</h2>
+          <p>Let's backtest our optimized portfolios to see how they perform in real market conditions.</p>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Portfolio backtesting framework
+class PortfolioBacktester:
+    """
+    Backtest optimized portfolios with rebalancing and transaction costs
+    """
+    
+    def __init__(self, initial_capital=100000, transaction_cost=0.001, rebalance_freq='M'):
+        self.initial_capital = initial_capital
+        self.transaction_cost = transaction_cost
+        self.rebalance_freq = rebalance_freq
+        self.results = {}
+    
+    def backtest_portfolio(self, returns_data, weights, portfolio_name, rebalance=True):
+        """Backtest a portfolio with given weights"""
+        
+        print(f"Backtesting {portfolio_name} portfolio...")
+        
+        # Convert returns to DataFrame if needed
+        if isinstance(returns_data, pd.DataFrame):
+            returns = returns_data.copy()
+        else:
+            returns = pd.DataFrame(returns_data)
+        
+        # Initialize tracking
+        portfolio_value = self.initial_capital
+        current_weights = np.array(weights)
+        
+        # Results tracking
+        portfolio_values = [portfolio_value]
+        portfolio_returns = [0]
+        rebalance_dates = []
+        
+        # Determine rebalancing dates
+        if rebalance:
+            if self.rebalance_freq == 'M':
+                rebalance_dates = returns.resample('M').last().index
+            elif self.rebalance_freq == 'Q':
+                rebalance_dates = returns.resample('Q').last().index
+            else:  # No rebalancing
+                rebalance_dates = []
+        
+        # Simulate portfolio performance
+        for i in range(1, len(returns)):
+            date = returns.index[i]
+            daily_returns = returns.iloc[i].values
+            
+            # Calculate portfolio return
+            portfolio_return = np.sum(current_weights * daily_returns)
+            portfolio_value *= (1 + portfolio_return)
+            
+            # Update weights due to price changes (drift)
+            current_weights *= (1 + daily_returns)
+            current_weights /= np.sum(current_weights)  # Renormalize
+            
+            # Rebalance if needed
+            if rebalance and date in rebalance_dates:
+                # Calculate transaction costs
+                weight_changes = np.abs(current_weights - np.array(weights))
+                total_turnover = np.sum(weight_changes)
+                transaction_costs = total_turnover * self.transaction_cost * portfolio_value
+                
+                # Apply costs and rebalance
+                portfolio_value -= transaction_costs
+                current_weights = np.array(weights)
+            
+            # Store results
+            portfolio_values.append(portfolio_value)
+            portfolio_returns.append(portfolio_return)
+        
+        # Calculate performance metrics
+        returns_series = pd.Series(portfolio_returns[1:], index=returns.index[1:])
+        
+        metrics = self.calculate_backtest_metrics(returns_series, portfolio_values)
+        
+        self.results[portfolio_name] = {
+            'portfolio_values': portfolio_values,
+            'returns': returns_series,
+            'metrics': metrics
+        }
+        
+        print(f"✅ {portfolio_name} backtest complete")
+        print(f"   Total Return: {metrics['total_return']:.2%}")
+        print(f"   Annual Return: {metrics['annual_return']:.2%}")
+        print(f"   Volatility: {metrics['volatility']:.2%}")
+        print(f"   Sharpe Ratio: {metrics['sharpe_ratio']:.3f}")
+        print(f"   Max Drawdown: {metrics['max_drawdown']:.2%}")
+        
+        return metrics
+    
+    def calculate_backtest_metrics(self, returns_series, portfolio_values):
+        """Calculate comprehensive backtest metrics"""
+        
+        # Basic metrics
+        total_return = (portfolio_values[-1] / self.initial_capital) - 1
+        annual_return = (1 + total_return) ** (252 / len(returns_series)) - 1
+        volatility = returns_series.std() * np.sqrt(252)
+        sharpe_ratio = (annual_return - 0.02) / volatility if volatility > 0 else 0
+        
+        # Drawdown analysis
+        portfolio_series = pd.Series(portfolio_values, index=[returns_series.index[0]] + list(returns_series.index))
+        rolling_max = portfolio_series.expanding().max()
+        drawdown = (portfolio_series - rolling_max) / rolling_max
+        max_drawdown = drawdown.min()
+        
+        # Additional metrics
+        positive_days = (returns_series > 0).sum()
+        win_rate = positive_days / len(returns_series)
+        
+        # Sortino ratio (downside risk)
+        downside_returns = returns_series[returns_series < 0]
+        downside_volatility = downside_returns.std() * np.sqrt(252) if len(downside_returns) > 0 else 0
+        sortino_ratio = (annual_return - 0.02) / downside_volatility if downside_volatility > 0 else 0
+        
+        return {
+            'total_return': total_return,
+            'annual_return': annual_return,
+            'volatility': volatility,
+            'sharpe_ratio': sharpe_ratio,
+            'max_drawdown': max_drawdown,
+            'win_rate': win_rate,
+            'sortino_ratio': sortino_ratio
+        }
+
+# Backtest all portfolios
+backtester = PortfolioBacktester(initial_capital=100000, transaction_cost=0.001, rebalance_freq='M')
+
+print("\n" + "="*60)
+print("PORTFOLIO BACKTESTING RESULTS")
+print("="*60)
+
+# Backtest each optimized portfolio
+backtest_results = {}
+
+for portfolio_name, portfolio_data in portfolio_optimizer.optimal_portfolios.items():
+    if portfolio_data['weights'] is not None:
+        metrics = backtester.backtest_portfolio(
+            returns_data, 
+            portfolio_data['weights'], 
+            portfolio_name,
+            rebalance=True
+        )
+        backtest_results[portfolio_name] = metrics
+        print()
+
+# Equal weight benchmark
+equal_weights = np.array([1/len(portfolio_optimizer.assets)] * len(portfolio_optimizer.assets))
+equal_weight_metrics = backtester.backtest_portfolio(
+    returns_data, 
+    equal_weights, 
+    'equal_weight',
+    rebalance=True
+)
+backtest_results['equal_weight'] = equal_weight_metrics
+
+# Create performance comparison visualization
+def plot_portfolio_performance_comparison(backtester):
+    """Plot performance comparison of all portfolios"""
+    
+    fig = make_subplots(
+        rows=3, cols=2,
+        subplot_titles=(
+            'Cumulative Returns',
+            'Rolling Sharpe Ratio (60 days)',
+            'Monthly Returns Heatmap',
+            'Risk-Return Scatter',
+            'Drawdown Analysis',
+            'Performance Metrics'
+        ),
+        vertical_spacing=0.1
+    )
+    
+    # 1. Cumulative returns
+    for name, data in backtester.results.items():
+        portfolio_values = pd.Series(data['portfolio_values'])
+        cumulative_returns = portfolio_values / portfolio_values.iloc[0]
+        
+        fig.add_trace(go.Scatter(
+            y=cumulative_returns,
+            mode='lines',
+            name=name.replace('_', ' ').title(),
+            line=dict(width=2)
+        ), row=1, col=1)
+    
+    # 2. Rolling Sharpe ratio (simplified with one portfolio)
+    sample_portfolio = list(backtester.results.keys())[0]
+    returns = backtester.results[sample_portfolio]['returns']
+    rolling_sharpe = (returns.rolling(60).mean() / returns.rolling(60).std()) * np.sqrt(252)
+    
+    fig.add_trace(go.Scatter(
+        x=rolling_sharpe.index,
+        y=rolling_sharpe,
+        mode='lines',
+        name='Rolling Sharpe',
+        line=dict(color='purple', width=2)
+    ), row=1, col=2)
+    
+    # 3. Risk-Return scatter
+    for name, data in backtester.results.items():
+        metrics = data['metrics']
+        fig.add_trace(go.Scatter(
+            x=[metrics['volatility']],
+            y=[metrics['annual_return']],
+            mode='markers',
+            marker=dict(size=12),
+            name=name.replace('_', ' ').title(),
+            text=[f"Sharpe: {metrics['sharpe_ratio']:.3f}"],
+            hovertemplate='<b>%{fullData.name}</b><br>' +
+                          'Return: %{y:.2%}<br>' +
+                          'Volatility: %{x:.2%}<br>' +
+                          '%{text}<extra></extra>'
+        ), row=2, col=1)
+    
+    # 4. Drawdown analysis (sample portfolio)
+    sample_values = pd.Series(backtester.results[sample_portfolio]['portfolio_values'])
+    rolling_max = sample_values.expanding().max()
+    drawdown = (sample_values - rolling_max) / rolling_max * 100
+    
+    fig.add_trace(go.Scatter(
+        y=drawdown,
+        mode='lines',
+        fill='tonexty',
+        fillcolor='rgba(255,0,0,0.3)',
+        line=dict(color='red', width=1),
+        name='Drawdown %'
+    ), row=2, col=2)
+    
+    fig.update_layout(
+        title='Portfolio Performance Comparison Dashboard',
+        height=1000,
+        showlegend=True
+    )
+    
+    fig.show()
+
+# Create performance comparison
+print("Creating portfolio performance comparison dashboard...")
+plot_portfolio_performance_comparison(backtester)
+
+# Final performance summary
+def create_final_performance_summary(backtest_results):
+    """Create final performance summary table"""
+    
+    print(f"\n=== FINAL PORTFOLIO PERFORMANCE SUMMARY ===")
+    
+    summary_data = []
+    for name, metrics in backtest_results.items():
+        summary_data.append({
+            'Portfolio': name.replace('_', ' ').title(),
+            'Total Return': f"{metrics['total_return']:.2%}",
+            'Annual Return': f"{metrics['annual_return']:.2%}",
+            'Volatility': f"{metrics['volatility']:.2%}",
+            'Sharpe Ratio': f"{metrics['sharpe_ratio']:.3f}",
+            'Max Drawdown': f"{metrics['max_drawdown']:.2%}",
+            'Win Rate': f"{metrics['win_rate']:.1%}"
+        })
+    
+    summary_df = pd.DataFrame(summary_data)
+    print(summary_df.to_string(index=False))
+    
+    # Find best performing portfolio
+    sharpe_ratios = {name: metrics['sharpe_ratio'] for name, metrics in backtest_results.items()}
+    best_portfolio = max(sharpe_ratios, key=sharpe_ratios.get)
+    
+    print(f"\n🏆 Best Risk-Adjusted Performance: {best_portfolio.replace('_', ' ').title()}")
+    print(f"   Sharpe Ratio: {sharpe_ratios[best_portfolio]:.3f}")
+
+# Create final summary
+create_final_performance_summary(backtest_results)</code></pre>
+            </div>
+          </div>
+
+          <div class="exercise-box">
+            <h3><i class="fa fa-code"></i> Hands-On Exercise</h3>
+            <p>Build your own advanced portfolio optimization system!</p>
+            
+            <h4>Exercise 1: Custom Optimization Objective</h4>
+            <p>Create a portfolio optimizer with custom objectives:</p>
+            <ul>
+              <li>Maximize return subject to maximum 15% volatility constraint</li>
+              <li>Minimize Conditional Value at Risk (CVaR)</li>
+              <li>Optimize for maximum diversification ratio</li>
+              <li>Multi-objective optimization (return vs risk vs diversification)</li>
+            </ul>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Your custom optimization framework
+class CustomPortfolioOptimizer:
+    """
+    Advanced portfolio optimizer with custom objectives
+    """
+    
+    def __init__(self, optimizer_base):
+        self.base = optimizer_base
+        self.custom_portfolios = {}
+    
+    def optimize_max_return_constrained_risk(self, max_volatility=0.15):
+        """Maximize return subject to volatility constraint"""
+        
+        # Your implementation here:
+        # 1. Define objective function (maximize expected return)
+        # 2. Add volatility constraint
+        # 3. Solve optimization problem
+        # 4. Return optimal weights
+        
+        pass
+    
+    def optimize_cvar(self, confidence_level=0.05):
+        """Minimize Conditional Value at Risk"""
+        
+        # Your CVaR optimization here
+        pass
+    
+    def optimize_diversification_ratio(self):
+        """Maximize diversification ratio"""
+        
+        # Your diversification optimization here
+        pass
+    
+    def multi_objective_optimization(self, return_weight=0.5, risk_weight=0.3, div_weight=0.2):
+        """Multi-objective optimization"""
+        
+        # Your multi-objective implementation here
+        pass
+
+# Implement your custom optimizer
+# custom_optimizer = CustomPortfolioOptimizer(portfolio_optimizer)
+# custom_results = custom_optimizer.optimize_max_return_constrained_risk()</code></pre>
+            </div>
+            
+            <h4>Exercise 2: Dynamic Portfolio Allocation</h4>
+            <p>Build a dynamic allocation system that adapts to market conditions:</p>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Dynamic portfolio allocation system
+class DynamicPortfolioAllocator:
+    """
+    Dynamic portfolio allocation based on market regimes and conditions
+    """
+    
+    def __init__(self, base_optimizer):
+        self.base_optimizer = base_optimizer
+        self.regime_history = []
+        self.allocation_history = []
+    
+    def detect_market_regime(self, returns_data, lookback=60):
+        """Detect current market regime"""
+        
+        # Your regime detection logic:
+        # 1. Volatility regime (high/low)
+        # 2. Trend regime (bull/bear/sideways)
+        # 3. Correlation regime (crisis/normal)
+        
+        pass
+    
+    def regime_based_allocation(self, current_regime):
+        """Adjust allocation based on detected regime"""
+        
+        # Your regime-based allocation logic
+        pass
+    
+    def dynamic_rebalancing(self, trigger_type='volatility', threshold=0.05):
+        """Dynamic rebalancing based on market conditions"""
+        
+        # Your dynamic rebalancing logic
+        pass
+
+# Implement your dynamic allocator
+# dynamic_allocator = DynamicPortfolioAllocator(portfolio_optimizer)
+# dynamic_allocation = dynamic_allocator.regime_based_allocation(current_regime)</code></pre>
+            </div>
+          </div>
+
+          <div class="warning-box">
+            <h4><i class="fa fa-exclamation-triangle"></i> Portfolio Optimization Limitations</h4>
+            <ul>
+              <li><strong>Parameter Uncertainty:</strong> Historical data may not predict future performance</li>
+              <li><strong>Estimation Error:</strong> Small errors in inputs can lead to large changes in optimal weights</li>
+              <li><strong>Model Risk:</strong> All models are simplifications of reality</li>
+              <li><strong>Transaction Costs:</strong> Frequent rebalancing can erode returns</li>
+              <li><strong>Regime Changes:</strong> Optimal allocations change with market conditions</li>
+              <li><strong>Behavioral Factors:</strong> Human psychology affects portfolio decisions</li>
+            </ul>
+          </div>
+
+          <h2>Key Takeaways</h2>
+          <p>You've mastered sophisticated portfolio optimization techniques used by institutional investors:</p>
+          <ul>
+            <li><strong>Modern Portfolio Theory:</strong> Mean-variance optimization and efficient frontier construction</li>
+            <li><strong>Advanced Methods:</strong> Black-Litterman, Hierarchical Risk Parity, and robust optimization</li>
+            <li><strong>Mathematical Framework:</strong> Convex optimization and constraint handling</li>
+            <li><strong>Performance Analysis:</strong> Comprehensive backtesting with transaction costs and rebalancing</li>
+            <li><strong>Risk Management:</strong> Diversification, correlation analysis, and drawdown control</li>
+            <li><strong>Practical Implementation:</strong> Real-world constraints and market condition adaptations</li>
+          </ul>
+          
+          <p>Next, we'll explore sentiment analysis trading to incorporate market psychology and news sentiment into our quantitative strategies!</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-5-risk-management.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Risk Management
+          </a>
+          <a href="lesson-7-sentiment-analysis.html" class="btn-nav btn-primary">
+            Next: Sentiment Analysis Trading <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+      // Mark lesson as completed when user scrolls to bottom
+      window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+          localStorage.setItem('quant_lesson_6_completed', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>

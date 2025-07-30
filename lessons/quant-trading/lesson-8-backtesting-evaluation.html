@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 8: Backtesting & Strategy Evaluation - Quantitative Trading with ML</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .section h2 {
+            color: #28a745;
+            margin-top: 0;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #4a5568;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #28a745, #20c997);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .exercise {
+            background: linear-gradient(120deg, #17a2b8, #138496);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .exercise h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .key-concept {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+        
+        .nav-button {
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Lesson 8: Backtesting & Strategy Evaluation</h1>
+            <p>Quantitative Trading with Machine Learning - Final Capstone</p>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Learning Objectives</h2>
+            <ul>
+                <li>Build comprehensive backtesting frameworks from scratch</li>
+                <li>Implement realistic trading simulation with transaction costs</li>
+                <li>Develop advanced performance metrics and attribution analysis</li>
+                <li>Create strategy comparison and optimization pipelines</li>
+                <li>Master walk-forward analysis and out-of-sample testing</li>
+                <li>Build production-ready strategy evaluation systems</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📈 Complete Backtesting Framework</h2>
+            <p>Let's build a comprehensive backtesting engine that integrates all concepts from previous lessons:</p>
+            
+            <div class="code-block">
+import numpy as np
+import pandas as pd
+import yfinance as yf
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+import seaborn as sns
+from datetime import datetime, timedelta
+import warnings
+warnings.filterwarnings('ignore')
+
+class ComprehensiveBacktester:
+    def __init__(self, initial_capital=100000, commission=0.001, slippage=0.0005):
+        """
+        Comprehensive backtesting framework
+        
+        Parameters:
+        - initial_capital: Starting capital
+        - commission: Transaction cost as percentage of trade value
+        - slippage: Market impact as percentage of trade value
+        """
+        self.initial_capital = initial_capital
+        self.commission = commission
+        self.slippage = slippage
+        self.positions = pd.DataFrame()
+        self.trades = []
+        self.portfolio_values = []
+        self.metrics = {}
+        
+    def calculate_transaction_costs(self, trade_value):
+        """Calculate realistic transaction costs"""
+        commission_cost = abs(trade_value) * self.commission
+        slippage_cost = abs(trade_value) * self.slippage
+        return commission_cost + slippage_cost
+    
+    def execute_trade(self, symbol, quantity, price, timestamp, signal_type):
+        """Execute a trade with transaction costs"""
+        trade_value = quantity * price
+        transaction_cost = self.calculate_transaction_costs(trade_value)
+        
+        trade = {
+            'timestamp': timestamp,
+            'symbol': symbol,
+            'quantity': quantity,
+            'price': price,
+            'trade_value': trade_value,
+            'transaction_cost': transaction_cost,
+            'signal_type': signal_type,
+            'net_value': trade_value - transaction_cost
+        }
+        
+        self.trades.append(trade)
+        return trade
+    
+    def run_backtest(self, strategy, data, signals):
+        """
+        Run comprehensive backtest
+        
+        Parameters:
+        - strategy: Strategy object with generate_signals method
+        - data: Price data DataFrame
+        - signals: Trading signals DataFrame
+        """
+        current_capital = self.initial_capital
+        current_positions = {}
+        portfolio_history = []
+        
+        print("🚀 Starting Comprehensive Backtest...")
+        print(f"Initial Capital: ${current_capital:,.2f}")
+        print(f"Commission: {self.commission*100:.3f}%")
+        print(f"Slippage: {self.slippage*100:.3f}%")
+        print("-" * 50)
+        
+        for timestamp, row in signals.iterrows():
+            if timestamp not in data.index:
+                continue
+                
+            current_prices = data.loc[timestamp]
+            
+            # Process signals for each symbol
+            for symbol in signals.columns:
+                if symbol not in current_prices.index:
+                    continue
+                    
+                signal = row[symbol]
+                current_price = current_prices[symbol]
+                
+                if pd.isna(signal) or signal == 0:
+                    continue
+                
+                # Calculate position size based on signal strength
+                position_size = self.calculate_position_size(
+                    signal, current_capital, current_price
+                )
+                
+                if position_size != 0:
+                    # Execute trade
+                    trade = self.execute_trade(
+                        symbol, position_size, current_price, 
+                        timestamp, 'BUY' if position_size > 0 else 'SELL'
+                    )
+                    
+                    # Update positions
+                    if symbol not in current_positions:
+                        current_positions[symbol] = 0
+                    current_positions[symbol] += position_size
+                    
+                    # Update capital
+                    current_capital -= trade['net_value']
+            
+            # Calculate portfolio value
+            portfolio_value = current_capital
+            for symbol, quantity in current_positions.items():
+                if symbol in current_prices.index:
+                    portfolio_value += quantity * current_prices[symbol]
+            
+            portfolio_history.append({
+                'timestamp': timestamp,
+                'capital': current_capital,
+                'positions_value': portfolio_value - current_capital,
+                'total_value': portfolio_value,
+                'positions': current_positions.copy()
+            })
+        
+        self.portfolio_values = pd.DataFrame(portfolio_history).set_index('timestamp')
+        print(f"✅ Backtest Complete! Final Value: ${portfolio_value:,.2f}")
+        
+        return self.portfolio_values
+    
+    def calculate_position_size(self, signal, available_capital, price):
+        """Calculate position size based on signal strength and available capital"""
+        # Risk per trade as percentage of capital
+        risk_per_trade = 0.02  # 2% risk per trade
+        
+        # Position size based on signal strength and available capital
+        max_position_value = available_capital * risk_per_trade * abs(signal)
+        position_size = int(max_position_value / price)
+        
+        # Apply sign based on signal direction
+        return position_size if signal > 0 else -position_size
+
+# Performance Analytics Engine
+class PerformanceAnalyzer:
+    def __init__(self, portfolio_values, benchmark_data=None, risk_free_rate=0.02):
+        self.portfolio_values = portfolio_values
+        self.benchmark_data = benchmark_data
+        self.risk_free_rate = risk_free_rate
+        self.returns = self.calculate_returns()
+        
+    def calculate_returns(self):
+        """Calculate portfolio returns"""
+        return self.portfolio_values['total_value'].pct_change().dropna()
+    
+    def calculate_comprehensive_metrics(self):
+        """Calculate comprehensive performance metrics"""
+        returns = self.returns
+        
+        # Basic metrics
+        total_return = (self.portfolio_values['total_value'].iloc[-1] / 
+                       self.portfolio_values['total_value'].iloc[0] - 1)
+        
+        annualized_return = (1 + total_return) ** (252 / len(returns)) - 1
+        
+        volatility = returns.std() * np.sqrt(252)
+        
+        # Risk-adjusted metrics
+        sharpe_ratio = (annualized_return - self.risk_free_rate) / volatility
+        
+        # Downside metrics
+        downside_returns = returns[returns < 0]
+        downside_volatility = downside_returns.std() * np.sqrt(252)
+        sortino_ratio = (annualized_return - self.risk_free_rate) / downside_volatility
+        
+        # Drawdown analysis
+        portfolio_value = self.portfolio_values['total_value']
+        rolling_max = portfolio_value.expanding().max()
+        drawdown = (portfolio_value - rolling_max) / rolling_max
+        max_drawdown = drawdown.min()
+        
+        # Advanced metrics
+        positive_returns = returns[returns > 0]
+        negative_returns = returns[returns < 0]
+        
+        win_rate = len(positive_returns) / len(returns) if len(returns) > 0 else 0
+        avg_win = positive_returns.mean() if len(positive_returns) > 0 else 0
+        avg_loss = negative_returns.mean() if len(negative_returns) > 0 else 0
+        profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
+        
+        # Calmar ratio
+        calmar_ratio = annualized_return / abs(max_drawdown) if max_drawdown != 0 else float('inf')
+        
+        metrics = {
+            'Total Return': f"{total_return:.2%}",
+            'Annualized Return': f"{annualized_return:.2%}",
+            'Volatility': f"{volatility:.2%}",
+            'Sharpe Ratio': f"{sharpe_ratio:.3f}",
+            'Sortino Ratio': f"{sortino_ratio:.3f}",
+            'Maximum Drawdown': f"{max_drawdown:.2%}",
+            'Calmar Ratio': f"{calmar_ratio:.3f}",
+            'Win Rate': f"{win_rate:.2%}",
+            'Profit Factor': f"{profit_factor:.2f}",
+            'Average Win': f"{avg_win:.4f}",
+            'Average Loss': f"{avg_loss:.4f}"
+        }
+        
+        return metrics
+    
+    def generate_performance_report(self):
+        """Generate comprehensive performance report"""
+        metrics = self.calculate_comprehensive_metrics()
+        
+        print("📊 COMPREHENSIVE PERFORMANCE REPORT")
+        print("=" * 50)
+        
+        for metric, value in metrics.items():
+            print(f"{metric:<20}: {value}")
+        
+        return metrics
+    
+    def plot_performance_dashboard(self):
+        """Create comprehensive performance dashboard"""
+        fig = make_subplots(
+            rows=3, cols=2,
+            subplot_titles=[
+                'Portfolio Value Over Time',
+                'Monthly Returns Heatmap',
+                'Rolling Sharpe Ratio',
+                'Drawdown Analysis',
+                'Return Distribution',
+                'Risk-Return Analysis'
+            ],
+            specs=[
+                [{"secondary_y": False}, {"type": "heatmap"}],
+                [{"secondary_y": False}, {"secondary_y": False}],
+                [{"type": "histogram"}, {"type": "scatter"}]
+            ]
+        )
+        
+        # Portfolio value over time
+        fig.add_trace(
+            go.Scatter(
+                x=self.portfolio_values.index,
+                y=self.portfolio_values['total_value'],
+                name='Portfolio Value',
+                line=dict(color='#28a745', width=2)
+            ),
+            row=1, col=1
+        )
+        
+        # Rolling Sharpe ratio
+        rolling_sharpe = self.calculate_rolling_sharpe(window=63)  # Quarterly
+        fig.add_trace(
+            go.Scatter(
+                x=rolling_sharpe.index,
+                y=rolling_sharpe.values,
+                name='Rolling Sharpe',
+                line=dict(color='#17a2b8', width=2)
+            ),
+            row=2, col=1
+        )
+        
+        # Drawdown analysis
+        portfolio_value = self.portfolio_values['total_value']
+        rolling_max = portfolio_value.expanding().max()
+        drawdown = (portfolio_value - rolling_max) / rolling_max
+        
+        fig.add_trace(
+            go.Scatter(
+                x=drawdown.index,
+                y=drawdown.values,
+                name='Drawdown',
+                fill='tonexty',
+                line=dict(color='#dc3545', width=1)
+            ),
+            row=2, col=2
+        )
+        
+        # Return distribution
+        fig.add_trace(
+            go.Histogram(
+                x=self.returns,
+                name='Return Distribution',
+                nbinsx=50,
+                marker_color='#28a745',
+                opacity=0.7
+            ),
+            row=3, col=1
+        )
+        
+        # Update layout
+        fig.update_layout(
+            height=1200,
+            title_text="📈 Comprehensive Performance Dashboard",
+            showlegend=True,
+            template="plotly_white"
+        )
+        
+        fig.show()
+        
+        return fig
+    
+    def calculate_rolling_sharpe(self, window=63):
+        """Calculate rolling Sharpe ratio"""
+        rolling_returns = self.returns.rolling(window=window)
+        rolling_mean = rolling_returns.mean() * 252
+        rolling_std = rolling_returns.std() * np.sqrt(252)
+        rolling_sharpe = (rolling_mean - self.risk_free_rate) / rolling_std
+        return rolling_sharpe.dropna()
+
+# Multi-Strategy Comparison Framework
+class StrategyComparison:
+    def __init__(self):
+        self.strategies = {}
+        self.results = {}
+        
+    def add_strategy(self, name, portfolio_values, trades=None):
+        """Add strategy results for comparison"""
+        self.strategies[name] = {
+            'portfolio_values': portfolio_values,
+            'trades': trades,
+            'analyzer': PerformanceAnalyzer(portfolio_values)
+        }
+        
+        # Calculate metrics
+        self.results[name] = self.strategies[name]['analyzer'].calculate_comprehensive_metrics()
+    
+    def compare_strategies(self):
+        """Compare multiple strategies"""
+        if not self.strategies:
+            print("No strategies to compare!")
+            return
+        
+        # Create comparison DataFrame
+        comparison_df = pd.DataFrame(self.results).T
+        
+        print("🏆 STRATEGY COMPARISON REPORT")
+        print("=" * 80)
+        print(comparison_df)
+        
+        # Create comparison visualization
+        self.plot_strategy_comparison()
+        
+        return comparison_df
+    
+    def plot_strategy_comparison(self):
+        """Create strategy comparison visualization"""
+        fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=[
+                'Portfolio Value Comparison',
+                'Risk-Return Scatter',
+                'Monthly Performance Comparison',
+                'Drawdown Comparison'
+            ]
+        )
+        
+        colors = ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#6f42c1']
+        
+        for i, (name, strategy) in enumerate(self.strategies.items()):
+            color = colors[i % len(colors)]
+            portfolio_values = strategy['portfolio_values']
+            
+            # Portfolio value comparison
+            fig.add_trace(
+                go.Scatter(
+                    x=portfolio_values.index,
+                    y=portfolio_values['total_value'],
+                    name=f'{name} Portfolio',
+                    line=dict(color=color, width=2)
+                ),
+                row=1, col=1
+            )
+            
+            # Calculate drawdown for comparison
+            portfolio_value = portfolio_values['total_value']
+            rolling_max = portfolio_value.expanding().max()
+            drawdown = (portfolio_value - rolling_max) / rolling_max
+            
+            # Drawdown comparison
+            fig.add_trace(
+                go.Scatter(
+                    x=drawdown.index,
+                    y=drawdown.values,
+                    name=f'{name} Drawdown',
+                    line=dict(color=color, width=1)
+                ),
+                row=2, col=2
+            )
+        
+        fig.update_layout(
+            height=800,
+            title_text="📊 Multi-Strategy Performance Comparison",
+            showlegend=True,
+            template="plotly_white"
+        )
+        
+        fig.show()
+        
+        return fig
+
+# Example usage with integrated strategy
+def run_comprehensive_example():
+    """Run comprehensive backtesting example"""
+    
+    # Download data for multiple assets
+    symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA']
+    print("📥 Downloading market data...")
+    
+    data = {}
+    for symbol in symbols:
+        try:
+            ticker_data = yf.download(symbol, start='2020-01-01', end='2023-12-31')
+            data[symbol] = ticker_data['Adj Close']
+        except Exception as e:
+            print(f"Error downloading {symbol}: {e}")
+    
+    price_data = pd.DataFrame(data).dropna()
+    
+    # Generate simple momentum signals
+    print("📊 Generating trading signals...")
+    signals = pd.DataFrame(index=price_data.index, columns=symbols)
+    
+    for symbol in symbols:
+        # Simple momentum strategy with multiple timeframes
+        short_ma = price_data[symbol].rolling(10).mean()
+        long_ma = price_data[symbol].rolling(50).mean()
+        rsi = calculate_rsi(price_data[symbol])
+        
+        # Combined signal
+        momentum_signal = np.where(short_ma > long_ma, 1, -1)
+        rsi_signal = np.where(rsi < 30, 1, np.where(rsi > 70, -1, 0))
+        
+        # Combine signals
+        signals[symbol] = (momentum_signal + rsi_signal) / 2
+    
+    signals = signals.fillna(0)
+    
+    # Run backtest
+    backtester = ComprehensiveBacktester(
+        initial_capital=100000,
+        commission=0.001,
+        slippage=0.0005
+    )
+    
+    portfolio_values = backtester.run_backtest(None, price_data, signals)
+    
+    # Analyze performance
+    analyzer = PerformanceAnalyzer(portfolio_values)
+    metrics = analyzer.generate_performance_report()
+    
+    # Create dashboard
+    analyzer.plot_performance_dashboard()
+    
+    return backtester, analyzer, portfolio_values
+
+def calculate_rsi(prices, window=14):
+    """Calculate RSI indicator"""
+    delta = prices.diff()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+    
+    avg_gain = gain.rolling(window=window).mean()
+    avg_loss = loss.rolling(window=window).mean()
+    
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    
+    return rsi
+
+# Run the comprehensive example
+if __name__ == "__main__":
+    backtester, analyzer, portfolio_values = run_comprehensive_example()
+    
+    print("\n🎉 Comprehensive backtesting complete!")
+    print("Check the generated visualizations for detailed analysis.")
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Walk-Forward Analysis</h2>
+            <p>Implement walk-forward analysis to test strategy robustness over time:</p>
+            
+            <div class="code-block">
+class WalkForwardAnalyzer:
+    def __init__(self, strategy_class, optimization_window=252, forward_window=63):
+        """
+        Walk-forward analysis framework
+        
+        Parameters:
+        - strategy_class: Strategy class to test
+        - optimization_window: Days for parameter optimization
+        - forward_window: Days for out-of-sample testing
+        """
+        self.strategy_class = strategy_class
+        self.optimization_window = optimization_window
+        self.forward_window = forward_window
+        self.results = []
+        
+    def optimize_parameters(self, data, param_ranges):
+        """
+        Optimize strategy parameters using grid search
+        
+        Parameters:
+        - data: Historical price data for optimization
+        - param_ranges: Dictionary of parameter ranges to test
+        """
+        best_params = None
+        best_sharpe = -np.inf
+        
+        # Generate parameter combinations
+        param_combinations = self.generate_param_combinations(param_ranges)
+        
+        print(f"🔍 Testing {len(param_combinations)} parameter combinations...")
+        
+        for i, params in enumerate(param_combinations):
+            try:
+                # Create strategy with current parameters
+                strategy = self.strategy_class(**params)
+                
+                # Generate signals for optimization period
+                signals = strategy.generate_signals(data)
+                
+                # Run mini backtest
+                backtester = ComprehensiveBacktester(
+                    initial_capital=100000,
+                    commission=0.001,
+                    slippage=0.0005
+                )
+                
+                portfolio_values = backtester.run_backtest(strategy, data, signals)
+                
+                # Calculate Sharpe ratio
+                analyzer = PerformanceAnalyzer(portfolio_values)
+                returns = analyzer.returns
+                
+                if len(returns) > 0:
+                    sharpe = (returns.mean() * 252 - 0.02) / (returns.std() * np.sqrt(252))
+                    
+                    if sharpe > best_sharpe:
+                        best_sharpe = sharpe
+                        best_params = params
+                        
+            except Exception as e:
+                print(f"Error testing parameters {params}: {e}")
+                continue
+                
+            if (i + 1) % 10 == 0:
+                print(f"Tested {i + 1}/{len(param_combinations)} combinations...")
+        
+        print(f"✅ Best parameters found: {best_params}")
+        print(f"📈 Best Sharpe ratio: {best_sharpe:.3f}")
+        
+        return best_params, best_sharpe
+    
+    def generate_param_combinations(self, param_ranges):
+        """Generate all parameter combinations"""
+        import itertools
+        
+        param_names = list(param_ranges.keys())
+        param_values = list(param_ranges.values())
+        
+        combinations = []
+        for combo in itertools.product(*param_values):
+            param_dict = dict(zip(param_names, combo))
+            combinations.append(param_dict)
+        
+        return combinations
+    
+    def run_walk_forward_analysis(self, data, param_ranges):
+        """
+        Run complete walk-forward analysis
+        
+        Parameters:
+        - data: Complete historical dataset
+        - param_ranges: Parameter ranges for optimization
+        """
+        print("🚀 Starting Walk-Forward Analysis...")
+        print(f"Optimization Window: {self.optimization_window} days")
+        print(f"Forward Testing Window: {self.forward_window} days")
+        print("-" * 50)
+        
+        results = []
+        start_idx = self.optimization_window
+        
+        while start_idx + self.forward_window < len(data):
+            # Define optimization and testing periods
+            opt_start = start_idx - self.optimization_window
+            opt_end = start_idx
+            test_start = start_idx
+            test_end = start_idx + self.forward_window
+            
+            opt_data = data.iloc[opt_start:opt_end]
+            test_data = data.iloc[test_start:test_end]
+            
+            print(f"\n📅 Period {len(results) + 1}:")
+            print(f"Optimization: {opt_data.index[0].date()} to {opt_data.index[-1].date()}")
+            print(f"Testing: {test_data.index[0].date()} to {test_data.index[-1].date()}")
+            
+            # Optimize parameters on historical data
+            best_params, best_sharpe = self.optimize_parameters(opt_data, param_ranges)
+            
+            if best_params is None:
+                print("❌ No valid parameters found, skipping period")
+                start_idx += self.forward_window
+                continue
+            
+            # Test optimized strategy on out-of-sample data
+            strategy = self.strategy_class(**best_params)
+            signals = strategy.generate_signals(test_data)
+            
+            # Run forward test
+            backtester = ComprehensiveBacktester(
+                initial_capital=100000,
+                commission=0.001,
+                slippage=0.0005
+            )
+            
+            portfolio_values = backtester.run_backtest(strategy, test_data, signals)
+            
+            # Analyze forward test results
+            analyzer = PerformanceAnalyzer(portfolio_values)
+            metrics = analyzer.calculate_comprehensive_metrics()
+            
+            # Store results
+            period_result = {
+                'period': len(results) + 1,
+                'opt_start': opt_data.index[0],
+                'opt_end': opt_data.index[-1],
+                'test_start': test_data.index[0],
+                'test_end': test_data.index[-1],
+                'best_params': best_params,
+                'optimization_sharpe': best_sharpe,
+                'forward_metrics': metrics,
+                'portfolio_values': portfolio_values
+            }
+            
+            results.append(period_result)
+            
+            print(f"✅ Forward test complete")
+            print(f"📊 Forward Sharpe: {analyzer.returns.mean() * 252 / (analyzer.returns.std() * np.sqrt(252)):.3f}")
+            
+            # Move to next period
+            start_idx += self.forward_window
+        
+        self.results = results
+        print(f"\n🎉 Walk-forward analysis complete! Tested {len(results)} periods.")
+        
+        return results
+    
+    def analyze_walk_forward_results(self):
+        """Analyze walk-forward analysis results"""
+        if not self.results:
+            print("No walk-forward results to analyze!")
+            return
+        
+        print("\n📊 WALK-FORWARD ANALYSIS SUMMARY")
+        print("=" * 60)
+        
+        # Extract forward test metrics
+        forward_returns = []
+        forward_sharpes = []
+        forward_max_dds = []
+        
+        for result in self.results:
+            analyzer = PerformanceAnalyzer(result['portfolio_values'])
+            returns = analyzer.returns
+            
+            if len(returns) > 0:
+                ann_return = returns.mean() * 252
+                sharpe = ann_return / (returns.std() * np.sqrt(252))
+                
+                # Calculate max drawdown
+                portfolio_value = result['portfolio_values']['total_value']
+                rolling_max = portfolio_value.expanding().max()
+                drawdown = (portfolio_value - rolling_max) / rolling_max
+                max_dd = drawdown.min()
+                
+                forward_returns.append(ann_return)
+                forward_sharpes.append(sharpe)
+                forward_max_dds.append(max_dd)
+        
+        # Summary statistics
+        if forward_returns:
+            print(f"Average Forward Return: {np.mean(forward_returns):.2%}")
+            print(f"Average Forward Sharpe: {np.mean(forward_sharpes):.3f}")
+            print(f"Average Max Drawdown: {np.mean(forward_max_dds):.2%}")
+            print(f"Win Rate: {sum(1 for r in forward_returns if r > 0) / len(forward_returns):.2%}")
+            print(f"Consistency (Sharpe Std): {np.std(forward_sharpes):.3f}")
+        
+        # Plot walk-forward results
+        self.plot_walk_forward_results()
+        
+        return {
+            'forward_returns': forward_returns,
+            'forward_sharpes': forward_sharpes,
+            'forward_max_drawdowns': forward_max_dds
+        }
+    
+    def plot_walk_forward_results(self):
+        """Plot walk-forward analysis results"""
+        fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=[
+                'Forward Test Returns by Period',
+                'Forward Test Sharpe Ratios',
+                'Cumulative Forward Performance',
+                'Parameter Stability Analysis'
+            ]
+        )
+        
+        periods = [r['period'] for r in self.results]
+        
+        # Extract metrics for plotting
+        forward_returns = []
+        forward_sharpes = []
+        
+        for result in self.results:
+            analyzer = PerformanceAnalyzer(result['portfolio_values'])
+            returns = analyzer.returns
+            
+            if len(returns) > 0:
+                ann_return = returns.mean() * 252
+                sharpe = ann_return / (returns.std() * np.sqrt(252))
+                forward_returns.append(ann_return)
+                forward_sharpes.append(sharpe)
+            else:
+                forward_returns.append(0)
+                forward_sharpes.append(0)
+        
+        # Forward returns by period
+        fig.add_trace(
+            go.Bar(
+                x=periods,
+                y=forward_returns,
+                name='Forward Returns',
+                marker_color='#28a745'
+            ),
+            row=1, col=1
+        )
+        
+        # Forward Sharpe ratios
+        fig.add_trace(
+            go.Scatter(
+                x=periods,
+                y=forward_sharpes,
+                mode='lines+markers',
+                name='Forward Sharpe',
+                line=dict(color='#17a2b8', width=2),
+                marker=dict(size=8)
+            ),
+            row=1, col=2
+        )
+        
+        # Cumulative forward performance
+        cumulative_returns = np.cumprod([1 + r for r in forward_returns]) - 1
+        fig.add_trace(
+            go.Scatter(
+                x=periods,
+                y=cumulative_returns,
+                mode='lines+markers',
+                name='Cumulative Return',
+                line=dict(color='#28a745', width=3),
+                fill='tonexty'
+            ),
+            row=2, col=1
+        )
+        
+        fig.update_layout(
+            height=800,
+            title_text="🔄 Walk-Forward Analysis Results",
+            showlegend=True,
+            template="plotly_white"
+        )
+        
+        fig.show()
+        
+        return fig
+
+# Example strategy class for walk-forward testing
+class ExampleMomentumStrategy:
+    def __init__(self, short_window=10, long_window=50, rsi_threshold=30):
+        self.short_window = short_window
+        self.long_window = long_window
+        self.rsi_threshold = rsi_threshold
+    
+    def generate_signals(self, data):
+        """Generate trading signals"""
+        signals = pd.DataFrame(index=data.index, columns=data.columns)
+        
+        for symbol in data.columns:
+            # Calculate indicators
+            short_ma = data[symbol].rolling(self.short_window).mean()
+            long_ma = data[symbol].rolling(self.long_window).mean()
+            rsi = calculate_rsi(data[symbol])
+            
+            # Generate signals
+            momentum_signal = np.where(short_ma > long_ma, 1, -1)
+            rsi_signal = np.where(rsi < self.rsi_threshold, 1, 
+                         np.where(rsi > (100 - self.rsi_threshold), -1, 0))
+            
+            signals[symbol] = (momentum_signal + rsi_signal) / 2
+        
+        return signals.fillna(0)
+
+# Run walk-forward analysis example
+def run_walk_forward_example():
+    """Run walk-forward analysis example"""
+    
+    # Download data
+    symbols = ['AAPL', 'GOOGL']
+    data = {}
+    
+    for symbol in symbols:
+        ticker_data = yf.download(symbol, start='2018-01-01', end='2023-12-31')
+        data[symbol] = ticker_data['Adj Close']
+    
+    price_data = pd.DataFrame(data).dropna()
+    
+    # Define parameter ranges for optimization
+    param_ranges = {
+        'short_window': [5, 10, 15, 20],
+        'long_window': [30, 50, 70, 100],
+        'rsi_threshold': [20, 30, 40]
+    }
+    
+    # Run walk-forward analysis
+    wf_analyzer = WalkForwardAnalyzer(
+        strategy_class=ExampleMomentumStrategy,
+        optimization_window=252,  # 1 year
+        forward_window=63         # 3 months
+    )
+    
+    results = wf_analyzer.run_walk_forward_analysis(price_data, param_ranges)
+    summary = wf_analyzer.analyze_walk_forward_results()
+    
+    return wf_analyzer, results, summary
+
+print("🎯 Walk-forward analysis framework ready!")
+print("Run: wf_analyzer, results, summary = run_walk_forward_example()")
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Monte Carlo Simulation</h2>
+            <p>Add Monte Carlo analysis for robust strategy evaluation:</p>
+            
+            <div class="code-block">
+class MonteCarloAnalyzer:
+    def __init__(self, returns, num_simulations=1000):
+        """
+        Monte Carlo simulation for strategy analysis
+        
+        Parameters:
+        - returns: Historical returns series
+        - num_simulations: Number of Monte Carlo simulations
+        """
+        self.returns = returns
+        self.num_simulations = num_simulations
+        self.simulation_results = []
+        
+    def run_monte_carlo_simulation(self, periods=252):
+        """
+        Run Monte Carlo simulation of future performance
+        
+        Parameters:
+        - periods: Number of periods to simulate (default: 1 year)
+        """
+        print(f"🎲 Running {self.num_simulations} Monte Carlo simulations...")
+        
+        # Calculate return statistics
+        mean_return = self.returns.mean()
+        std_return = self.returns.std()
+        
+        simulation_results = []
+        
+        for sim in range(self.num_simulations):
+            # Generate random returns
+            simulated_returns = np.random.normal(
+                mean_return, std_return, periods
+            )
+            
+            # Calculate cumulative performance
+            cumulative_returns = np.cumprod(1 + simulated_returns) - 1
+            final_return = cumulative_returns[-1]
+            
+            # Calculate metrics for this simulation
+            annualized_return = (1 + final_return) ** (252 / periods) - 1
+            volatility = np.std(simulated_returns) * np.sqrt(252)
+            sharpe = annualized_return / volatility if volatility > 0 else 0
+            
+            # Calculate maximum drawdown
+            cumulative_value = np.cumprod(1 + simulated_returns)
+            rolling_max = np.maximum.accumulate(cumulative_value)
+            drawdown = (cumulative_value - rolling_max) / rolling_max
+            max_drawdown = np.min(drawdown)
+            
+            simulation_results.append({
+                'simulation': sim + 1,
+                'final_return': final_return,
+                'annualized_return': annualized_return,
+                'volatility': volatility,
+                'sharpe_ratio': sharpe,
+                'max_drawdown': max_drawdown,
+                'returns_series': simulated_returns,
+                'cumulative_series': cumulative_returns
+            })
+        
+        self.simulation_results = simulation_results
+        print("✅ Monte Carlo simulation complete!")
+        
+        return simulation_results
+    
+    def analyze_simulation_results(self):
+        """Analyze Monte Carlo simulation results"""
+        if not self.simulation_results:
+            print("No simulation results to analyze!")
+            return
+        
+        # Extract metrics
+        final_returns = [r['final_return'] for r in self.simulation_results]
+        annualized_returns = [r['annualized_return'] for r in self.simulation_results]
+        sharpe_ratios = [r['sharpe_ratio'] for r in self.simulation_results]
+        max_drawdowns = [r['max_drawdown'] for r in self.simulation_results]
+        
+        # Calculate confidence intervals
+        confidence_levels = [0.05, 0.25, 0.5, 0.75, 0.95]
+        
+        print("\n🎯 MONTE CARLO SIMULATION ANALYSIS")
+        print("=" * 50)
+        
+        print("\nFinal Returns (1 Year):")
+        for conf in confidence_levels:
+            percentile = np.percentile(final_returns, conf * 100)
+            print(f"{conf*100:4.0f}% Confidence: {percentile:6.2%}")
+        
+        print("\nAnnualized Returns:")
+        for conf in confidence_levels:
+            percentile = np.percentile(annualized_returns, conf * 100)
+            print(f"{conf*100:4.0f}% Confidence: {percentile:6.2%}")
+        
+        print("\nSharpe Ratios:")
+        for conf in confidence_levels:
+            percentile = np.percentile(sharpe_ratios, conf * 100)
+            print(f"{conf*100:4.0f}% Confidence: {percentile:6.3f}")
+        
+        print("\nMaximum Drawdowns:")
+        for conf in confidence_levels:
+            percentile = np.percentile(max_drawdowns, conf * 100)
+            print(f"{conf*100:4.0f}% Confidence: {percentile:6.2%}")
+        
+        # Risk metrics
+        var_95 = np.percentile(final_returns, 5)
+        var_99 = np.percentile(final_returns, 1)
+        
+        print(f"\n📉 Risk Metrics:")
+        print(f"Value at Risk (95%): {var_95:.2%}")
+        print(f"Value at Risk (99%): {var_99:.2%}")
+        print(f"Probability of Loss: {sum(1 for r in final_returns if r < 0) / len(final_returns):.2%}")
+        
+        # Plot results
+        self.plot_monte_carlo_results()
+        
+        return {
+            'final_returns': final_returns,
+            'annualized_returns': annualized_returns,
+            'sharpe_ratios': sharpe_ratios,
+            'max_drawdowns': max_drawdowns,
+            'var_95': var_95,
+            'var_99': var_99
+        }
+    
+    def plot_monte_carlo_results(self):
+        """Plot Monte Carlo simulation results"""
+        fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=[
+                'Distribution of Final Returns',
+                'Sharpe Ratio Distribution',
+                'Cumulative Return Paths (Sample)',
+                'Risk-Return Scatter'
+            ]
+        )
+        
+        # Extract data
+        final_returns = [r['final_return'] for r in self.simulation_results]
+        annualized_returns = [r['annualized_return'] for r in self.simulation_results]
+        sharpe_ratios = [r['sharpe_ratio'] for r in self.simulation_results]
+        
+        # Distribution of final returns
+        fig.add_trace(
+            go.Histogram(
+                x=final_returns,
+                nbinsx=50,
+                name='Final Returns',
+                marker_color='#28a745',
+                opacity=0.7
+            ),
+            row=1, col=1
+        )
+        
+        # Sharpe ratio distribution
+        fig.add_trace(
+            go.Histogram(
+                x=sharpe_ratios,
+                nbinsx=50,
+                name='Sharpe Ratios',
+                marker_color='#17a2b8',
+                opacity=0.7
+            ),
+            row=1, col=2
+        )
+        
+        # Sample cumulative return paths
+        sample_indices = np.random.choice(
+            len(self.simulation_results), 
+            size=min(100, len(self.simulation_results)), 
+            replace=False
+        )
+        
+        for i in sample_indices[:20]:  # Show first 20 paths
+            result = self.simulation_results[i]
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(result['cumulative_series']))),
+                    y=result['cumulative_series'],
+                    mode='lines',
+                    name=f'Path {i+1}',
+                    line=dict(width=1, color='rgba(40, 167, 69, 0.3)'),
+                    showlegend=False
+                ),
+                row=2, col=1
+            )
+        
+        # Risk-return scatter
+        volatilities = [r['volatility'] for r in self.simulation_results]
+        fig.add_trace(
+            go.Scatter(
+                x=volatilities,
+                y=annualized_returns,
+                mode='markers',
+                name='Risk-Return',
+                marker=dict(
+                    color=sharpe_ratios,
+                    colorscale='RdYlGn',
+                    size=6,
+                    colorbar=dict(title="Sharpe Ratio")
+                )
+            ),
+            row=2, col=2
+        )
+        
+        fig.update_layout(
+            height=800,
+            title_text="🎲 Monte Carlo Simulation Results",
+            showlegend=True,
+            template="plotly_white"
+        )
+        
+        fig.show()
+        
+        return fig
+
+# Run Monte Carlo example
+def run_monte_carlo_example():
+    """Run Monte Carlo simulation example"""
+    
+    # Download sample data
+    ticker_data = yf.download('AAPL', start='2020-01-01', end='2023-12-31')
+    prices = ticker_data['Adj Close']
+    returns = prices.pct_change().dropna()
+    
+    # Run Monte Carlo analysis
+    mc_analyzer = MonteCarloAnalyzer(returns, num_simulations=1000)
+    simulation_results = mc_analyzer.run_monte_carlo_simulation(periods=252)
+    analysis = mc_analyzer.analyze_simulation_results()
+    
+    return mc_analyzer, simulation_results, analysis
+
+print("\n🎲 Monte Carlo analysis framework ready!")
+print("Run: mc_analyzer, results, analysis = run_monte_carlo_example()")
+            </div>
+        </div>
+
+        <div class="key-concept">
+            <h3>🎯 Key Backtesting Principles</h3>
+            <ul>
+                <li><strong>Realistic Assumptions:</strong> Include transaction costs, slippage, and market impact</li>
+                <li><strong>Out-of-Sample Testing:</strong> Always test on unseen data to avoid overfitting</li>
+                <li><strong>Walk-Forward Analysis:</strong> Test parameter stability over time</li>
+                <li><strong>Monte Carlo Simulation:</strong> Understand range of possible outcomes</li>
+                <li><strong>Multiple Metrics:</strong> Use comprehensive performance evaluation</li>
+                <li><strong>Risk Analysis:</strong> Focus on downside protection and drawdown management</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <h3>⚠️ Common Backtesting Pitfalls</h3>
+            <ul>
+                <li><strong>Look-Ahead Bias:</strong> Using future information in historical analysis</li>
+                <li><strong>Survivorship Bias:</strong> Only testing on surviving assets</li>
+                <li><strong>Data Snooping:</strong> Over-optimizing parameters on limited data</li>
+                <li><strong>Ignoring Costs:</strong> Unrealistic transaction cost assumptions</li>
+                <li><strong>Overfitting:</strong> Creating strategies that work only on historical data</li>
+                <li><strong>Regime Changes:</strong> Not accounting for changing market conditions</li>
+            </ul>
+        </div>
+
+        <div class="exercise">
+            <h3>🚀 Capstone Project: Complete Trading System</h3>
+            <p><strong>Build a comprehensive trading system that integrates all course concepts:</strong></p>
+            <ol>
+                <li>Data pipeline with multiple asset classes and timeframes</li>
+                <li>Technical analysis with 10+ indicators</li>
+                <li>Machine learning feature engineering and model selection</li>
+                <li>Multi-strategy signal combination</li>
+                <li>Dynamic risk management and position sizing</li>
+                <li>Portfolio optimization with rebalancing</li>
+                <li>Sentiment analysis integration</li>
+                <li>Comprehensive backtesting with walk-forward analysis</li>
+                <li>Monte Carlo simulation for risk assessment</li>
+                <li>Performance attribution and strategy comparison</li>
+            </ol>
+            <p><strong>Deliverables:</strong></p>
+            <ul>
+                <li>Complete Python trading system (1000+ lines)</li>
+                <li>Comprehensive performance report</li>
+                <li>Interactive dashboard with Plotly</li>
+                <li>Strategy documentation and risk assessment</li>
+                <li>Presentation of results and findings</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎓 Course Completion & Next Steps</h2>
+            <p>Congratulations! You've completed the comprehensive Quantitative Trading with ML course. Here's what you've mastered:</p>
+            
+            <div class="highlight">
+                <h3>✅ Skills Acquired</h3>
+                <ul>
+                    <li>Financial data analysis and preprocessing</li>
+                    <li>Advanced technical analysis and indicator development</li>
+                    <li>Time series modeling with ARIMA, GARCH, and LSTM</li>
+                    <li>Machine learning for trading signal generation</li>
+                    <li>Comprehensive risk management frameworks</li>
+                    <li>Modern portfolio optimization techniques</li>
+                    <li>NLP and sentiment analysis for trading</li>
+                    <li>Professional backtesting and strategy evaluation</li>
+                </ul>
+            </div>
+            
+            <div class="key-concept">
+                <h3>🚀 Career Pathways</h3>
+                <ul>
+                    <li><strong>Quantitative Analyst:</strong> Develop trading models for hedge funds</li>
+                    <li><strong>Algorithmic Trader:</strong> Build and execute automated trading systems</li>
+                    <li><strong>Risk Manager:</strong> Manage portfolio risk and optimize capital allocation</li>
+                    <li><strong>Data Scientist:</strong> Apply ML to financial markets and trading</li>
+                    <li><strong>Portfolio Manager:</strong> Manage systematic investment strategies</li>
+                    <li><strong>Financial Engineer:</strong> Design complex financial instruments and strategies</li>
+                </ul>
+            </div>
+            
+            <div class="exercise">
+                <h3>📚 Recommended Next Steps</h3>
+                <ol>
+                    <li><strong>Advanced Topics:</strong> Study options trading, derivatives, and exotic instruments</li>
+                    <li><strong>High-Frequency Trading:</strong> Learn market microstructure and ultra-low latency systems</li>
+                    <li><strong>Alternative Data:</strong> Explore satellite imagery, credit card transactions, social media</li>
+                    <li><strong>Blockchain & DeFi:</strong> Understand cryptocurrency markets and decentralized finance</li>
+                    <li><strong>Regulatory Knowledge:</strong> Learn compliance, market regulations, and risk frameworks</li>
+                    <li><strong>Production Systems:</strong> Build scalable, real-time trading infrastructure</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="lesson-7-sentiment-analysis.html" class="nav-button">← Previous: Sentiment Analysis Trading</a>
+            <a href="../index.html" class="nav-button">🏠 Course Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive elements and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate sections on scroll
+            const sections = document.querySelectorAll('.section');
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+            
+            // Add copy functionality to code blocks
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                block.style.position = 'relative';
+                
+                const copyButton = document.createElement('button');
+                copyButton.innerHTML = '📋 Copy';
+                copyButton.style.position = 'absolute';
+                copyButton.style.top = '10px';
+                copyButton.style.right = '10px';
+                copyButton.style.background = '#28a745';
+                copyButton.style.color = 'white';
+                copyButton.style.border = 'none';
+                copyButton.style.padding = '5px 10px';
+                copyButton.style.borderRadius = '4px';
+                copyButton.style.cursor = 'pointer';
+                copyButton.style.fontSize = '12px';
+                
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(block.textContent);
+                    copyButton.innerHTML = '✅ Copied!';
+                    setTimeout(() => {
+                        copyButton.innerHTML = '📋 Copy';
+                    }, 2000);
+                });
+                
+                block.appendChild(copyButton);
+            });
+            
+            console.log('🎉 Lesson 8: Backtesting & Strategy Evaluation loaded successfully!');
+            console.log('🎓 Congratulations on completing the Quantitative Trading with ML course!');
+        });
+    </script>
+</body>
+</html>
