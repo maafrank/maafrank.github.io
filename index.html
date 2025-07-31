@@ -1007,6 +1007,43 @@
     color: #dc3545;
 }
 
+.retry-options {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
+    justify-content: center;
+}
+
+.retry-btn, .clear-cache-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 15px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.retry-btn {
+    background: #007bff;
+    color: white;
+}
+
+.retry-btn:hover {
+    background: #0056b3;
+}
+
+.clear-cache-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.clear-cache-btn:hover {
+    background: #545b62;
+}
+
 .input-group {
     display: flex;
     gap: 8px;
@@ -1204,30 +1241,146 @@ Please answer questions about Matthew Frank based on this information. Be conver
         this.chatWindow.classList.remove('active');
     }
     
-    async loadModel() {
+    async loadModel(retryCount = 0) {
         if (this.isLoading || this.engine) return;
         
         const selectedModel = this.modelSelect.value;
+        const maxRetries = 3;
+        
         this.isLoading = true;
-        this.updateStatus('Loading model...', 'loading');
+        
+        if (retryCount === 0) {
+            this.updateStatus('Loading model...', 'loading');
+        } else {
+            this.updateStatus(`Retry ${retryCount}/${maxRetries}...`, 'loading');
+        }
         
         try {
-            this.engine = await CreateMLCEngine(selectedModel, {
+            // Add timeout wrapper for the engine creation
+            const enginePromise = CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percent = Math.round(progress.progress * 100);
-                    this.updateStatus(`Loading: ${percent}%`, 'loading');
+                    if (retryCount === 0) {
+                        this.updateStatus(`Loading: ${percent}%`, 'loading');
+                    } else {
+                        this.updateStatus(`Retry ${retryCount}: ${percent}%`, 'loading');
+                    }
                 }
             });
+            
+            // Set a reasonable timeout (5 minutes)
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Model loading timeout')), 300000);
+            });
+            
+            this.engine = await Promise.race([enginePromise, timeoutPromise]);
             
             this.currentModel = selectedModel;
             this.updateStatus('Model ready!', 'ready');
             this.enableInput();
             
         } catch (error) {
-            console.error('Failed to load model:', error);
-            this.updateStatus('Failed to load. Click to retry.', 'error');
+            console.error(`Failed to load model (attempt ${retryCount + 1}):`, error);
+            
+            if (retryCount < maxRetries) {
+                // Exponential backoff: wait 2^retryCount seconds
+                const delay = Math.pow(2, retryCount) * 1000;
+                this.updateStatus(`Retrying in ${Math.pow(2, retryCount)}s...`, 'loading');
+                
+                setTimeout(() => {
+                    this.loadModel(retryCount + 1);
+                }, delay);
+            } else {
+                // All retries failed
+                this.updateStatus('Download failed. Check connection and try again.', 'error');
+                this.showRetryOptions();
+            }
         } finally {
+            if (retryCount >= maxRetries || this.engine) {
+                this.isLoading = false;
+            }
+        }
+    }
+    
+    showRetryOptions() {
+        // Add retry button and alternative model suggestions
+        const retryDiv = document.createElement('div');
+        retryDiv.className = 'retry-options';
+        retryDiv.innerHTML = `
+            <button class="retry-btn" onclick="window.chatWidget.forceRetry()">
+                <i class="fa fa-refresh"></i> Try Again
+            </button>
+            <button class="clear-cache-btn" onclick="window.chatWidget.clearCacheAndRetry()">
+                <i class="fa fa-trash"></i> Clear Cache & Retry
+            </button>
+        `;
+        
+        // Insert after model status
+        const modelStatus = document.getElementById('modelStatus');
+        if (!document.querySelector('.retry-options')) {
+            modelStatus.parentNode.insertBefore(retryDiv, modelStatus.nextSibling);
+        }
+    }
+    
+    async forceRetry() {
+        // Remove retry options
+        const retryOptions = document.querySelector('.retry-options');
+        if (retryOptions) retryOptions.remove();
+        
+        // Reset state and try again
+        this.engine = null;
+        this.currentModel = null;
+        this.isLoading = false;
+        
+        await this.loadModel();
+    }
+    
+    async clearCacheAndRetry() {
+        // Remove retry options
+        const retryOptions = document.querySelector('.retry-options');
+        if (retryOptions) retryOptions.remove();
+        
+        this.updateStatus('Clearing cache...', 'loading');
+        
+        try {
+            // Clear WebLLM cache if possible
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                for (const cacheName of cacheNames) {
+                    if (cacheName.includes('webllm') || cacheName.includes('mlc')) {
+                        await caches.delete(cacheName);
+                    }
+                }
+            }
+            
+            // Clear IndexedDB data if possible
+            if ('indexedDB' in window) {
+                try {
+                    const databases = await indexedDB.databases();
+                    for (const db of databases) {
+                        if (db.name.includes('webllm') || db.name.includes('mlc')) {
+                            indexedDB.deleteDatabase(db.name);
+                        }
+                    }
+                } catch (e) {
+                    console.log('Could not clear IndexedDB:', e);
+                }
+            }
+            
+            // Reset state
+            this.engine = null;
+            this.currentModel = null;
             this.isLoading = false;
+            
+            // Wait a moment then retry
+            setTimeout(() => {
+                this.loadModel();
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Error clearing cache:', error);
+            this.updateStatus('Cache clear failed. Try manual retry.', 'error');
+            this.showRetryOptions();
         }
     }
     
@@ -1330,7 +1483,7 @@ Please answer questions about Matthew Frank based on this information. Be conver
 
 // Initialize the chat widget when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new PersonalChatWidget();
+    window.chatWidget = new PersonalChatWidget();
 });
 </script>
 
