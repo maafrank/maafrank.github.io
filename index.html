@@ -796,9 +796,10 @@
             <div id="chatInput" class="chat-input">
                 <div class="model-selector-mini">
                     <select id="chatModelSelect">
-                        <option value="Phi-3.5-mini-instruct-q4f16_1-MLC">Phi-3.5 Mini</option>
-                        <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC" selected>Llama 3.2</option>
-                        <option value="Qwen2.5-3B-Instruct-q4f16_1-MLC">Qwen 2.5</option>
+                        <option value="Qwen2.5-0.5B-Instruct-q4f16_1-MLC" selected>Qwen 2.5 0.5B (0.3GB) - Fastest</option>
+                        <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B (0.6GB)</option>
+                        <option value="Phi-3.5-mini-instruct-q4f16_1-MLC">Phi-3.5 Mini (2.2GB)</option>
+                        <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B (2.0GB)</option>
                     </select>
                 </div>
                 <div id="modelStatus" class="model-status">Click to load model</div>
@@ -1274,9 +1275,17 @@ Please answer questions about Matthew Frank based on this information. Be conver
                 }
             });
             
-            // Set a shorter timeout (2 minutes) to fail faster
+            // Set timeout based on model size - smaller models get shorter timeout
+            const timeoutMap = {
+                'Qwen2.5-0.5B-Instruct-q4f16_1-MLC': 60000,  // 1 minute for 0.3GB
+                'Llama-3.2-1B-Instruct-q4f16_1-MLC': 90000,   // 1.5 minutes for 0.6GB
+                'Phi-3.5-mini-instruct-q4f16_1-MLC': 180000,  // 3 minutes for 2.2GB
+                'Llama-3.2-3B-Instruct-q4f16_1-MLC': 180000   // 3 minutes for 2.0GB
+            };
+            
+            const timeout = timeoutMap[selectedModel] || 120000;
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Model loading timeout after 2 minutes')), 120000);
+                setTimeout(() => reject(new Error(`Model loading timeout after ${timeout/1000/60} minutes`)), timeout);
             });
             
             this.engine = await Promise.race([enginePromise, timeoutPromise]);
