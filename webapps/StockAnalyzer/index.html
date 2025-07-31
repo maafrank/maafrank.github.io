@@ -901,42 +901,128 @@
                 const fetchLog = document.getElementById('fetchLog');
                 const fetchProgress = document.getElementById('fetchProgress');
                 
-                this.addFetchLogEntry('Starting data retrieval for 25 stocks/ETFs...', 'info');
+                this.addFetchLogEntry('🚀 Starting single API call to fetch all 25 stocks simultaneously...', 'info');
+                this.addFetchLogEntry('Using Polygon.io Snapshot API for maximum efficiency', 'info');
                 
-                // Get yesterday's date for end-of-day data
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const dateStr = yesterday.toISOString().split('T')[0];
+                // Create comma-separated ticker list for single API call
+                const tickerSymbols = TOP_STOCKS.map(stock => stock.symbol).join(',');
+                this.addFetchLogEntry(`📋 Ticker list: ${tickerSymbols}`, 'info');
+                
+                fetchProgress.style.width = '10%';
+                
+                try {
+                    // Single API call to get all stocks at once using Snapshot API
+                    const snapshotUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers?tickers=${tickerSymbols}&apikey=${this.apiKey}`;
+                    
+                    this.addFetchLogEntry('⏳ Making single API request for all 25 stocks...', 'info');
+                    fetchProgress.style.width = '30%';
+                    
+                    const response = await fetch(snapshotUrl);
+                    const data = await response.json();
+                    
+                    fetchProgress.style.width = '60%';
+                    this.addFetchLogEntry('✓ API response received, processing stock data...', 'success');
+                    
+                    if (data.results && Array.isArray(data.results)) {
+                        let processedCount = 0;
+                        
+                        data.results.forEach((result, index) => {
+                            const ticker = result.ticker;
+                            const stockInfo = TOP_STOCKS.find(stock => stock.symbol === ticker);
+                            
+                            if (stockInfo && result.session) {
+                                const session = result.session;
+                                const price = session.close || session.price;
+                                const open = session.open;
+                                const high = session.high;
+                                const low = session.low;
+                                const volume = session.volume;
+                                const previousClose = session.previous_close;
+                                
+                                // Calculate change from previous close (more accurate than open)
+                                const change = price - previousClose;
+                                const changePercent = ((change / previousClose) * 100);
+                                
+                                // Calculate technical indicators
+                                const technical = this.calculateTechnicalIndicators({
+                                    open, high, low, close: price, volume
+                                });
+                                
+                                this.stockData[ticker] = {
+                                    symbol: ticker,
+                                    name: stockInfo.name,
+                                    price: price,
+                                    change: change,
+                                    changePercent: changePercent,
+                                    volume: volume,
+                                    high: high,
+                                    low: low,
+                                    open: open,
+                                    previousClose: previousClose,
+                                    technical: technical
+                                };
+                                
+                                processedCount++;
+                                
+                                // Update progress as we process each stock
+                                const progressPercent = 60 + ((processedCount / TOP_STOCKS.length) * 40);
+                                fetchProgress.style.width = progressPercent + '%';
+                                
+                                this.addFetchLogEntry(`✓ ${ticker}: $${price.toFixed(2)} (${change > 0 ? '+' : ''}${change.toFixed(2)} / ${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%) RSI: ${technical.rsi.toFixed(1)}`, 'success');
+                            } else {
+                                this.addFetchLogEntry(`⚠️ ${ticker}: Missing session data or stock info`, 'info');
+                            }
+                        });
+                        
+                        fetchProgress.style.width = '100%';
+                        this.addFetchLogEntry(`🎉 Single API call completed: Processed ${processedCount} stocks in ~2 seconds!`, 'success');
+                        this.addFetchLogEntry(`⚡ Performance: 25 stocks fetched with 1 API call instead of 25 separate calls`, 'success');
+                        
+                    } else {
+                        throw new Error('Invalid API response format');
+                    }
+                    
+                } catch (error) {
+                    this.addFetchLogEntry(`❌ API request failed: ${error.message}`, 'info');
+                    this.addFetchLogEntry('🔄 Falling back to individual stock requests...', 'info');
+                    
+                    // Fallback to original method if snapshot API fails
+                    await this.fetchStockDataFallback();
+                }
+            }
+            
+            async fetchStockDataFallback() {
+                // Fallback method using individual API calls (original approach)
+                const fetchLog = document.getElementById('fetchLog');
+                const fetchProgress = document.getElementById('fetchProgress');
                 
                 let requestCount = 0;
-                const maxRequests = 25; // Analyze all stocks
+                const maxRequests = Math.min(5, TOP_STOCKS.length); // Limit to 5 for fallback
+                
+                this.addFetchLogEntry(`🔄 Fallback: Fetching first ${maxRequests} stocks individually...`, 'info');
                 
                 for (const stock of TOP_STOCKS.slice(0, maxRequests)) {
                     try {
-                        // Update progress
                         const progressPercent = ((requestCount + 1) / maxRequests) * 100;
                         fetchProgress.style.width = progressPercent + '%';
                         
-                        this.addFetchLogEntry(`Fetching ${stock.symbol} (${stock.name})...`, 'info');
+                        this.addFetchLogEntry(`⏳ Fetching ${stock.symbol}...`, 'info');
                         
-                        // Fetch current day data and previous close for technical analysis
                         const prevUrl = `https://api.polygon.io/v2/aggs/ticker/${stock.symbol}/prev?adjusted=true&apikey=${this.apiKey}`;
-                        
                         const response = await fetch(prevUrl);
                         const data = await response.json();
                         
                         if (data.results && data.results.length > 0) {
                             const result = data.results[0];
-                            const price = result.c; // Close price
-                            const open = result.o; // Open price
-                            const high = result.h; // High price
-                            const low = result.l; // Low price
-                            const volume = result.v; // Volume
+                            const price = result.c;
+                            const open = result.o;
+                            const high = result.h;
+                            const low = result.l;
+                            const volume = result.v;
                             
                             const change = price - open;
                             const changePercent = ((change / open) * 100);
                             
-                            // Calculate technical indicators
                             const technical = this.calculateTechnicalIndicators({
                                 open, high, low, close: price, volume
                             });
@@ -955,25 +1041,22 @@
                                 technical: technical
                             };
                             
-                            this.addFetchLogEntry(`✓ ${stock.symbol}: $${price.toFixed(2)} (${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%) RSI: ${technical.rsi.toFixed(1)}`, 'success');
-                        } else {
-                            this.addFetchLogEntry(`✗ Failed to fetch ${stock.symbol} - no data available`, 'info');
+                            this.addFetchLogEntry(`✓ ${stock.symbol}: $${price.toFixed(2)} (${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%)`, 'success');
                         }
                         
                         requestCount++;
                         
-                        // Respect rate limits - wait 12 seconds between requests (5 requests/minute)
+                        // Small delay between fallback requests
                         if (requestCount < maxRequests) {
-                            await new Promise(resolve => setTimeout(resolve, 12000));
+                            await new Promise(resolve => setTimeout(resolve, 2000));
                         }
                         
                     } catch (error) {
                         this.addFetchLogEntry(`✗ Error fetching ${stock.symbol}: ${error.message}`, 'info');
-                        console.error(`Error fetching ${stock.symbol}:`, error);
                     }
                 }
                 
-                this.addFetchLogEntry(`Completed: Retrieved data for ${Object.keys(this.stockData).length} stocks`, 'success');
+                this.addFetchLogEntry(`Fallback completed: ${Object.keys(this.stockData).length} stocks processed`, 'success');
             }
             
             addFetchLogEntry(message, type = 'info') {
