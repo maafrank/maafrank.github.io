@@ -69,6 +69,17 @@
           <h2>The Psychology of Markets</h2>
           <p>Market sentiment drives price movements beyond what fundamental and technical analysis can explain. Fear, greed, optimism, and pessimism create trading opportunities for those who can quantify and exploit these emotions. This lesson teaches you to build sentiment-driven trading strategies using natural language processing and machine learning.</p>
           
+          <div class="exercise-box">
+            <h3><i class="fa fa-brain"></i> Why Sentiment Analysis Is Wall Street's Secret Weapon</h3>
+            <p><strong>Behavioral Finance Reality:</strong> Traditional finance assumes rational investors, but behavioral finance proves otherwise. Investors systematically overreact to bad news, underreact to complex information, and follow herds during bubbles and crashes. Sentiment analysis quantifies these irrational behaviors, turning human psychology into profitable trading signals.</p>
+            
+            <p><strong>Information Edge:</strong> News moves markets, but not all news is created equal. A negative earnings report might cause a 5% drop, but the language used by management during the earnings call can predict whether the stock continues falling or recovers. Sentiment analysis extracts signal from the noise of financial communication.</p>
+            
+            <p><strong>Speed Advantage:</strong> Professional trading firms use sentiment analysis to react to news within milliseconds. By the time human analysts finish reading a press release, algorithms have already processed the sentiment and placed trades. This speed advantage can mean the difference between profit and loss in fast-moving markets.</p>
+            
+            <p><strong>Alternative Data Gold Rush:</strong> Hedge funds spend millions on alternative data sources - satellite imagery, credit card transactions, social media feeds - because traditional data is commoditized. Sentiment analysis of non-traditional sources provides unique insights that aren't reflected in conventional financial metrics.</p>
+          </div>
+          
           <div class="sentiment-info">
             <h3><i class="fa fa-lightbulb-o"></i> Core Sentiment Trading Concepts</h3>
             <ul>
@@ -83,6 +94,17 @@
 
           <h2>Sentiment Data Sources</h2>
           <p>Modern sentiment analysis draws from multiple data sources to capture market psychology.</p>
+          
+          <div class="sentiment-info">
+            <h3><i class="fa fa-database"></i> The Strategic Value of Each Data Source</h3>
+            <p><strong>News Articles:</strong> Professional journalism provides high-quality, fact-checked information that institutional investors rely on. Breaking news from Reuters or Bloomberg can move markets within seconds because every major trading desk monitors these feeds. The key is speed and credibility.</p>
+            
+            <p><strong>Social Media:</strong> Retail investor sentiment on Twitter and Reddit can drive massive price movements, especially in meme stocks and cryptocurrencies. The challenge is filtering noise from signal - viral misinformation can cause temporary spikes, while sustained positive sentiment can create lasting trends.</p>
+            
+            <p><strong>Earnings Calls:</strong> Management tone and word choice often reveal more than the numbers themselves. Confident CEOs use different language than worried ones. Analyzing transcripts can predict post-earnings stock performance better than the actual earnings figures.</p>
+            
+            <p><strong>Professional vs. Retail Sentiment:</strong> Analyst reports represent institutional sentiment, while social media captures retail sentiment. These often diverge, creating arbitrage opportunities. When professionals are bearish but retail is bullish, or vice versa, significant price movements often follow.</p>
+          </div>
 
           <div class="sentiment-grid">
             <div class="sentiment-card">
@@ -124,6 +146,17 @@
 
           <h2>Natural Language Processing Framework</h2>
           <p>Let's build a comprehensive NLP system for processing and analyzing financial text data.</p>
+          
+          <div class="nlp-box">
+            <h3><i class="fa fa-cogs"></i> NLP Techniques for Financial Text</h3>
+            <p><strong>VADER vs. TextBlob:</strong> VADER (Valence Aware Dictionary and sEntiment Reasoner) is specifically tuned for social media text and handles negations, intensifiers, and punctuation better than general-purpose tools. TextBlob provides polarity and subjectivity scores, useful for distinguishing factual reporting from opinion pieces.</p>
+            
+            <p><strong>Financial Language Challenges:</strong> Financial text has unique characteristics - "beat earnings by 2 cents" is positive, but "missed by 2 cents" is negative. Standard NLP models struggle with financial jargon, numbers, and context. We need domain-specific preprocessing and potentially fine-tuned models.</p>
+            
+            <p><strong>Preprocessing Importance:</strong> Removing financial stop words ("stock", "price", "market") helps focus on sentiment-bearing words. However, some financial terms carry sentiment - "bankruptcy" is clearly negative, "acquisition" might be positive or negative depending on context.</p>
+            
+            <p><strong>Real-Time Processing:</strong> Professional systems process thousands of documents per second. Efficiency matters as much as accuracy - a slightly less accurate model that processes news 10x faster can be more profitable by capturing time-sensitive opportunities.</p>
+          </div>
           
           <div class="code-section">
             <h3>🧠 NLP & Sentiment Analysis Framework</h3>
