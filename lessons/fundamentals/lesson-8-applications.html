@@ -55,6 +55,77 @@
       .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
       .btn-secondary { background: #6c757d; color: white; }
       .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      
+      .code-block {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 25px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        overflow-x: auto;
+        border-left: 4px solid #667eea;
+      }
+      
+      .code-block pre {
+        margin: 0;
+        color: #d4d4d4;
+      }
+      
+      .code-comment {
+        color: #6a9955;
+      }
+      
+      .code-keyword {
+        color: #569cd6;
+      }
+      
+      .code-string {
+        color: #ce9178;
+      }
+      
+      .code-function {
+        color: #dcdcaa;
+      }
+      
+      .code-number {
+        color: #b5cea8;
+      }
+      
+      .technical-approach {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 25px 0;
+      }
+      
+      .technical-approach h4 {
+        color: #495057;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .approach-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+      
+      .approach-step {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
     </style>
   </head>
   
@@ -163,7 +234,37 @@
             <p><strong>Challenge:</strong> Radiologists spend hours analyzing medical images, and human error can lead to misdiagnosis.</p>
             <p><strong>AI Solution:</strong> CNN-based systems can detect cancer, fractures, and other conditions with superhuman accuracy.</p>
             <p><strong>Impact:</strong> Google's AI can detect diabetic retinopathy from eye scans with 90%+ accuracy, potentially preventing blindness in millions.</p>
-            <p><strong>Technical Approach:</strong> Transfer learning from ImageNet → Fine-tuning on medical data → Ensemble methods for robust predictions</p>
+            <div class="technical-approach">
+              <h4><i class="fa fa-cogs"></i> Technical Implementation</h4>
+              <div class="approach-steps">
+                <div class="approach-step">1. Transfer Learning</div>
+                <div class="approach-step">2. Fine-tuning</div>
+                <div class="approach-step">3. Ensemble Methods</div>
+                <div class="approach-step">4. Validation</div>
+              </div>
+              <div class="code-block">
+                <pre><code><span class="code-comment"># Medical imaging CNN pipeline</span>
+<span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+<span class="code-keyword">from</span> tensorflow.keras.applications <span class="code-keyword">import</span> ResNet50
+
+<span class="code-comment"># Load pre-trained model</span>
+<span class="code-function">base_model</span> = ResNet50(weights=<span class="code-string">'imagenet'</span>, include_top=<span class="code-keyword">False</span>)
+
+<span class="code-comment"># Add custom layers for medical diagnosis</span>
+<span class="code-function">model</span> = tf.keras.Sequential([
+    base_model,
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dense(<span class="code-number">128</span>, activation=<span class="code-string">'relu'</span>),
+    tf.keras.layers.Dropout(<span class="code-number">0.5</span>),
+    tf.keras.layers.Dense(<span class="code-number">2</span>, activation=<span class="code-string">'softmax'</span>)  <span class="code-comment"># cancer/no-cancer</span>
+])
+
+<span class="code-comment"># Fine-tune with medical data</span>
+model.compile(optimizer=<span class="code-string">'adam'</span>, 
+             loss=<span class="code-string">'categorical_crossentropy'</span>,
+             metrics=[<span class="code-string">'accuracy'</span>])</code></pre>
+              </div>
+            </div>
           </div>
 
           <h3>Autonomous Vehicles: The Ultimate AI Challenge</h3>
@@ -212,6 +313,26 @@
             <div style="background: #e8f4fd; padding: 20px; border-radius: 10px;">
               <h4>📺 Netflix</h4>
               <p>80% of watched content comes from recommendations</p>
+              <div class="code-block">
+                <pre><code><span class="code-comment"># Netflix-style recommendation system</span>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">from</span> sklearn.metrics.pairwise <span class="code-keyword">import</span> cosine_similarity
+
+<span class="code-keyword">class</span> <span class="code-function">RecommendationEngine</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, user_item_matrix):
+        self.matrix = user_item_matrix
+        
+    <span class="code-keyword">def</span> <span class="code-function">collaborative_filtering</span>(self, user_id, n_recommendations=<span class="code-number">10</span>):
+        <span class="code-comment"># Calculate user similarities</span>
+        user_similarities = cosine_similarity(self.matrix)
+        
+        <span class="code-comment"># Find similar users</span>
+        similar_users = user_similarities[user_id].argsort()[:-<span class="code-number">10</span>:-<span class="code-number">1</span>]
+        
+        <span class="code-comment"># Generate recommendations</span>
+        recommendations = self.<span class="code-function">_generate_recs</span>(user_id, similar_users)
+        <span class="code-keyword">return</span> recommendations[:n_recommendations]</code></pre>
+              </div>
               <p><strong>Techniques:</strong> Collaborative filtering, content-based filtering, deep learning</p>
             </div>
             <div style="background: #f8d7da; padding: 20px; border-radius: 10px;">
