@@ -1242,10 +1242,13 @@ Please answer questions about Matthew Frank based on this information. Be conver
     }
     
     async loadModel(retryCount = 0) {
-        if (this.isLoading || this.engine) return;
+        if (this.engine) return;
         
         const selectedModel = this.modelSelect.value;
         const maxRetries = 3;
+        
+        // Allow retries even if currently loading
+        if (this.isLoading && retryCount === 0) return;
         
         this.isLoading = true;
         
@@ -1256,10 +1259,13 @@ Please answer questions about Matthew Frank based on this information. Be conver
         }
         
         try {
+            console.log(`Starting model load attempt ${retryCount + 1} for ${selectedModel}`);
+            
             // Add timeout wrapper for the engine creation
             const enginePromise = CreateMLCEngine(selectedModel, {
                 initProgressCallback: (progress) => {
                     const percent = Math.round(progress.progress * 100);
+                    console.log(`Model loading progress: ${percent}%`);
                     if (retryCount === 0) {
                         this.updateStatus(`Loading: ${percent}%`, 'loading');
                     } else {
@@ -1268,12 +1274,13 @@ Please answer questions about Matthew Frank based on this information. Be conver
                 }
             });
             
-            // Set a reasonable timeout (5 minutes)
+            // Set a shorter timeout (2 minutes) to fail faster
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Model loading timeout')), 300000);
+                setTimeout(() => reject(new Error('Model loading timeout after 2 minutes')), 120000);
             });
             
             this.engine = await Promise.race([enginePromise, timeoutPromise]);
+            console.log('Model loaded successfully!');
             
             this.currentModel = selectedModel;
             this.updateStatus('Model ready!', 'ready');
@@ -1282,21 +1289,37 @@ Please answer questions about Matthew Frank based on this information. Be conver
         } catch (error) {
             console.error(`Failed to load model (attempt ${retryCount + 1}):`, error);
             
+            // Reset loading state temporarily for retry
+            this.isLoading = false;
+            
             if (retryCount < maxRetries) {
-                // Exponential backoff: wait 2^retryCount seconds
+                // Exponential backoff: wait 2^retryCount seconds  
                 const delay = Math.pow(2, retryCount) * 1000;
-                this.updateStatus(`Retrying in ${Math.pow(2, retryCount)}s...`, 'loading');
+                let countdown = Math.pow(2, retryCount);
+                
+                console.log(`Retrying in ${countdown} seconds...`);
+                
+                // Visual countdown
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        this.updateStatus(`Retrying in ${countdown}s...`, 'loading');
+                    } else {
+                        clearInterval(countdownInterval);
+                        this.updateStatus('Retrying now...', 'loading');
+                    }
+                }, 1000);
                 
                 setTimeout(() => {
+                    clearInterval(countdownInterval);
+                    console.log(`Starting retry ${retryCount + 1}`);
                     this.loadModel(retryCount + 1);
                 }, delay);
             } else {
                 // All retries failed
+                console.log('All retry attempts failed');
                 this.updateStatus('Download failed. Check connection and try again.', 'error');
                 this.showRetryOptions();
-            }
-        } finally {
-            if (retryCount >= maxRetries || this.engine) {
                 this.isLoading = false;
             }
         }
