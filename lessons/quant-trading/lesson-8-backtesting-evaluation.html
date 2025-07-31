@@ -133,9 +133,25 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
         }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #28a745;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .back-link:hover {
+            color: #1e7e34;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+    <a href="../quant-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
     <div class="container">
         <div class="header">
             <h1>Lesson 8: Backtesting & Strategy Evaluation</h1>
