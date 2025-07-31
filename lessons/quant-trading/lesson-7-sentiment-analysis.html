@@ -1,0 +1,1309 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 7: Sentiment Analysis Trading - Quantitative Trading Course</title>
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #28a745; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #28a745; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #1e7e34; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #28a745; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .code-section { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .code-example { background: #2d3748; border-radius: 10px; padding: 20px; margin: 20px 0; overflow-x: auto; }
+      .code-example pre { margin: 0; background: none !important; padding: 0 !important; }
+      .code-example code { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+      .output-box { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4299e1; }
+      .exercise-box { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .exercise-box h3 { color: #007bff; margin-bottom: 20px; }
+      .sentiment-info { background: #d4edda; border-left: 4px solid #28a745; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .sentiment-info h3 { color: #28a745; margin-bottom: 20px; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      .nlp-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .nlp-box h3 { color: #856404; margin-bottom: 20px; }
+      .sentiment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+      .sentiment-card { background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745; }
+      .sentiment-card h4 { color: #28a745; margin-bottom: 15px; }
+      .warning-box { background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .warning-box h4 { color: #721c24; margin-bottom: 10px; }
+      .data-source-box { background: #d1ecf1; border-left: 4px solid #0c5460; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .data-source-box h3 { color: #0c5460; margin-bottom: 20px; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../quant-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-comments"></i> Sentiment Analysis Trading</h1>
+          <p>Harness market psychology and news sentiment to enhance trading strategies with NLP and machine learning</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 90-110 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-brain"></i> AI & NLP</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>The Psychology of Markets</h2>
+          <p>Market sentiment drives price movements beyond what fundamental and technical analysis can explain. Fear, greed, optimism, and pessimism create trading opportunities for those who can quantify and exploit these emotions. This lesson teaches you to build sentiment-driven trading strategies using natural language processing and machine learning.</p>
+          
+          <div class="sentiment-info">
+            <h3><i class="fa fa-lightbulb-o"></i> Core Sentiment Trading Concepts</h3>
+            <ul>
+              <li><strong>Market Psychology:</strong> Emotions drive price movements beyond rational analysis</li>
+              <li><strong>News Impact:</strong> Breaking news creates immediate and lasting price effects</li>
+              <li><strong>Social Media Sentiment:</strong> Retail investor sentiment affects stock prices</li>
+              <li><strong>Contrarian Signals:</strong> Extreme sentiment often marks turning points</li>
+              <li><strong>Event-Driven Trading:</strong> Earnings, announcements, and news create opportunities</li>
+              <li><strong>Sentiment Momentum:</strong> Positive sentiment can build on itself</li>
+            </ul>
+          </div>
+
+          <h2>Sentiment Data Sources</h2>
+          <p>Modern sentiment analysis draws from multiple data sources to capture market psychology.</p>
+
+          <div class="sentiment-grid">
+            <div class="sentiment-card">
+              <h4>📰 News Articles</h4>
+              <p><strong>Sources:</strong> Reuters, Bloomberg, Financial Times, WSJ</p>
+              <p><strong>Signal:</strong> Breaking news sentiment and event analysis</p>
+            </div>
+            
+            <div class="sentiment-card">
+              <h4>🐦 Social Media</h4>
+              <p><strong>Sources:</strong> Twitter, Reddit, StockTwits, Discord</p>
+              <p><strong>Signal:</strong> Retail investor sentiment and viral trends</p>
+            </div>
+            
+            <div class="sentiment-card">
+              <h4>💼 Earnings Calls</h4>
+              <p><strong>Sources:</strong> Transcripts, management tone, Q&A sessions</p>
+              <p><strong>Signal:</strong> Management confidence and future outlook</p>
+            </div>
+            
+            <div class="sentiment-card">
+              <h4>📊 Analyst Reports</h4>
+              <p><strong>Sources:</strong> Research reports, upgrades, downgrades</p>
+              <p><strong>Signal:</strong> Professional sentiment and price targets</p>
+            </div>
+            
+            <div class="sentiment-card">
+              <h4>📈 Market Data</h4>
+              <p><strong>Sources:</strong> VIX, Put/Call ratios, Insider trading</p>
+              <p><strong>Signal:</strong> Fear/greed indicators and positioning</p>
+            </div>
+            
+            <div class="sentiment-card">
+              <h4>🔍 Search Trends</h4>
+              <p><strong>Sources:</strong> Google Trends, Wikipedia views</p>
+              <p><strong>Signal:</strong> Public interest and attention levels</p>
+            </div>
+          </div>
+
+          <h2>Natural Language Processing Framework</h2>
+          <p>Let's build a comprehensive NLP system for processing and analyzing financial text data.</p>
+          
+          <div class="code-section">
+            <h3>🧠 NLP & Sentiment Analysis Framework</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Comprehensive sentiment analysis framework
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# NLP Libraries
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import re
+from textblob import TextBlob
+
+# Machine Learning
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+
+# Deep Learning (optional)
+# import tensorflow as tf
+# from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+
+# Web scraping (for demo purposes)
+import requests
+from bs4 import BeautifulSoup
+import time
+import warnings
+warnings.filterwarnings('ignore')
+
+# Download required NLTK data
+try:
+    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('corpora/stopwords')
+    nltk.data.find('corpora/wordnet')
+    nltk.data.find('vader_lexicon')
+except LookupError:
+    print("Downloading required NLTK data...")
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    nltk.download('vader_lexicon')
+
+print("Sentiment Analysis Framework Initialized!")
+print("Ready to analyze market psychology through text data")
+
+class SentimentAnalyzer:
+    """
+    Comprehensive sentiment analysis system for financial text
+    """
+    
+    def __init__(self):
+        self.vader_analyzer = SentimentIntensityAnalyzer()
+        self.lemmatizer = WordNetLemmatizer()
+        self.stop_words = set(stopwords.words('english'))
+        
+        # Financial-specific stop words
+        self.financial_stop_words = {
+            'stock', 'price', 'market', 'trading', 'shares', 'company', 
+            'financial', 'investment', 'investors', 'analyst', 'analysts'
+        }
+        
+        # Sentiment models
+        self.tfidf_vectorizer = None
+        self.ml_model = None
+        self.scaler = StandardScaler()
+    
+    def preprocess_text(self, text):
+        """Clean and preprocess text for analysis"""
+        
+        if not isinstance(text, str):
+            return ""
+        
+        # Convert to lowercase
+        text = text.lower()
+        
+        # Remove special characters and digits
+        text = re.sub(r'[^a-zA-Z\s]', '', text)
+        
+        # Tokenize
+        tokens = word_tokenize(text)
+        
+        # Remove stop words and lemmatize
+        tokens = [
+            self.lemmatizer.lemmatize(token) 
+            for token in tokens 
+            if token not in self.stop_words and token not in self.financial_stop_words
+            and len(token) > 2
+        ]
+        
+        return ' '.join(tokens)
+    
+    def analyze_sentiment_vader(self, text):
+        """Analyze sentiment using VADER (Valence Aware Dictionary and sEntiment Reasoner)"""
+        
+        scores = self.vader_analyzer.polarity_scores(text)
+        
+        return {
+            'compound': scores['compound'],  # Overall sentiment (-1 to 1)
+            'positive': scores['pos'],
+            'neutral': scores['neu'], 
+            'negative': scores['neg'],
+            'sentiment_label': self.classify_sentiment(scores['compound'])
+        }
+    
+    def analyze_sentiment_textblob(self, text):
+        """Analyze sentiment using TextBlob"""
+        
+        blob = TextBlob(text)
+        
+        return {
+            'polarity': blob.sentiment.polarity,  # -1 to 1
+            'subjectivity': blob.sentiment.subjectivity,  # 0 to 1
+            'sentiment_label': self.classify_sentiment(blob.sentiment.polarity)
+        }
+    
+    def classify_sentiment(self, score, threshold=0.1):
+        """Classify sentiment score into labels"""
+        
+        if score > threshold:
+            return 'positive'
+        elif score < -threshold:
+            return 'negative'
+        else:
+            return 'neutral'
+    
+    def extract_financial_entities(self, text):
+        """Extract financial entities and keywords"""
+        
+        # Simple keyword extraction (in practice, use NER models)
+        financial_keywords = [
+            'earnings', 'revenue', 'profit', 'loss', 'growth', 'decline',
+            'bullish', 'bearish', 'buy', 'sell', 'hold', 'upgrade', 'downgrade',
+            'merger', 'acquisition', 'partnership', 'launch', 'announce',
+            'beat', 'miss', 'exceed', 'disappoint', 'strong', 'weak'
+        ]
+        
+        found_keywords = []
+        text_lower = text.lower()
+        
+        for keyword in financial_keywords:
+            if keyword in text_lower:
+                found_keywords.append(keyword)
+        
+        return found_keywords
+    
+    def calculate_sentiment_score(self, text):
+        """Calculate comprehensive sentiment score"""
+        
+        # Get scores from different methods
+        vader_scores = self.analyze_sentiment_vader(text)
+        textblob_scores = self.analyze_sentiment_textblob(text)
+        
+        # Extract keywords
+        keywords = self.extract_financial_entities(text)
+        
+        # Combine scores (weighted average)
+        combined_score = (
+            vader_scores['compound'] * 0.6 +
+            textblob_scores['polarity'] * 0.4
+        )
+        
+        return {
+            'combined_score': combined_score,
+            'vader_score': vader_scores['compound'],
+            'textblob_score': textblob_scores['polarity'],
+            'sentiment_label': self.classify_sentiment(combined_score),
+            'keywords': keywords,
+            'keyword_count': len(keywords)
+        }
+
+# Initialize sentiment analyzer
+sentiment_analyzer = SentimentAnalyzer()
+
+# Sample financial news headlines for demonstration
+sample_news = [
+    "Apple reports record quarterly earnings, beats analyst expectations",
+    "Tesla stock plunges after disappointing delivery numbers",
+    "Amazon announces major expansion into healthcare sector",
+    "Google faces regulatory scrutiny over antitrust concerns",
+    "Microsoft shows strong growth in cloud computing division",
+    "Netflix loses subscribers for first time, shares tumble",
+    "Meta announces layoffs amid declining revenue",
+    "Nvidia benefits from AI boom, stock reaches new highs",
+    "JPMorgan warns of potential recession risks ahead",
+    "Goldman Sachs upgrades tech sector outlook"
+]
+
+print(f"\n=== Sample Sentiment Analysis ===")
+print(f"Analyzing {len(sample_news)} financial headlines...")
+
+# Analyze sample news
+news_analysis = []
+for i, headline in enumerate(sample_news):
+    analysis = sentiment_analyzer.calculate_sentiment_score(headline)
+    news_analysis.append({
+        'headline': headline,
+        'sentiment_score': analysis['combined_score'],
+        'sentiment_label': analysis['sentiment_label'],
+        'keywords': analysis['keywords']
+    })
+    
+    print(f"\n{i+1}. {headline}")
+    print(f"   Sentiment: {analysis['sentiment_label'].title()} ({analysis['combined_score']:.3f})")
+    print(f"   Keywords: {', '.join(analysis['keywords']) if analysis['keywords'] else 'None'}")
+
+# Convert to DataFrame for analysis
+news_df = pd.DataFrame(news_analysis)
+print(f"\nSentiment Distribution:")
+print(news_df['sentiment_label'].value_counts())</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Output:</strong><br>
+              Sentiment Analysis Framework Initialized!<br>
+              Analyzing 10 financial headlines...<br>
+              Sentiment Distribution: 4 positive, 4 negative, 2 neutral
+            </div>
+          </div>
+
+          <h2>Building a Financial News Sentiment Model</h2>
+          <p>Let's create a specialized sentiment model trained on financial text data.</p>
+
+          <div class="nlp-box">
+            <h3><i class="fa fa-cogs"></i> Financial Sentiment Model Architecture</h3>
+            <p>Financial text requires specialized models because:</p>
+            <ul>
+              <li><strong>Domain-specific language:</strong> Financial jargon and terminology</li>
+              <li><strong>Context sensitivity:</strong> "Beat expectations" vs "Beat down"</li>
+              <li><strong>Numerical context:</strong> Percentages and financial metrics matter</li>
+              <li><strong>Temporal sensitivity:</strong> News impact varies over time</li>
+            </ul>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Financial sentiment modeling
+class FinancialSentimentModel:
+    """
+    Specialized sentiment model for financial text
+    """
+    
+    def __init__(self):
+        self.vectorizer = TfidfVectorizer(
+            max_features=5000,
+            ngram_range=(1, 2),  # Include bigrams
+            min_df=2,
+            max_df=0.8
+        )
+        self.model = None
+        self.is_trained = False
+        
+        # Financial sentiment lexicon
+        self.positive_words = {
+            'beat', 'exceed', 'strong', 'growth', 'profit', 'gain', 'up', 'rise',
+            'bullish', 'buy', 'upgrade', 'outperform', 'positive', 'excellent',
+            'robust', 'solid', 'impressive', 'stellar', 'soar', 'surge'
+        }
+        
+        self.negative_words = {
+            'miss', 'disappoint', 'weak', 'decline', 'loss', 'drop', 'down', 'fall',
+            'bearish', 'sell', 'downgrade', 'underperform', 'negative', 'poor',
+            'struggle', 'plunge', 'tumble', 'crash', 'collapse', 'dive'
+        }
+    
+    def create_training_data(self, n_samples=1000):
+        """
+        Create synthetic training data for demonstration
+        In practice, you'd use labeled financial news datasets
+        """
+        
+        print(f"Creating synthetic training dataset with {n_samples} samples...")
+        
+        # Positive news templates
+        positive_templates = [
+            "{company} reports strong quarterly earnings",
+            "{company} beats analyst expectations",
+            "{company} announces robust growth in {sector}",
+            "{company} stock surges after positive news",
+            "{company} shows excellent performance",
+            "Analysts upgrade {company} rating",
+            "{company} launches innovative new product",
+            "{company} exceeds revenue forecasts"
+        ]
+        
+        # Negative news templates
+        negative_templates = [
+            "{company} disappoints with weak earnings",
+            "{company} misses analyst expectations",
+            "{company} announces declining revenue",
+            "{company} stock plunges on bad news",
+            "{company} shows poor performance",
+            "Analysts downgrade {company} rating",
+            "{company} faces regulatory challenges",
+            "{company} falls short of forecasts"
+        ]
+        
+        # Neutral news templates
+        neutral_templates = [
+            "{company} releases quarterly report",
+            "{company} announces management changes",
+            "{company} schedules earnings call",
+            "{company} stock remains stable",
+            "{company} provides business update",
+            "{company} holds investor meeting",
+            "{company} publishes annual report",
+            "{company} maintains current guidance"
+        ]
+        
+        companies = ['Apple', 'Google', 'Microsoft', 'Amazon', 'Tesla', 'Netflix', 'Meta']
+        sectors = ['cloud services', 'artificial intelligence', 'mobile devices', 'streaming']
+        
+        training_data = []
+        labels = []
+        
+        # Generate positive samples
+        for _ in range(n_samples // 3):
+            template = np.random.choice(positive_templates)
+            company = np.random.choice(companies)
+            sector = np.random.choice(sectors)
+            text = template.format(company=company, sector=sector)
+            training_data.append(text)
+            labels.append(1)  # Positive
+        
+        # Generate negative samples
+        for _ in range(n_samples // 3):
+            template = np.random.choice(negative_templates)
+            company = np.random.choice(companies)
+            sector = np.random.choice(sectors)
+            text = template.format(company=company, sector=sector)
+            training_data.append(text)
+            labels.append(-1)  # Negative
+        
+        # Generate neutral samples
+        for _ in range(n_samples - 2 * (n_samples // 3)):
+            template = np.random.choice(neutral_templates)
+            company = np.random.choice(companies)
+            sector = np.random.choice(sectors)
+            text = template.format(company=company, sector=sector)
+            training_data.append(text)
+            labels.append(0)  # Neutral
+        
+        return training_data, labels
+    
+    def train_model(self, texts=None, labels=None):
+        """Train the financial sentiment model"""
+        
+        if texts is None or labels is None:
+            # Use synthetic data
+            texts, labels = self.create_training_data(1000)
+        
+        print("Training financial sentiment model...")
+        
+        # Vectorize texts
+        X = self.vectorizer.fit_transform(texts)
+        y = np.array(labels)
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        
+        # Train model
+        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.model.fit(X_train, y_train)
+        
+        # Evaluate
+        train_score = self.model.score(X_train, y_train)
+        test_score = self.model.score(X_test, y_test)
+        
+        print(f"✅ Model trained successfully!")
+        print(f"   Training accuracy: {train_score:.3f}")
+        print(f"   Test accuracy: {test_score:.3f}")
+        
+        # Make predictions on test set for detailed analysis
+        y_pred = self.model.predict(X_test)
+        
+        print(f"\nClassification Report:")
+        print(classification_report(y_test, y_pred, target_names=['Negative', 'Neutral', 'Positive']))
+        
+        self.is_trained = True
+        return self.model
+    
+    def predict_sentiment(self, text):
+        """Predict sentiment for new text"""
+        
+        if not self.is_trained:
+            print("Model not trained yet. Training with default data...")
+            self.train_model()
+        
+        # Vectorize text
+        X = self.vectorizer.transform([text])
+        
+        # Get prediction and probability
+        prediction = self.model.predict(X)[0]
+        probabilities = self.model.predict_proba(X)[0]
+        
+        # Map prediction to label
+        label_map = {-1: 'negative', 0: 'neutral', 1: 'positive'}
+        sentiment_label = label_map[prediction]
+        
+        # Get confidence (probability of predicted class)
+        confidence = np.max(probabilities)
+        
+        return {
+            'sentiment': sentiment_label,
+            'confidence': confidence,
+            'score': prediction,
+            'probabilities': {
+                'negative': probabilities[0],
+                'neutral': probabilities[1], 
+                'positive': probabilities[2]
+            }
+        }
+    
+    def get_feature_importance(self, top_n=20):
+        """Get most important features for sentiment classification"""
+        
+        if not self.is_trained:
+            return None
+        
+        # Get feature names and importance
+        feature_names = self.vectorizer.get_feature_names_out()
+        importances = self.model.feature_importances_
+        
+        # Create feature importance dataframe
+        feature_importance = pd.DataFrame({
+            'feature': feature_names,
+            'importance': importances
+        }).sort_values('importance', ascending=False)
+        
+        return feature_importance.head(top_n)
+
+# Initialize and train financial sentiment model
+financial_model = FinancialSentimentModel()
+trained_model = financial_model.train_model()
+
+# Test the model on sample headlines
+print(f"\n=== Testing Financial Sentiment Model ===")
+
+test_headlines = [
+    "Apple stock soars after beating earnings expectations",
+    "Tesla disappoints investors with weak delivery numbers", 
+    "Microsoft announces quarterly dividend",
+    "Amazon faces antitrust investigation",
+    "Google shows strong growth in cloud business"
+]
+
+for headline in test_headlines:
+    result = financial_model.predict_sentiment(headline)
+    print(f"\nHeadline: {headline}")
+    print(f"Sentiment: {result['sentiment'].title()} (confidence: {result['confidence']:.3f})")
+    print(f"Probabilities: Pos:{result['probabilities']['positive']:.2f} "
+          f"Neu:{result['probabilities']['neutral']:.2f} "
+          f"Neg:{result['probabilities']['negative']:.2f}")
+
+# Show most important features
+print(f"\n=== Most Important Features for Sentiment Classification ===")
+feature_importance = financial_model.get_feature_importance(15)
+print(feature_importance)</code></pre>
+          </div>
+
+          <h2>Real-Time Sentiment Data Collection</h2>
+          <p>Let's build a system to collect and process real-time sentiment data from various sources.</p>
+
+          <div class="data-source-box">
+            <h3><i class="fa fa-database"></i> Sentiment Data Sources</h3>
+            <p><strong>Note:</strong> This lesson demonstrates data collection concepts. In production, you'd need:</p>
+            <ul>
+              <li>API keys for news services (Alpha Vantage, NewsAPI, Polygon)</li>
+              <li>Social media API access (Twitter API, Reddit API)</li>
+              <li>Compliance with rate limits and terms of service</li>
+              <li>Proper data storage and processing infrastructure</li>
+            </ul>
+          </div>
+
+          <div class="code-section">
+            <h3>📡 Real-Time Sentiment Collection</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Real-time sentiment data collection system
+import yfinance as yf
+from datetime import datetime, timedelta
+import json
+
+class SentimentDataCollector:
+    """
+    Real-time sentiment data collector and processor
+    """
+    
+    def __init__(self, sentiment_model):
+        self.sentiment_model = sentiment_model
+        self.data_cache = {}
+        self.sentiment_history = {}
+    
+    def simulate_news_feed(self, symbol, n_articles=5):
+        """
+        Simulate news feed for a given symbol
+        In production, this would connect to real news APIs
+        """
+        
+        # Get recent stock performance for context
+        stock = yf.Ticker(symbol)
+        recent_data = stock.history(period="5d")
+        recent_change = (recent_data['Close'][-1] / recent_data['Close'][0] - 1) * 100
+        
+        # Generate realistic news based on recent performance
+        if recent_change > 2:
+            news_type = 'positive'
+        elif recent_change < -2:
+            news_type = 'negative'
+        else:
+            news_type = 'neutral'
+        
+        # Simulated news templates based on performance
+        news_templates = {
+            'positive': [
+                f"{symbol} stock rallies on strong quarterly results",
+                f"Analysts upgrade {symbol} following impressive growth",
+                f"{symbol} announces breakthrough in key market segment",
+                f"Institutional investors increase {symbol} positions",
+                f"{symbol} beats expectations, raises guidance"
+            ],
+            'negative': [
+                f"{symbol} shares decline on disappointing earnings",
+                f"Concerns grow over {symbol}'s competitive position",
+                f"{symbol} faces headwinds in key market",
+                f"Analysts express caution on {symbol} outlook",
+                f"{symbol} warns of potential challenges ahead"
+            ],
+            'neutral': [
+                f"{symbol} schedules quarterly earnings call",
+                f"{symbol} announces management changes",
+                f"{symbol} provides business update to investors",
+                f"{symbol} maintains current market guidance",
+                f"{symbol} releases routine regulatory filing"
+            ]
+        }
+        
+        # Select articles based on sentiment bias
+        articles = []
+        templates = news_templates[news_type]
+        
+        for i in range(n_articles):
+            # Add some randomness
+            if np.random.random() < 0.7:
+                article_type = news_type
+            else:
+                article_type = np.random.choice(['positive', 'negative', 'neutral'])
+            
+            template = np.random.choice(news_templates[article_type])
+            
+            articles.append({
+                'title': template,
+                'timestamp': datetime.now() - timedelta(hours=np.random.randint(0, 24)),
+                'source': np.random.choice(['Reuters', 'Bloomberg', 'WSJ', 'CNBC', 'MarketWatch'])
+            })
+        
+        return articles
+    
+    def process_news_sentiment(self, symbol, articles):
+        """Process news articles and calculate sentiment scores"""
+        
+        print(f"Processing {len(articles)} news articles for {symbol}...")
+        
+        sentiments = []
+        
+        for article in articles:
+            # Analyze sentiment
+            sentiment_result = self.sentiment_model.predict_sentiment(article['title'])
+            
+            sentiments.append({
+                'title': article['title'],
+                'timestamp': article['timestamp'],
+                'source': article['source'],
+                'sentiment': sentiment_result['sentiment'],
+                'confidence': sentiment_result['confidence'],
+                'score': sentiment_result['score']
+            })
+        
+        # Calculate aggregate sentiment
+        scores = [s['score'] for s in sentiments]
+        confidences = [s['confidence'] for s in sentiments]
+        
+        # Weighted average by confidence
+        weighted_sentiment = np.average(scores, weights=confidences) if scores else 0
+        avg_confidence = np.mean(confidences) if confidences else 0
+        
+        return {
+            'symbol': symbol,
+            'timestamp': datetime.now(),
+            'articles': sentiments,
+            'aggregate_sentiment': weighted_sentiment,
+            'average_confidence': avg_confidence,
+            'article_count': len(articles),
+            'positive_count': sum(1 for s in sentiments if s['sentiment'] == 'positive'),
+            'negative_count': sum(1 for s in sentiments if s['sentiment'] == 'negative'),
+            'neutral_count': sum(1 for s in sentiments if s['sentiment'] == 'neutral')
+        }
+    
+    def calculate_sentiment_momentum(self, symbol, lookback_hours=24):
+        """Calculate sentiment momentum over time"""
+        
+        if symbol not in self.sentiment_history:
+            return None
+        
+        cutoff_time = datetime.now() - timedelta(hours=lookback_hours)
+        
+        recent_sentiments = [
+            entry for entry in self.sentiment_history[symbol]
+            if entry['timestamp'] > cutoff_time
+        ]
+        
+        if len(recent_sentiments) < 2:
+            return None
+        
+        # Calculate momentum (change in sentiment over time)
+        sentiments = [entry['aggregate_sentiment'] for entry in recent_sentiments]
+        timestamps = [entry['timestamp'] for entry in recent_sentiments]
+        
+        # Simple momentum: recent sentiment - older sentiment
+        momentum = sentiments[-1] - sentiments[0]
+        
+        return {
+            'momentum': momentum,
+            'current_sentiment': sentiments[-1],
+            'sentiment_trend': 'improving' if momentum > 0.1 else 'declining' if momentum < -0.1 else 'stable',
+            'data_points': len(recent_sentiments)
+        }
+    
+    def update_sentiment_data(self, symbol):
+        """Update sentiment data for a symbol"""
+        
+        # Collect news
+        articles = self.simulate_news_feed(symbol, n_articles=5)
+        
+        # Process sentiment
+        sentiment_data = self.process_news_sentiment(symbol, articles)
+        
+        # Store in history
+        if symbol not in self.sentiment_history:
+            self.sentiment_history[symbol] = []
+        
+        self.sentiment_history[symbol].append(sentiment_data)
+        
+        # Keep only recent data (last 7 days)
+        cutoff_time = datetime.now() - timedelta(days=7)
+        self.sentiment_history[symbol] = [
+            entry for entry in self.sentiment_history[symbol]
+            if entry['timestamp'] > cutoff_time
+        ]
+        
+        return sentiment_data
+
+# Initialize sentiment data collector
+collector = SentimentDataCollector(financial_model)
+
+# Collect sentiment data for multiple symbols
+symbols = ['AAPL', 'TSLA', 'GOOGL', 'MSFT', 'AMZN']
+
+print(f"\n=== Real-Time Sentiment Analysis ===")
+
+sentiment_results = {}
+for symbol in symbols:
+    sentiment_data = collector.update_sentiment_data(symbol)
+    sentiment_results[symbol] = sentiment_data
+    
+    print(f"\n{symbol} Sentiment Analysis:")
+    print(f"  Aggregate Sentiment: {sentiment_data['aggregate_sentiment']:.3f}")
+    print(f"  Confidence: {sentiment_data['average_confidence']:.3f}")
+    print(f"  Articles: {sentiment_data['positive_count']} pos, "
+          f"{sentiment_data['negative_count']} neg, {sentiment_data['neutral_count']} neu")
+    
+    # Show sample articles
+    print(f"  Sample headlines:")
+    for article in sentiment_data['articles'][:3]:
+        print(f"    • {article['title']} ({article['sentiment']})")
+
+# Visualize sentiment comparison
+def plot_sentiment_comparison(sentiment_results):
+    """Plot sentiment comparison across symbols"""
+    
+    symbols = list(sentiment_results.keys())
+    sentiments = [sentiment_results[symbol]['aggregate_sentiment'] for symbol in symbols]
+    confidences = [sentiment_results[symbol]['average_confidence'] for symbol in symbols]
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    
+    # Sentiment scores
+    colors = ['green' if s > 0.1 else 'red' if s < -0.1 else 'gray' for s in sentiments]
+    bars1 = ax1.bar(symbols, sentiments, color=colors, alpha=0.7)
+    ax1.set_title('Current Sentiment Scores by Symbol')
+    ax1.set_ylabel('Sentiment Score')
+    ax1.axhline(y=0, color='black', linestyle='-', alpha=0.3)
+    ax1.axhline(y=0.1, color='green', linestyle='--', alpha=0.5, label='Positive threshold')
+    ax1.axhline(y=-0.1, color='red', linestyle='--', alpha=0.5, label='Negative threshold')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Add value labels on bars
+    for bar, sentiment in zip(bars1, sentiments):
+        height = bar.get_height()
+        ax1.annotate(f'{sentiment:.3f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3 if height > 0 else -15),
+                    textcoords="offset points",
+                    ha='center', va='bottom' if height > 0 else 'top')
+    
+    # Confidence levels
+    bars2 = ax2.bar(symbols, confidences, color='blue', alpha=0.7)
+    ax2.set_title('Sentiment Analysis Confidence')
+    ax2.set_ylabel('Average Confidence')
+    ax2.set_ylim(0, 1)
+    ax2.grid(True, alpha=0.3)
+    
+    # Add value labels
+    for bar, confidence in zip(bars2, confidences):
+        height = bar.get_height()
+        ax2.annotate(f'{confidence:.3f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),  
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+    
+    plt.tight_layout()
+    plt.show()
+
+# Create sentiment comparison plot
+print("\nCreating sentiment analysis visualization...")
+plot_sentiment_comparison(sentiment_results)</code></pre>
+            </div>
+          </div>
+
+          <h2>Building Sentiment-Driven Trading Strategies</h2>
+          <p>Now let's integrate sentiment analysis into actionable trading strategies.</p>
+
+          <div class="code-section">
+            <h3>📈 Sentiment Trading Strategy</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Sentiment-driven trading strategy
+class SentimentTradingStrategy:
+    """
+    Trading strategy that incorporates sentiment analysis
+    """
+    
+    def __init__(self, sentiment_collector, initial_capital=100000):
+        self.sentiment_collector = sentiment_collector
+        self.initial_capital = initial_capital
+        self.current_capital = initial_capital
+        self.positions = {}
+        self.trading_history = []
+        
+        # Strategy parameters
+        self.sentiment_threshold_buy = 0.3
+        self.sentiment_threshold_sell = -0.3
+        self.confidence_threshold = 0.6
+        self.max_position_size = 0.1  # 10% max per position
+        
+    def generate_trading_signals(self, symbol, price_data, sentiment_data):
+        """Generate trading signals based on sentiment and price"""
+        
+        current_price = price_data['Close'].iloc[-1]
+        recent_returns = price_data['Close'].pct_change(5).iloc[-1]  # 5-day return
+        
+        sentiment_score = sentiment_data['aggregate_sentiment']
+        sentiment_confidence = sentiment_data['average_confidence']
+        
+        # Technical momentum (simple)
+        price_momentum = 1 if recent_returns > 0.02 else -1 if recent_returns < -0.02 else 0
+        
+        # Sentiment signal
+        if (sentiment_score > self.sentiment_threshold_buy and 
+            sentiment_confidence > self.confidence_threshold):
+            sentiment_signal = 1  # Buy
+        elif (sentiment_score < self.sentiment_threshold_sell and 
+              sentiment_confidence > self.confidence_threshold):
+            sentiment_signal = -1  # Sell
+        else:
+            sentiment_signal = 0  # Hold
+        
+        # Combined signal (sentiment + momentum confirmation)
+        if sentiment_signal == 1 and price_momentum >= 0:
+            final_signal = 1
+            signal_strength = min(abs(sentiment_score), 1.0) * sentiment_confidence
+        elif sentiment_signal == -1 and price_momentum <= 0:
+            final_signal = -1
+            signal_strength = min(abs(sentiment_score), 1.0) * sentiment_confidence
+        else:
+            final_signal = 0
+            signal_strength = 0
+        
+        return {
+            'signal': final_signal,
+            'strength': signal_strength,
+            'sentiment_score': sentiment_score,
+            'sentiment_confidence': sentiment_confidence,
+            'price_momentum': price_momentum,
+            'current_price': current_price,
+            'reasoning': self._explain_signal(final_signal, sentiment_score, price_momentum)
+        }
+    
+    def _explain_signal(self, signal, sentiment, momentum):
+        """Explain the reasoning behind a trading signal"""
+        
+        if signal == 1:
+            return f"BUY: Positive sentiment ({sentiment:.3f}) with supportive price action"
+        elif signal == -1:
+            return f"SELL: Negative sentiment ({sentiment:.3f}) with weak price action"
+        else:
+            return "HOLD: Insufficient sentiment conviction or conflicting signals"
+    
+    def calculate_position_size(self, signal_strength, current_price, available_capital):
+        """Calculate position size based on signal strength and risk management"""
+        
+        # Base position size as percentage of capital
+        base_size = self.max_position_size * signal_strength
+        
+        # Convert to dollar amount
+        position_value = available_capital * base_size
+        
+        # Convert to shares
+        shares = int(position_value / current_price)
+        
+        return max(shares, 0)
+    
+    def execute_trade(self, symbol, signal_data):
+        """Execute trading decision"""
+        
+        signal = signal_data['signal']
+        signal_strength = signal_data['strength']
+        current_price = signal_data['current_price']
+        
+        if signal == 0:
+            return None  # No trade
+        
+        # Calculate position size
+        available_capital = self.current_capital * 0.95  # Keep 5% cash buffer
+        shares = self.calculate_position_size(signal_strength, current_price, available_capital)
+        
+        if shares == 0:
+            return None
+        
+        # Execute trade
+        trade_value = shares * current_price
+        
+        if signal == 1:  # Buy
+            if trade_value <= available_capital:
+                self.current_capital -= trade_value
+                self.positions[symbol] = self.positions.get(symbol, 0) + shares
+                
+                trade_record = {
+                    'timestamp': datetime.now(),
+                    'symbol': symbol,
+                    'action': 'BUY',
+                    'shares': shares,
+                    'price': current_price,
+                    'value': trade_value,
+                    'sentiment_score': signal_data['sentiment_score'],
+                    'reasoning': signal_data['reasoning']
+                }
+                
+        elif signal == -1:  # Sell
+            current_position = self.positions.get(symbol, 0)
+            shares_to_sell = min(shares, current_position)
+            
+            if shares_to_sell > 0:
+                self.current_capital += shares_to_sell * current_price
+                self.positions[symbol] = current_position - shares_to_sell
+                
+                trade_record = {
+                    'timestamp': datetime.now(),
+                    'symbol': symbol,
+                    'action': 'SELL',
+                    'shares': shares_to_sell,
+                    'price': current_price,
+                    'value': shares_to_sell * current_price,
+                    'sentiment_score': signal_data['sentiment_score'],
+                    'reasoning': signal_data['reasoning']
+                }
+            else:
+                return None
+        
+        self.trading_history.append(trade_record)
+        return trade_record
+    
+    def run_strategy(self, symbols, lookback_days=30):
+        """Run the sentiment trading strategy"""
+        
+        print(f"Running sentiment trading strategy on {len(symbols)} symbols...")
+        
+        strategy_results = {}
+        
+        for symbol in symbols:
+            print(f"\nAnalyzing {symbol}...")
+            
+            # Get price data
+            stock = yf.Ticker(symbol)
+            price_data = stock.history(period=f"{lookback_days}d")
+            
+            # Update sentiment data
+            sentiment_data = self.sentiment_collector.update_sentiment_data(symbol)
+            
+            # Generate signals
+            signal_data = self.generate_trading_signals(symbol, price_data, sentiment_data)
+            
+            # Execute trade if signal is strong enough
+            trade_result = self.execute_trade(symbol, signal_data)
+            
+            strategy_results[symbol] = {
+                'signal_data': signal_data,
+                'trade_result': trade_result,
+                'current_price': signal_data['current_price']
+            }
+            
+            print(f"  Signal: {signal_data['reasoning']}")
+            if trade_result:
+                print(f"  Trade: {trade_result['action']} {trade_result['shares']} shares at ${trade_result['price']:.2f}")
+            else:
+                print(f"  Trade: No action taken")
+        
+        return strategy_results
+    
+    def get_portfolio_summary(self):
+        """Get current portfolio summary"""
+        
+        total_value = self.current_capital
+        position_values = {}
+        
+        for symbol, shares in self.positions.items():
+            if shares > 0:
+                stock = yf.Ticker(symbol)
+                current_price = stock.history(period="1d")['Close'].iloc[-1]
+                position_value = shares * current_price
+                total_value += position_value
+                position_values[symbol] = {
+                    'shares': shares,
+                    'price': current_price,
+                    'value': position_value,
+                    'weight': position_value / total_value
+                }
+        
+        return {
+            'total_value': total_value,
+            'cash': self.current_capital,
+            'positions': position_values,
+            'total_return': (total_value / self.initial_capital) - 1,
+            'number_of_trades': len(self.trading_history)
+        }
+
+# Initialize and run sentiment trading strategy
+strategy = SentimentTradingStrategy(collector, initial_capital=100000)
+
+print(f"\n" + "="*60)
+print("SENTIMENT TRADING STRATEGY EXECUTION")
+print("="*60)
+
+# Run strategy on selected symbols
+strategy_symbols = ['AAPL', 'TSLA', 'GOOGL', 'MSFT']
+strategy_results = strategy.run_strategy(strategy_symbols)
+
+# Get portfolio summary
+portfolio_summary = strategy.get_portfolio_summary()
+
+print(f"\n=== Portfolio Summary ===")
+print(f"Total Portfolio Value: ${portfolio_summary['total_value']:,.2f}")
+print(f"Cash: ${portfolio_summary['cash']:,.2f}")
+print(f"Total Return: {portfolio_summary['total_return']:.2%}")
+print(f"Number of Trades: {portfolio_summary['number_of_trades']}")
+
+print(f"\nCurrent Positions:")
+for symbol, position in portfolio_summary['positions'].items():
+    print(f"  {symbol}: {position['shares']} shares @ ${position['price']:.2f} "
+          f"(${position['value']:,.2f}, {position['weight']:.1%})")
+
+# Show recent trades
+if strategy.trading_history:
+    print(f"\nRecent Trades:")
+    for trade in strategy.trading_history[-5:]:  # Last 5 trades
+        print(f"  {trade['timestamp'].strftime('%Y-%m-%d %H:%M')} - "
+              f"{trade['action']} {trade['shares']} {trade['symbol']} @ ${trade['price']:.2f} "
+              f"(Sentiment: {trade['sentiment_score']:.3f})")
+
+# Sentiment vs Price Movement Analysis
+def analyze_sentiment_price_relationship(strategy_results):
+    """Analyze relationship between sentiment and price movements"""
+    
+    print(f"\n=== Sentiment vs Price Analysis ===")
+    
+    for symbol, results in strategy_results.items():
+        signal_data = results['signal_data']
+        
+        # Get recent price movement
+        stock = yf.Ticker(symbol)
+        recent_data = stock.history(period="5d")
+        price_change = (recent_data['Close'].iloc[-1] / recent_data['Close'].iloc[0] - 1) * 100
+        
+        sentiment_score = signal_data['sentiment_score']
+        
+        print(f"\n{symbol}:")
+        print(f"  Sentiment Score: {sentiment_score:.3f}")
+        print(f"  5-Day Price Change: {price_change:+.2f}%")
+        
+        # Simple correlation analysis
+        if sentiment_score > 0.1 and price_change > 0:
+            relationship = "Positive sentiment, positive price movement ✅"
+        elif sentiment_score < -0.1 and price_change < 0:
+            relationship = "Negative sentiment, negative price movement ✅"
+        elif abs(sentiment_score) < 0.1:
+            relationship = "Neutral sentiment, mixed signals"
+        else:
+            relationship = "Sentiment-price divergence ⚠️"
+        
+        print(f"  Relationship: {relationship}")
+
+# Analyze sentiment-price relationships
+analyze_sentiment_price_relationship(strategy_results)</code></pre>
+            </div>
+          </div>
+
+          <div class="exercise-box">
+            <h3><i class="fa fa-code"></i> Hands-On Exercise</h3>
+            <p>Build advanced sentiment analysis trading systems!</p>
+            
+            <h4>Exercise 1: Multi-Source Sentiment Aggregation</h4>
+            <p>Create a system that combines sentiment from multiple sources:</p>
+            <ul>
+              <li>Weight different sources by reliability and accuracy</li>
+              <li>Handle conflicting sentiment signals</li>
+              <li>Implement sentiment momentum and trend analysis</li>
+              <li>Add real-time sentiment alerts and notifications</li>
+            </ul>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Multi-source sentiment aggregator
+class MultiSourceSentimentAnalyzer:
+    """
+    Advanced sentiment analyzer combining multiple data sources
+    """
+    
+    def __init__(self):
+        self.sources = {}
+        self.source_weights = {}
+        self.sentiment_history = {}
+    
+    def add_sentiment_source(self, source_name, weight, reliability_score):
+        """Add a new sentiment data source"""
+        
+        # Your implementation here:
+        # 1. Register new sentiment source
+        # 2. Set source weight and reliability
+        # 3. Initialize source-specific processing
+        
+        pass
+    
+    def aggregate_multi_source_sentiment(self, symbol, time_window='1h'):
+        """Aggregate sentiment from multiple sources"""
+        
+        # Your aggregation logic:
+        # 1. Collect sentiment from all sources
+        # 2. Apply source weights and reliability scores
+        # 3. Handle conflicting signals
+        # 4. Calculate confidence intervals
+        
+        pass
+    
+    def detect_sentiment_anomalies(self, symbol):
+        """Detect unusual sentiment patterns"""
+        
+        # Your anomaly detection logic
+        pass
+
+# Implement your multi-source analyzer
+# multi_analyzer = MultiSourceSentimentAnalyzer()
+# aggregated_sentiment = multi_analyzer.aggregate_multi_source_sentiment('AAPL')</code></pre>
+            </div>
+            
+            <h4>Exercise 2: Event-Driven Sentiment Strategy</h4>
+            <p>Build a strategy that reacts to specific events and news:</p>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Event-driven sentiment strategy
+class EventDrivenSentimentStrategy:
+    """
+    Trading strategy focused on news events and sentiment spikes
+    """
+    
+    def __init__(self):
+        self.event_types = {}
+        self.event_history = {}
+        self.strategy_rules = {}
+    
+    def detect_market_events(self, symbol, sentiment_data, price_data):
+        """Detect significant market events"""
+        
+        # Your event detection logic:
+        # 1. Earnings announcements
+        # 2. News sentiment spikes
+        # 3. Unusual trading volume
+        # 4. Price gap events
+        
+        pass
+    
+    def create_event_response_rules(self):
+        """Define how to respond to different events"""
+        
+        # Your event response rules:
+        # 1. Immediate reaction strategies
+        # 2. Delayed reaction strategies  
+        # 3. Contrarian vs momentum approaches
+        # 4. Risk management for event trading
+        
+        pass
+    
+    def execute_event_strategy(self, detected_events):
+        """Execute trades based on detected events"""
+        
+        # Your execution logic
+        pass
+
+# Implement your event-driven strategy
+# event_strategy = EventDrivenSentimentStrategy()
+# events = event_strategy.detect_market_events('AAPL', sentiment_data, price_data)</code></pre>
+            </div>
+          </div>
+
+          <div class="warning-box">
+            <h4><i class="fa fa-exclamation-triangle"></i> Sentiment Analysis Limitations</h4>
+            <ul>
+              <li><strong>Data Quality:</strong> Sentiment analysis is only as good as the input data</li>
+              <li><strong>Context Sensitivity:</strong> NLP models may miss sarcasm, context, or nuance</li>
+              <li><strong>Market Efficiency:</strong> Sentiment signals may be quickly arbitraged away</li>
+              <li><strong>Overfitting:</strong> Historical sentiment patterns may not predict future behavior</li>
+              <li><strong>Data Latency:</strong> Real-time sentiment data can be expensive and delayed</li>
+              <li><strong>Regulatory Risk:</strong> Using material non-public information can be illegal</li>
+            </ul>
+          </div>
+
+          <h2>Key Takeaways</h2>
+          <p>You've mastered advanced sentiment analysis techniques for quantitative trading:</p>
+          <ul>
+            <li><strong>NLP Foundations:</strong> Text preprocessing, tokenization, and feature extraction</li>
+            <li><strong>Sentiment Models:</strong> VADER, TextBlob, and custom financial sentiment classifiers</li>
+            <li><strong>Data Collection:</strong> Real-time sentiment monitoring and aggregation systems</li>
+            <li><strong>Trading Integration:</strong> Sentiment-driven signal generation and strategy execution</li>
+            <li><strong>Multi-Source Analysis:</strong> Combining news, social media, and market sentiment</li>
+            <li><strong>Performance Analytics:</strong> Sentiment-price relationship analysis and strategy evaluation</li>
+          </ul>
+          
+          <p>Finally, we'll explore comprehensive backtesting and strategy evaluation to ensure our trading systems are robust and profitable before deploying real capital!</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-6-portfolio-optimization.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Portfolio Optimization
+          </a>
+          <a href="lesson-8-backtesting-evaluation.html" class="btn-nav btn-primary">
+            Next: Backtesting & Strategy Evaluation <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+      // Mark lesson as completed when user scrolls to bottom
+      window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+          localStorage.setItem('quant_lesson_7_completed', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>

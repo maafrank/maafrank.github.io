@@ -1,0 +1,1200 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 5: Risk Management & Position Sizing - Quantitative Trading Course</title>
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #28a745; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #28a745; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #1e7e34; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #28a745; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .code-section { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .code-example { background: #2d3748; border-radius: 10px; padding: 20px; margin: 20px 0; overflow-x: auto; }
+      .code-example pre { margin: 0; background: none !important; padding: 0 !important; }
+      .code-example code { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+      .output-box { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4299e1; }
+      .exercise-box { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .exercise-box h3 { color: #007bff; margin-bottom: 20px; }
+      .risk-info { background: #d4edda; border-left: 4px solid #28a745; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .risk-info h3 { color: #28a745; margin-bottom: 20px; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      .warning-box { background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .warning-box h4 { color: #721c24; margin-bottom: 10px; }
+      .kelly-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .kelly-box h3 { color: #856404; margin-bottom: 20px; }
+      .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+      .risk-card { background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745; }
+      .risk-card h4 { color: #28a745; margin-bottom: 15px; }
+      .var-box { background: #d1ecf1; border-left: 4px solid #0c5460; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .var-box h3 { color: #0c5460; margin-bottom: 20px; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../quant-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-shield"></i> Risk Management & Position Sizing</h1>
+          <p>Master the art of preserving capital and optimizing position sizes for maximum risk-adjusted returns</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 70-85 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Advanced Level</span>
+            <span><i class="fa fa-shield"></i> Capital Preservation</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>The Foundation of Successful Trading</h2>
+          <p>Risk management is the cornerstone of profitable trading. While finding profitable strategies is important, preserving capital and managing risk is what separates consistently profitable traders from those who blow up their accounts. This lesson will teach you sophisticated risk management techniques used by professional trading firms.</p>
+          
+          <div class="risk-info">
+            <h3><i class="fa fa-exclamation-triangle"></i> Core Risk Management Principles</h3>
+            <ul>
+              <li><strong>Capital Preservation:</strong> Never risk more than you can afford to lose</li>
+              <li><strong>Position Sizing:</strong> Adjust bet size based on edge and risk</li>
+              <li><strong>Diversification:</strong> Don't put all eggs in one basket</li>
+              <li><strong>Stop Losses:</strong> Define exit points before entering trades</li>
+              <li><strong>Risk Budget:</strong> Allocate risk across different strategies and timeframes</li>
+              <li><strong>Drawdown Management:</strong> Reduce risk during losing periods</li>
+            </ul>
+          </div>
+
+          <h2>Types of Risk in Trading</h2>
+          <p>Understanding different types of risk helps us build comprehensive risk management systems.</p>
+
+          <div class="risk-grid">
+            <div class="risk-card">
+              <h4>🎯 Market Risk</h4>
+              <p><strong>Definition:</strong> Risk from adverse price movements</p>
+              <p><strong>Management:</strong> Position sizing, stop losses, hedging</p>
+            </div>
+            
+            <div class="risk-card">
+              <h4>⚡ Liquidity Risk</h4>
+              <p><strong>Definition:</strong> Risk of not being able to exit positions</p>
+              <p><strong>Management:</strong> Trade liquid assets, limit position sizes</p>
+            </div>
+            
+            <div class="risk-card">
+              <h4>🔧 Model Risk</h4>
+              <p><strong>Definition:</strong> Risk from flawed models or assumptions</p>
+              <p><strong>Management:</strong> Backtesting, out-of-sample testing, diversification</p>
+            </div>
+            
+            <div class="risk-card">
+              <h4>⚙️ Operational Risk</h4>
+              <p><strong>Definition:</strong> Risk from system failures, errors, fraud</p>
+              <p><strong>Management:</strong> Redundancy, monitoring, controls</p>
+            </div>
+            
+            <div class="risk-card">
+              <h4>📊 Concentration Risk</h4>
+              <p><strong>Definition:</strong> Risk from over-concentration in single asset/strategy</p>
+              <p><strong>Management:</strong> Diversification, correlation analysis</p>
+            </div>
+            
+            <div class="risk-card">
+              <h4>⏰ Regime Risk</h4>
+              <p><strong>Definition:</strong> Risk from changing market conditions</p>
+              <p><strong>Management:</strong> Adaptive strategies, regime detection</p>
+            </div>
+          </div>
+
+          <h2>Setting Up Risk Management Framework</h2>
+          <p>Let's build a comprehensive risk management system with Python.</p>
+          
+          <div class="code-section">
+            <h3>🛡️ Risk Management Framework</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Comprehensive risk management framework
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# Statistical libraries
+from scipy import stats
+from scipy.optimize import minimize
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set random seed
+np.random.seed(42)
+
+print("Risk Management Framework Initialized!")
+print("Ready to build professional risk management systems")
+
+class RiskManager:
+    """
+    Comprehensive risk management system for quantitative trading
+    """
+    
+    def __init__(self, initial_capital=100000, max_portfolio_risk=0.02, max_position_risk=0.01):
+        self.initial_capital = initial_capital
+        self.current_capital = initial_capital
+        self.max_portfolio_risk = max_portfolio_risk  # 2% max portfolio risk per day
+        self.max_position_risk = max_position_risk    # 1% max risk per position
+        self.positions = {}
+        self.risk_metrics = {}
+        
+    def calculate_volatility(self, returns, window=30):
+        """Calculate rolling volatility"""
+        return returns.rolling(window=window).std() * np.sqrt(252)
+    
+    def calculate_var(self, returns, confidence_level=0.05, method='historical'):
+        """
+        Calculate Value at Risk (VaR)
+        
+        Methods:
+        - historical: Historical simulation
+        - parametric: Assumes normal distribution
+        - monte_carlo: Monte Carlo simulation
+        """
+        if method == 'historical':
+            return np.percentile(returns.dropna(), confidence_level * 100)
+        
+        elif method == 'parametric':
+            mean = returns.mean()
+            std = returns.std()
+            return stats.norm.ppf(confidence_level, mean, std)
+        
+        elif method == 'monte_carlo':
+            # Simple Monte Carlo simulation
+            mean = returns.mean()
+            std = returns.std()
+            simulated_returns = np.random.normal(mean, std, 10000)
+            return np.percentile(simulated_returns, confidence_level * 100)
+    
+    def calculate_expected_shortfall(self, returns, confidence_level=0.05):
+        """Calculate Expected Shortfall (Conditional VaR)"""
+        var = self.calculate_var(returns, confidence_level)
+        return returns[returns <= var].mean()
+    
+    def calculate_maximum_drawdown(self, returns):
+        """Calculate maximum drawdown from returns series"""
+        cumulative = (1 + returns).cumprod()
+        rolling_max = cumulative.expanding().max()
+        drawdown = (cumulative - rolling_max) / rolling_max
+        return drawdown.min()
+
+# Initialize risk manager
+risk_manager = RiskManager(initial_capital=100000)
+
+# Fetch sample data for risk analysis
+def fetch_portfolio_data(symbols, period="2y"):
+    """Fetch data for multiple assets"""
+    
+    print(f"Fetching data for {len(symbols)} assets...")
+    portfolio_data = {}
+    
+    for symbol in symbols:
+        try:
+            stock = yf.Ticker(symbol)
+            data = stock.history(period=period)
+            data['Returns'] = data['Close'].pct_change()
+            portfolio_data[symbol] = data
+            print(f"✅ {symbol}: {len(data)} days")
+        except Exception as e:
+            print(f"❌ {symbol}: {str(e)}")
+    
+    return portfolio_data
+
+# Sample portfolio
+symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'SPY']
+portfolio_data = fetch_portfolio_data(symbols)
+
+print(f"\n=== Portfolio Data Summary ===")
+print(f"Assets: {len(portfolio_data)}")
+for symbol, data in portfolio_data.items():
+    returns = data['Returns'].dropna()
+    print(f"{symbol}: {returns.mean()*252:.1%} annual return, {returns.std()*np.sqrt(252):.1%} volatility")</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Output:</strong><br>
+              Risk Management Framework Initialized!<br>
+              Fetching data for 5 assets...<br>
+              ✅ AAPL: ~500 days<br>
+              Portfolio loaded successfully
+            </div>
+          </div>
+
+          <h2>Value at Risk (VaR) Analysis</h2>
+          <p>VaR is a statistical measure that quantifies the maximum expected loss over a specific time period at a given confidence level.</p>
+
+          <div class="var-box">
+            <h3><i class="fa fa-calculator"></i> VaR Interpretation</h3>
+            <p><strong>Example:</strong> A 5% daily VaR of $10,000 means there's a 5% chance of losing more than $10,000 in a single day, or equivalently, we expect losses to exceed $10,000 on 1 out of every 20 trading days.</p>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Value at Risk analysis
+def comprehensive_var_analysis(portfolio_data, portfolio_weights=None, confidence_levels=[0.01, 0.05, 0.10]):
+    """
+    Perform comprehensive VaR analysis for portfolio
+    """
+    
+    # Equal weights if not specified
+    if portfolio_weights is None:
+        portfolio_weights = {symbol: 1/len(portfolio_data) for symbol in portfolio_data.keys()}
+    
+    # Create returns matrix
+    returns_df = pd.DataFrame()
+    for symbol, data in portfolio_data.items():
+        returns_df[symbol] = data['Returns']
+    
+    returns_df = returns_df.dropna()
+    
+    # Calculate portfolio returns
+    portfolio_returns = (returns_df * pd.Series(portfolio_weights)).sum(axis=1)
+    
+    print("=== Value at Risk Analysis ===")
+    
+    # Individual asset VaR
+    print("\nIndividual Asset VaR (Daily):")
+    print(f"{'Asset':<8} {'1% VaR':<10} {'5% VaR':<10} {'10% VaR':<10} {'Expected Shortfall':<15}")
+    print("-" * 65)
+    
+    asset_var_results = {}
+    for symbol in returns_df.columns:
+        asset_returns = returns_df[symbol]
+        var_1 = risk_manager.calculate_var(asset_returns, 0.01) * 100
+        var_5 = risk_manager.calculate_var(asset_returns, 0.05) * 100
+        var_10 = risk_manager.calculate_var(asset_returns, 0.10) * 100
+        es_5 = risk_manager.calculate_expected_shortfall(asset_returns, 0.05) * 100
+        
+        asset_var_results[symbol] = {
+            'VaR_1%': var_1, 'VaR_5%': var_5, 'VaR_10%': var_10, 'ES_5%': es_5
+        }
+        
+        print(f"{symbol:<8} {var_1:<10.2f} {var_5:<10.2f} {var_10:<10.2f} {es_5:<15.2f}")
+    
+    # Portfolio VaR
+    print(f"\nPortfolio VaR (Daily):")
+    portfolio_var_1 = risk_manager.calculate_var(portfolio_returns, 0.01) * 100
+    portfolio_var_5 = risk_manager.calculate_var(portfolio_returns, 0.05) * 100
+    portfolio_var_10 = risk_manager.calculate_var(portfolio_returns, 0.10) * 100
+    portfolio_es_5 = risk_manager.calculate_expected_shortfall(portfolio_returns, 0.05) * 100
+    
+    print(f"1% VaR: {portfolio_var_1:.2f}%")
+    print(f"5% VaR: {portfolio_var_5:.2f}%")
+    print(f"10% VaR: {portfolio_var_10:.2f}%")
+    print(f"5% Expected Shortfall: {portfolio_es_5:.2f}%")
+    
+    # VaR in dollar terms
+    capital = 100000
+    print(f"\nVaR in Dollar Terms (${capital:,} portfolio):")
+    print(f"1% VaR: ${abs(portfolio_var_1 * capital / 100):,.0f}")
+    print(f"5% VaR: ${abs(portfolio_var_5 * capital / 100):,.0f}")
+    print(f"10% VaR: ${abs(portfolio_var_10 * capital / 100):,.0f}")
+    
+    return {
+        'portfolio_returns': portfolio_returns,
+        'asset_var': asset_var_results,
+        'portfolio_var': {
+            '1%': portfolio_var_1, '5%': portfolio_var_5, '10%': portfolio_var_10, 'ES_5%': portfolio_es_5
+        }
+    }
+
+# Run VaR analysis
+var_results = comprehensive_var_analysis(portfolio_data)
+
+# Visualize VaR
+def plot_var_analysis(portfolio_returns, var_results):
+    """Plot VaR analysis results"""
+    
+    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    
+    # Returns distribution with VaR levels
+    axes[0, 0].hist(portfolio_returns * 100, bins=50, alpha=0.7, color='blue', density=True)
+    axes[0, 0].axvline(var_results['portfolio_var']['5%'], color='red', linestyle='--', 
+                      label=f"5% VaR: {var_results['portfolio_var']['5%']:.2f}%")
+    axes[0, 0].axvline(var_results['portfolio_var']['1%'], color='darkred', linestyle='--',
+                      label=f"1% VaR: {var_results['portfolio_var']['1%']:.2f}%")
+    axes[0, 0].set_title('Portfolio Returns Distribution with VaR')
+    axes[0, 0].set_xlabel('Daily Returns (%)')
+    axes[0, 0].set_ylabel('Density')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    # Rolling VaR
+    rolling_var_5 = portfolio_returns.rolling(60).apply(
+        lambda x: risk_manager.calculate_var(x, 0.05) * 100
+    )
+    
+    axes[0, 1].plot(rolling_var_5.index, rolling_var_5, color='red', linewidth=2)
+    axes[0, 1].set_title('Rolling 60-Day VaR (5%)')
+    axes[0, 1].set_ylabel('VaR (%)')
+    axes[0, 1].grid(True, alpha=0.3)
+    
+    # Drawdown analysis
+    cumulative_returns = (1 + portfolio_returns).cumprod()
+    rolling_max = cumulative_returns.expanding().max()
+    drawdown = (cumulative_returns - rolling_max) / rolling_max * 100
+    
+    axes[1, 0].fill_between(drawdown.index, drawdown, 0, alpha=0.3, color='red')
+    axes[1, 0].plot(drawdown.index, drawdown, color='red', linewidth=1)
+    axes[1, 0].set_title('Portfolio Drawdown')
+    axes[1, 0].set_ylabel('Drawdown (%)')
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    # Risk comparison by asset
+    assets = list(var_results['asset_var'].keys())
+    var_5_values = [var_results['asset_var'][asset]['VaR_5%'] for asset in assets]
+    
+    axes[1, 1].bar(assets, var_5_values, color='orange', alpha=0.7)
+    axes[1, 1].set_title('5% VaR by Asset')
+    axes[1, 1].set_ylabel('VaR (%)')
+    axes[1, 1].tick_params(axis='x', rotation=45)
+    axes[1, 1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Plot VaR analysis
+print("Creating VaR analysis visualization...")
+plot_var_analysis(var_results['portfolio_returns'], var_results)</code></pre>
+          </div>
+
+          <h2>Position Sizing Strategies</h2>
+          <p>Position sizing determines how much capital to allocate to each trade. This is often more important than the trading signals themselves.</p>
+
+          <div class="code-section">
+            <h3>📏 Position Sizing Methods</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Position sizing strategies
+class PositionSizer:
+    """
+    Advanced position sizing methods for risk management
+    """
+    
+    def __init__(self, capital, max_risk_per_trade=0.02):
+        self.capital = capital
+        self.max_risk_per_trade = max_risk_per_trade
+    
+    def fixed_dollar_amount(self, trade_signal, fixed_amount=1000):
+        """Fixed dollar amount per trade"""
+        return fixed_amount if trade_signal != 0 else 0
+    
+    def fixed_percentage(self, trade_signal, percentage=0.05):
+        """Fixed percentage of capital"""
+        return self.capital * percentage if trade_signal != 0 else 0
+    
+    def volatility_adjusted(self, trade_signal, price, volatility, target_vol=0.15):
+        """Position size adjusted for volatility targeting"""
+        if trade_signal == 0:
+            return 0
+        
+        # Calculate position to achieve target volatility
+        if volatility > 0:
+            position_size = (self.capital * target_vol) / (price * volatility)
+            return min(position_size, self.capital * self.max_risk_per_trade / price)
+        return 0
+    
+    def kelly_criterion(self, win_rate, avg_win, avg_loss):
+        """
+        Kelly Criterion for optimal position sizing
+        f* = (bp - q) / b
+        where:
+        b = odds (avg_win / avg_loss)
+        p = probability of winning
+        q = probability of losing (1-p)
+        """
+        if avg_loss <= 0 or win_rate <= 0 or win_rate >= 1:
+            return 0
+        
+        b = avg_win / abs(avg_loss)  # odds
+        p = win_rate
+        q = 1 - p
+        
+        kelly_fraction = (b * p - q) / b
+        
+        # Cap Kelly at reasonable level (usually 25% of Kelly)
+        kelly_fraction = max(0, min(kelly_fraction * 0.25, self.max_risk_per_trade))
+        
+        return kelly_fraction
+    
+    def risk_parity(self, assets_volatility, target_portfolio_vol=0.12):
+        """
+        Risk parity position sizing - equal risk contribution
+        """
+        inv_vol = 1 / assets_volatility
+        weights = inv_vol / inv_vol.sum()
+        
+        # Scale to target portfolio volatility
+        portfolio_vol = np.sqrt(np.sum((weights * assets_volatility) ** 2))
+        scaling_factor = target_portfolio_vol / portfolio_vol
+        
+        return weights * scaling_factor
+    
+    def maximum_diversification(self, expected_returns, cov_matrix):
+        """
+        Maximum diversification portfolio
+        Maximizes diversification ratio: portfolio volatility / weighted average of asset volatilities
+        """
+        n_assets = len(expected_returns)
+        
+        # Objective function: minimize negative diversification ratio
+        def objective(weights):
+            portfolio_vol = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+            avg_vol = np.sum(weights * np.sqrt(np.diag(cov_matrix)))
+            return -portfolio_vol / avg_vol  # Negative because we minimize
+        
+        # Constraints
+        constraints = {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}  # Weights sum to 1
+        bounds = tuple((0, 1) for _ in range(n_assets))  # Long-only
+        
+        # Initial guess
+        x0 = np.array([1/n_assets] * n_assets)
+        
+        # Optimize
+        result = minimize(objective, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+        
+        return result.x if result.success else x0
+
+# Initialize position sizer
+position_sizer = PositionSizer(capital=100000, max_risk_per_trade=0.02)
+
+# Demonstrate different position sizing methods
+def demonstrate_position_sizing(portfolio_data):
+    """Demonstrate various position sizing approaches"""
+    
+    print("=== Position Sizing Demonstration ===")
+    
+    # Get recent data for one asset
+    symbol = 'AAPL'
+    data = portfolio_data[symbol].dropna()
+    current_price = data['Close'].iloc[-1]
+    returns = data['Returns'].dropna()
+    volatility = returns.std() * np.sqrt(252)
+    
+    print(f"\nAsset: {symbol}")
+    print(f"Current Price: ${current_price:.2f}")
+    print(f"Annual Volatility: {volatility:.1%}")
+    
+    # 1. Fixed dollar amount
+    fixed_dollar = position_sizer.fixed_dollar_amount(1, 5000)
+    fixed_shares = fixed_dollar / current_price
+    print(f"\n1. Fixed Dollar ($5,000): {fixed_shares:.0f} shares")
+    
+    # 2. Fixed percentage
+    fixed_pct = position_sizer.fixed_percentage(1, 0.10)
+    fixed_pct_shares = fixed_pct / current_price
+    print(f"2. Fixed Percentage (10%): {fixed_pct_shares:.0f} shares (${fixed_pct:,.0f})")
+    
+    # 3. Volatility adjusted
+    vol_adj = position_sizer.volatility_adjusted(1, current_price, volatility, 0.15)
+    print(f"3. Volatility Adjusted: {vol_adj:.0f} shares (${vol_adj * current_price:,.0f})")
+    
+    # 4. Kelly Criterion (estimate from historical data)
+    # Simple win/loss analysis
+    positive_returns = returns[returns > 0]
+    negative_returns = returns[returns < 0]
+    
+    if len(positive_returns) > 0 and len(negative_returns) > 0:
+        win_rate = len(positive_returns) / len(returns)
+        avg_win = positive_returns.mean()
+        avg_loss = negative_returns.mean()
+        
+        kelly_fraction = position_sizer.kelly_criterion(win_rate, avg_win, avg_loss)
+        kelly_dollar = kelly_fraction * position_sizer.capital
+        kelly_shares = kelly_dollar / current_price
+        
+        print(f"4. Kelly Criterion: {kelly_shares:.0f} shares (${kelly_dollar:,.0f}, {kelly_fraction:.1%} of capital)")
+        print(f"   Win Rate: {win_rate:.1%}, Avg Win: {avg_win:.1%}, Avg Loss: {avg_loss:.1%}")
+    
+    return {
+        'fixed_dollar': fixed_dollar,
+        'fixed_percentage': fixed_pct,
+        'volatility_adjusted': vol_adj * current_price,
+        'kelly': kelly_dollar if 'kelly_dollar' in locals() else 0
+    }
+
+# Demonstrate position sizing
+position_sizing_results = demonstrate_position_sizing(portfolio_data)
+
+# Risk parity example
+def demonstrate_risk_parity(portfolio_data):
+    """Demonstrate risk parity position sizing"""
+    
+    print(f"\n=== Risk Parity Portfolio ===")
+    
+    # Calculate volatilities
+    volatilities = {}
+    for symbol, data in portfolio_data.items():
+        returns = data['Returns'].dropna()
+        vol = returns.std() * np.sqrt(252)
+        volatilities[symbol] = vol
+    
+    vol_series = pd.Series(volatilities)
+    rp_weights = position_sizer.risk_parity(vol_series)
+    
+    print("Risk Parity Weights:")
+    for symbol, weight in zip(vol_series.index, rp_weights):
+        print(f"{symbol}: {weight:.1%} (Vol: {vol_series[symbol]:.1%})")
+    
+    return dict(zip(vol_series.index, rp_weights))
+
+# Demonstrate risk parity
+rp_weights = demonstrate_risk_parity(portfolio_data)</code></pre>
+            </div>
+          </div>
+
+          <h2>Kelly Criterion Deep Dive</h2>
+          <p>The Kelly Criterion is a mathematical formula for determining optimal position sizes to maximize long-term growth.</p>
+
+          <div class="kelly-box">
+            <h3><i class="fa fa-calculator"></i> Kelly Criterion Formula</h3>
+            <p><strong>f* = (bp - q) / b</strong></p>
+            <ul>
+              <li><strong>f*:</strong> Optimal fraction of capital to bet</li>
+              <li><strong>b:</strong> Odds (average win / average loss)</li>
+              <li><strong>p:</strong> Probability of winning</li>
+              <li><strong>q:</strong> Probability of losing (1-p)</li>
+            </ul>
+          </div>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Advanced Kelly Criterion implementation
+class KellyOptimizer:
+    """
+    Advanced Kelly Criterion implementation with practical considerations
+    """
+    
+    def __init__(self, lookback_period=252):
+        self.lookback_period = lookback_period
+    
+    def calculate_kelly_from_returns(self, returns, method='simple'):
+        """
+        Calculate Kelly fraction from returns series
+        """
+        returns = returns.dropna()
+        
+        if method == 'simple':
+            # Simple binary win/loss approach
+            wins = returns[returns > 0]
+            losses = returns[returns < 0]
+            
+            if len(wins) == 0 or len(losses) == 0:
+                return 0
+            
+            win_rate = len(wins) / len(returns)
+            avg_win = wins.mean()
+            avg_loss = abs(losses.mean())
+            
+            if avg_loss == 0:
+                return 0
+            
+            b = avg_win / avg_loss
+            p = win_rate
+            q = 1 - p
+            
+            kelly = (b * p - q) / b
+            
+        elif method == 'continuous':
+            # Continuous Kelly for normally distributed returns
+            mean_return = returns.mean()
+            variance = returns.var()
+            
+            if variance == 0:
+                return 0
+            
+            kelly = mean_return / variance
+        
+        # Apply practical constraints
+        kelly = max(0, kelly)  # No negative Kelly
+        kelly = min(kelly, 0.25)  # Cap at 25% (common practice)
+        
+        return kelly
+    
+    def rolling_kelly(self, returns, window=60):
+        """Calculate rolling Kelly fraction"""
+        return returns.rolling(window).apply(
+            lambda x: self.calculate_kelly_from_returns(x, 'simple'), raw=False
+        )
+    
+    def fractional_kelly(self, kelly_fraction, fraction=0.25):
+        """Apply fractional Kelly (typically 1/4 Kelly)"""
+        return kelly_fraction * fraction
+    
+    def kelly_with_drawdown_control(self, returns, current_drawdown, max_drawdown=0.10):
+        """Adjust Kelly based on current drawdown"""
+        base_kelly = self.calculate_kelly_from_returns(returns)
+        
+        # Reduce position size during drawdowns
+        if abs(current_drawdown) > max_drawdown * 0.5:
+            drawdown_multiplier = max(0.1, 1 - abs(current_drawdown) / max_drawdown)
+            adjusted_kelly = base_kelly * drawdown_multiplier
+        else:
+            adjusted_kelly = base_kelly
+        
+        return adjusted_kelly
+
+# Test Kelly optimization
+kelly_optimizer = KellyOptimizer()
+
+def analyze_kelly_performance(portfolio_data):
+    """Analyze Kelly criterion performance across assets"""
+    
+    print("=== Kelly Criterion Analysis ===")
+    
+    kelly_results = {}
+    
+    for symbol, data in portfolio_data.items():
+        returns = data['Returns'].dropna()
+        
+        # Calculate different Kelly variants
+        simple_kelly = kelly_optimizer.calculate_kelly_from_returns(returns, 'simple')
+        continuous_kelly = kelly_optimizer.calculate_kelly_from_returns(returns, 'continuous')
+        fractional_kelly = kelly_optimizer.fractional_kelly(simple_kelly, 0.25)
+        
+        # Rolling Kelly
+        rolling_kelly = kelly_optimizer.rolling_kelly(returns, window=60)
+        current_rolling_kelly = rolling_kelly.iloc[-1] if not rolling_kelly.empty else 0
+        
+        kelly_results[symbol] = {
+            'simple_kelly': simple_kelly,
+            'continuous_kelly': continuous_kelly,
+            'fractional_kelly': fractional_kelly,
+            'rolling_kelly': current_rolling_kelly
+        }
+        
+        print(f"\n{symbol}:")
+        print(f"  Simple Kelly: {simple_kelly:.1%}")
+        print(f"  Continuous Kelly: {continuous_kelly:.1%}")
+        print(f"  Fractional Kelly (25%): {fractional_kelly:.1%}")
+        print(f"  Current Rolling Kelly: {current_rolling_kelly:.1%}")
+    
+    return kelly_results
+
+# Analyze Kelly performance
+kelly_results = analyze_kelly_performance(portfolio_data)
+
+# Visualize Kelly analysis
+def plot_kelly_analysis(portfolio_data, kelly_results):
+    """Plot Kelly criterion analysis"""
+    
+    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    
+    # Kelly fractions by asset
+    assets = list(kelly_results.keys())
+    simple_kelly_values = [kelly_results[asset]['simple_kelly'] * 100 for asset in assets]
+    fractional_kelly_values = [kelly_results[asset]['fractional_kelly'] * 100 for asset in assets]
+    
+    x = np.arange(len(assets))
+    width = 0.35
+    
+    axes[0, 0].bar(x - width/2, simple_kelly_values, width, label='Full Kelly', alpha=0.8)
+    axes[0, 0].bar(x + width/2, fractional_kelly_values, width, label='Fractional Kelly', alpha=0.8)
+    axes[0, 0].set_title('Kelly Fractions by Asset')
+    axes[0, 0].set_ylabel('Kelly Fraction (%)')
+    axes[0, 0].set_xticks(x)
+    axes[0, 0].set_xticklabels(assets)
+    axes[0, 0].legend()
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    # Rolling Kelly for one asset
+    symbol = assets[0]
+    data = portfolio_data[symbol]
+    rolling_kelly = kelly_optimizer.rolling_kelly(data['Returns'], window=60) * 100
+    
+    axes[0, 1].plot(rolling_kelly.index, rolling_kelly, linewidth=2, color='blue')
+    axes[0, 1].set_title(f'Rolling Kelly Fraction - {symbol}')
+    axes[0, 1].set_ylabel('Kelly Fraction (%)')
+    axes[0, 1].grid(True, alpha=0.3)
+    
+    # Risk vs Kelly relationship
+    for i, symbol in enumerate(assets):
+        returns = portfolio_data[symbol]['Returns'].dropna()
+        volatility = returns.std() * np.sqrt(252) * 100
+        kelly_frac = kelly_results[symbol]['simple_kelly'] * 100
+        
+        axes[1, 0].scatter(volatility, kelly_frac, s=100, alpha=0.7, label=symbol)
+    
+    axes[1, 0].set_title('Volatility vs Kelly Fraction')
+    axes[1, 0].set_xlabel('Annualized Volatility (%)')
+    axes[1, 0].set_ylabel('Kelly Fraction (%)')
+    axes[1, 0].legend()
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    # Return vs Kelly relationship
+    for i, symbol in enumerate(assets):
+        returns = portfolio_data[symbol]['Returns'].dropna()
+        annual_return = returns.mean() * 252 * 100
+        kelly_frac = kelly_results[symbol]['simple_kelly'] * 100
+        
+        axes[1, 1].scatter(annual_return, kelly_frac, s=100, alpha=0.7, label=symbol)
+    
+    axes[1, 1].set_title('Annual Return vs Kelly Fraction')
+    axes[1, 1].set_xlabel('Annualized Return (%)')
+    axes[1, 1].set_ylabel('Kelly Fraction (%)')
+    axes[1, 1].legend()
+    axes[1, 1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Plot Kelly analysis
+print("Creating Kelly criterion analysis...")
+plot_kelly_analysis(portfolio_data, kelly_results)</code></pre>
+          </div>
+
+          <h2>Dynamic Risk Management</h2>
+          <p>Advanced risk management systems adapt to changing market conditions and portfolio performance.</p>
+
+          <div class="code-section">
+            <h3>🔄 Adaptive Risk Management</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Dynamic risk management system
+class DynamicRiskManager:
+    """
+    Advanced risk management with adaptive position sizing and regime detection
+    """
+    
+    def __init__(self, initial_capital=100000, base_risk=0.02):
+        self.initial_capital = initial_capital
+        self.current_capital = initial_capital
+        self.base_risk = base_risk
+        self.risk_multiplier = 1.0
+        self.max_risk_multiplier = 2.0
+        self.min_risk_multiplier = 0.1
+        
+        # Performance tracking
+        self.equity_curve = []
+        self.drawdown_periods = []
+        self.risk_adjustments = []
+    
+    def detect_market_regime(self, returns, volatility_threshold=0.25, trend_threshold=0.05):
+        """
+        Detect market regime: trending vs ranging, high vs low volatility
+        """
+        recent_returns = returns.tail(60)  # Last 3 months
+        
+        # Volatility regime
+        current_vol = recent_returns.std() * np.sqrt(252)
+        vol_regime = 'high_vol' if current_vol > volatility_threshold else 'low_vol'
+        
+        # Trend regime
+        cumulative_return = (1 + recent_returns).prod() - 1
+        trend_regime = 'trending' if abs(cumulative_return) > trend_threshold else 'ranging'
+        
+        return {
+            'volatility_regime': vol_regime,
+            'trend_regime': trend_regime,
+            'current_volatility': current_vol,
+            'recent_performance': cumulative_return
+        }
+    
+    def calculate_dynamic_position_size(self, signal_strength, price, returns, 
+                                      current_drawdown=0, regime_info=None):
+        """
+        Calculate position size with dynamic adjustments
+        """
+        
+        base_position_value = self.current_capital * self.base_risk * signal_strength
+        
+        # 1. Drawdown adjustment
+        if abs(current_drawdown) > 0.05:  # 5% drawdown threshold
+            drawdown_multiplier = max(0.2, 1 - abs(current_drawdown) * 2)
+        else:
+            drawdown_multiplier = 1.0
+        
+        # 2. Volatility adjustment
+        if regime_info:
+            if regime_info['volatility_regime'] == 'high_vol':
+                vol_multiplier = 0.5  # Reduce size in high vol
+            else:
+                vol_multiplier = 1.2  # Increase size in low vol
+        else:
+            vol_multiplier = 1.0
+        
+        # 3. Performance-based adjustment
+        recent_performance = regime_info['recent_performance'] if regime_info else 0
+        if recent_performance > 0.1:  # Good recent performance
+            performance_multiplier = min(1.5, 1 + recent_performance)
+        elif recent_performance < -0.1:  # Poor recent performance
+            performance_multiplier = max(0.3, 1 + recent_performance)
+        else:
+            performance_multiplier = 1.0
+        
+        # 4. Trend strength adjustment
+        if regime_info and regime_info['trend_regime'] == 'trending':
+            trend_multiplier = 1.3
+        else:
+            trend_multiplier = 0.8
+        
+        # Combine all adjustments
+        total_multiplier = (drawdown_multiplier * vol_multiplier * 
+                          performance_multiplier * trend_multiplier)
+        
+        # Cap the multiplier
+        total_multiplier = max(self.min_risk_multiplier, 
+                             min(self.max_risk_multiplier, total_multiplier))
+        
+        final_position_value = base_position_value * total_multiplier
+        position_shares = final_position_value / price
+        
+        # Store adjustment info
+        self.risk_adjustments.append({
+            'drawdown_mult': drawdown_multiplier,
+            'vol_mult': vol_multiplier,
+            'perf_mult': performance_multiplier,
+            'trend_mult': trend_multiplier,
+            'total_mult': total_multiplier
+        })
+        
+        return position_shares, final_position_value, total_multiplier
+    
+    def update_risk_budget(self, portfolio_performance, market_conditions):
+        """
+        Update overall risk budget based on performance and conditions
+        """
+        
+        # Base risk adjustment based on recent performance
+        if portfolio_performance > 0.05:  # Good performance
+            self.risk_multiplier = min(self.max_risk_multiplier, self.risk_multiplier * 1.1)
+        elif portfolio_performance < -0.05:  # Poor performance
+            self.risk_multiplier = max(self.min_risk_multiplier, self.risk_multiplier * 0.9)
+        
+        # Market condition adjustments
+        if market_conditions.get('volatility_regime') == 'high_vol':
+            self.risk_multiplier *= 0.8
+        
+        return self.risk_multiplier
+
+# Demonstrate dynamic risk management
+def demonstrate_dynamic_risk_management(portfolio_data):
+    """Demonstrate dynamic risk management system"""
+    
+    print("=== Dynamic Risk Management Demonstration ===")
+    
+    # Initialize dynamic risk manager
+    dynamic_rm = DynamicRiskManager(initial_capital=100000, base_risk=0.02)
+    
+    # Use AAPL data for demonstration
+    symbol = 'AAPL'
+    data = portfolio_data[symbol].dropna()
+    returns = data['Returns']
+    
+    # Simulate different market conditions
+    scenarios = [
+        {'drawdown': 0.0, 'signal_strength': 1.0, 'description': 'Normal conditions'},
+        {'drawdown': -0.08, 'signal_strength': 1.0, 'description': '8% drawdown'},
+        {'drawdown': -0.15, 'signal_strength': 1.0, 'description': '15% drawdown'},
+        {'drawdown': 0.0, 'signal_strength': 0.5, 'description': 'Weak signal'},
+        {'drawdown': 0.0, 'signal_strength': 1.5, 'description': 'Strong signal'}
+    ]
+    
+    current_price = data['Close'].iloc[-1]
+    regime_info = dynamic_rm.detect_market_regime(returns)
+    
+    print(f"\nCurrent Market Regime:")
+    print(f"  Volatility: {regime_info['volatility_regime']}")
+    print(f"  Trend: {regime_info['trend_regime']}")
+    print(f"  Current Vol: {regime_info['current_volatility']:.1%}")
+    print(f"  Recent Performance: {regime_info['recent_performance']:.1%}")
+    
+    print(f"\nPosition Sizing Scenarios (${current_price:.2f} per share):")
+    print(f"{'Scenario':<20} {'Shares':<8} {'Value':<12} {'Risk Mult':<10}")
+    print("-" * 55)
+    
+    for scenario in scenarios:
+        shares, value, mult = dynamic_rm.calculate_dynamic_position_size(
+            signal_strength=scenario['signal_strength'],
+            price=current_price,
+            returns=returns,
+            current_drawdown=scenario['drawdown'],
+            regime_info=regime_info
+        )
+        
+        print(f"{scenario['description']:<20} {shares:<8.0f} ${value:<11,.0f} {mult:<10.2f}")
+    
+    return dynamic_rm
+
+# Demonstrate dynamic risk management
+dynamic_rm = demonstrate_dynamic_risk_management(portfolio_data)
+
+# Risk monitoring dashboard
+def create_risk_monitoring_dashboard(portfolio_data, risk_manager):
+    """Create comprehensive risk monitoring dashboard"""
+    
+    fig = make_subplots(
+        rows=3, cols=2,
+        subplot_titles=(
+            'Portfolio Value & Drawdown',
+            'Rolling VaR (5%)',
+            'Risk-Adjusted Returns',
+            'Position Size History',
+            'Risk Multiplier Evolution',
+            'Regime Detection'
+        ),
+        vertical_spacing=0.12
+    )
+    
+    # Sample data for demonstration
+    symbol = 'AAPL'
+    data = portfolio_data[symbol].tail(252)
+    returns = data['Returns']
+    
+    # Portfolio simulation
+    cumulative_returns = (1 + returns).cumprod()
+    portfolio_value = cumulative_returns * 100000
+    
+    # Drawdown calculation
+    rolling_max = portfolio_value.expanding().max()
+    drawdown = (portfolio_value - rolling_max) / rolling_max
+    
+    # 1. Portfolio value and drawdown
+    fig.add_trace(go.Scatter(
+        x=data.index, y=portfolio_value,
+        line=dict(color='blue', width=2), name='Portfolio Value'
+    ), row=1, col=1)
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=drawdown * 100,
+        fill='tonexty', fillcolor='rgba(255,0,0,0.3)',
+        line=dict(color='red', width=1), name='Drawdown %'
+    ), row=1, col=2)
+    
+    # 2. Rolling VaR
+    rolling_var = returns.rolling(30).apply(
+        lambda x: risk_manager.calculate_var(x, 0.05) * 100
+    )
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=rolling_var,
+        line=dict(color='orange', width=2), name='30-Day VaR'
+    ), row=1, col=2)
+    
+    # 3. Risk-adjusted returns (Sharpe ratio)
+    rolling_sharpe = (returns.rolling(60).mean() / returns.rolling(60).std()) * np.sqrt(252)
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=rolling_sharpe,
+        line=dict(color='green', width=2), name='60-Day Sharpe'
+    ), row=2, col=1)
+    
+    # 4. Simulated position sizes
+    position_sizes = []
+    for i in range(len(data)):
+        regime = dynamic_rm.detect_market_regime(returns.iloc[:i+60] if i >= 60 else returns.iloc[:i+1])
+        current_dd = drawdown.iloc[i]
+        shares, _, mult = dynamic_rm.calculate_dynamic_position_size(
+            1.0, data['Close'].iloc[i], returns.iloc[:i+1], current_dd, regime
+        )
+        position_sizes.append(shares)
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=position_sizes,
+        line=dict(color='purple', width=2), name='Position Size'
+    ), row=2, col=2)
+    
+    # 5. Risk multiplier evolution
+    risk_multipliers = [adj['total_mult'] for adj in dynamic_rm.risk_adjustments[-len(data):]]
+    if len(risk_multipliers) < len(data):
+        risk_multipliers = [1.0] * (len(data) - len(risk_multipliers)) + risk_multipliers
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=risk_multipliers,
+        line=dict(color='red', width=2), name='Risk Multiplier'
+    ), row=3, col=1)
+    
+    # 6. Volatility regime
+    vol_regimes = []
+    for i in range(len(data)):
+        regime = dynamic_rm.detect_market_regime(returns.iloc[:i+60] if i >= 60 else returns.iloc[:i+1])
+        vol_regimes.append(1 if regime['volatility_regime'] == 'high_vol' else 0)
+    
+    fig.add_trace(go.Scatter(
+        x=data.index, y=vol_regimes,
+        mode='markers', marker=dict(size=4, color='orange'),
+        name='High Vol Regime (1=High, 0=Low)'
+    ), row=3, col=2)
+    
+    fig.update_layout(
+        title='Risk Management Dashboard',
+        height=900,
+        showlegend=False
+    )
+    
+    fig.show()
+
+# Create risk monitoring dashboard
+print("Creating risk monitoring dashboard...")
+create_risk_monitoring_dashboard(portfolio_data, risk_manager)</code></pre>
+            </div>
+          </div>
+
+          <div class="exercise-box">
+            <h3><i class="fa fa-code"></i> Hands-On Exercise</h3>
+            <p>Build your own comprehensive risk management system!</p>
+            
+            <h4>Exercise 1: Portfolio Risk Monitor</h4>
+            <p>Create a real-time portfolio risk monitoring system:</p>
+            <ul>
+              <li>Calculate portfolio VaR across multiple time horizons</li>
+              <li>Implement correlation-based risk measures</li>
+              <li>Add stress testing scenarios</li>
+              <li>Create risk alerts and notifications</li>
+            </ul>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Your portfolio risk monitor
+class PortfolioRiskMonitor:
+    """
+    Real-time portfolio risk monitoring system
+    """
+    
+    def __init__(self, portfolio_weights, alert_thresholds):
+        self.portfolio_weights = portfolio_weights
+        self.alert_thresholds = alert_thresholds
+        self.alerts = []
+    
+    def calculate_portfolio_metrics(self, returns_data):
+        """Calculate comprehensive portfolio risk metrics"""
+        
+        # Your implementation here:
+        # 1. Portfolio VaR across multiple horizons
+        # 2. Component VaR (risk contribution by asset)
+        # 3. Correlation analysis
+        # 4. Concentration risk measures
+        # 5. Stress test scenarios
+        
+        pass
+    
+    def generate_risk_alerts(self, current_metrics):
+        """Generate risk alerts based on thresholds"""
+        
+        # Your alert logic here
+        pass
+    
+    def create_risk_report(self):
+        """Generate comprehensive risk report"""
+        
+        # Your reporting logic here
+        pass
+
+# Implement your risk monitor
+# risk_monitor = PortfolioRiskMonitor(weights, thresholds)
+# risk_report = risk_monitor.create_risk_report()</code></pre>
+            </div>
+            
+            <h4>Exercise 2: Adaptive Position Sizing Strategy</h4>
+            <p>Build an adaptive position sizing system:</p>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Adaptive position sizing strategy
+class AdaptivePositionSizer:
+    """
+    Advanced position sizing with machine learning
+    """
+    
+    def __init__(self):
+        self.model = None
+        self.features = []
+        self.position_history = []
+    
+    def extract_features(self, market_data, portfolio_state):
+        """Extract features for position sizing model"""
+        
+        # Your feature engineering here:
+        # 1. Market volatility features
+        # 2. Portfolio performance features  
+        # 3. Risk regime features
+        # 4. Signal strength features
+        
+        pass
+    
+    def train_sizing_model(self, historical_data, outcomes):
+        """Train ML model for optimal position sizing"""
+        
+        # Your ML training here
+        pass
+    
+    def predict_optimal_size(self, current_features):
+        """Predict optimal position size"""
+        
+        # Your prediction logic here
+        pass
+
+# Implement your adaptive sizer
+# adaptive_sizer = AdaptivePositionSizer()
+# optimal_size = adaptive_sizer.predict_optimal_size(features)</code></pre>
+            </div>
+          </div>
+
+          <div class="warning-box">
+            <h4><i class="fa fa-exclamation-triangle"></i> Risk Management Best Practices</h4>
+            <ul>
+              <li><strong>Never risk more than 1-2% per trade:</strong> Preserve capital for long-term success</li>
+              <li><strong>Diversify across strategies and assets:</strong> Don't concentrate risk</li>
+              <li><strong>Use stop losses religiously:</strong> Cut losses short, let winners run</li>
+              <li><strong>Monitor correlations:</strong> Diversification can disappear in crisis</li>
+              <li><strong>Stress test regularly:</strong> Prepare for extreme scenarios</li>
+              <li><strong>Keep detailed records:</strong> Learn from both wins and losses</li>
+            </ul>
+          </div>
+
+          <h2>Key Takeaways</h2>
+          <p>You've mastered professional-grade risk management and position sizing techniques:</p>
+          <ul>
+            <li><strong>Risk Measurement:</strong> VaR, Expected Shortfall, and drawdown analysis</li>
+            <li><strong>Position Sizing:</strong> Kelly Criterion, risk parity, and volatility targeting</li>
+            <li><strong>Dynamic Adaptation:</strong> Regime-aware risk management systems</li>
+            <li><strong>Portfolio Risk:</strong> Correlation analysis and diversification techniques</li>
+            <li><strong>Practical Implementation:</strong> Real-world constraints and monitoring systems</li>
+            <li><strong>Professional Tools:</strong> Industry-standard risk management frameworks</li>
+          </ul>
+          
+          <p>Next, we'll explore portfolio optimization techniques to build diversified, risk-efficient portfolios that maximize returns for a given level of risk!</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-4-momentum-strategy.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: Momentum Strategy
+          </a>
+          <a href="lesson-6-portfolio-optimization.html" class="btn-nav btn-primary">
+            Next: Portfolio Optimization <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+      // Mark lesson as completed when user scrolls to bottom
+      window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+          localStorage.setItem('quant_lesson_5_completed', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>
