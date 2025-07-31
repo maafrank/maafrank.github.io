@@ -923,25 +923,75 @@
                     fetchProgress.style.width = '60%';
                     this.addFetchLogEntry('✓ API response received, processing stock data...', 'success');
                     
+                    // Debug: Log the actual response structure
+                    console.log('Full API Response:', data);
+                    this.addFetchLogEntry(`🔍 API Response Keys: ${Object.keys(data).join(', ')}`, 'info');
+                    
+                    if (data.status === 'OK' || data.status === 'DELAYED') {
+                        this.addFetchLogEntry(`📊 API Status: ${data.status} - Results count: ${data.results?.length || 0}`, 'info');
+                    }
+                    
                     if (data.results && Array.isArray(data.results)) {
                         let processedCount = 0;
                         
                         data.results.forEach((result, index) => {
-                            const ticker = result.ticker;
+                            // Debug: Log first few results to understand structure
+                            if (index < 3) {
+                                console.log(`Stock ${index} structure:`, result);
+                                this.addFetchLogEntry(`🔍 ${result.ticker || result.T || 'Unknown'} structure: ${Object.keys(result).join(', ')}`, 'info');
+                            }
+                            
+                            const ticker = result.ticker || result.T; // Handle different response formats
                             const stockInfo = TOP_STOCKS.find(stock => stock.symbol === ticker);
                             
-                            if (stockInfo && result.session) {
-                                const session = result.session;
-                                const price = session.close || session.price;
-                                const open = session.open;
-                                const high = session.high;
-                                const low = session.low;
-                                const volume = session.volume;
-                                const previousClose = session.previous_close;
+                            if (stockInfo && (result.session || result.prevDay || result.day)) {
+                                // Handle different API response formats
+                                let session, price, open, high, low, volume, previousClose;
+                                
+                                if (result.session) {
+                                    // New snapshot API format
+                                    session = result.session;
+                                    price = session.close || session.price;
+                                    open = session.open;
+                                    high = session.high;
+                                    low = session.low;
+                                    volume = session.volume;
+                                    previousClose = session.previous_close;
+                                } else if (result.prevDay) {
+                                    // Alternative format with prevDay
+                                    const prevDay = result.prevDay;
+                                    const lastQuote = result.lastQuote || {};
+                                    price = lastQuote.p || prevDay.c;
+                                    open = prevDay.o;
+                                    high = prevDay.h;
+                                    low = prevDay.l;
+                                    volume = prevDay.v;
+                                    previousClose = prevDay.c;
+                                } else if (result.day) {
+                                    // Another alternative format
+                                    const day = result.day;
+                                    price = day.c;
+                                    open = day.o;
+                                    high = day.h;
+                                    low = day.l;
+                                    volume = day.v;
+                                    previousClose = day.c; // May need adjustment
+                                }
+                                
+                                // Log the extracted data for debugging
+                                if (index < 3) {
+                                    this.addFetchLogEntry(`📈 ${ticker} data: Price=${price}, Open=${open}, High=${high}, Low=${low}, Vol=${volume}`, 'info');
+                                }
+                                
+                                // Validate that we have the required data
+                                if (!price || !open || !high || !low || !volume) {
+                                    this.addFetchLogEntry(`⚠️ ${ticker}: Missing required price data (price=${price}, open=${open}, high=${high}, low=${low}, vol=${volume})`, 'info');
+                                    return; // Skip this stock
+                                }
                                 
                                 // Calculate change from previous close (more accurate than open)
-                                const change = price - previousClose;
-                                const changePercent = ((change / previousClose) * 100);
+                                const change = price - (previousClose || open);
+                                const changePercent = ((change / (previousClose || open)) * 100);
                                 
                                 // Calculate technical indicators
                                 const technical = this.calculateTechnicalIndicators({
@@ -979,7 +1029,16 @@
                         this.addFetchLogEntry(`⚡ Performance: 25 stocks fetched with 1 API call instead of 25 separate calls`, 'success');
                         
                     } else {
-                        throw new Error('Invalid API response format');
+                        // More detailed error information
+                        const errorMsg = data.error ? `API Error: ${data.error}` : 'Invalid API response format';
+                        this.addFetchLogEntry(`❌ API Response Issue: ${errorMsg}`, 'info');
+                        this.addFetchLogEntry(`📋 Response keys available: ${Object.keys(data).join(', ')}`, 'info');
+                        
+                        if (data.status && data.status !== 'OK' && data.status !== 'DELAYED') {
+                            this.addFetchLogEntry(`📊 API Status: ${data.status}`, 'info');
+                        }
+                        
+                        throw new Error(errorMsg);
                     }
                     
                 } catch (error) {
@@ -1197,14 +1256,43 @@ Respond in JSON format:
                 `;
                 
                 try {
-                    // Extract JSON from response
-                    const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+                    // Debug: Log AI response for troubleshooting
+                    console.log('Raw AI Response:', analysisText);
+                    
+                    // Try multiple JSON extraction methods
+                    let jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+                    
+                    if (!jsonMatch) {
+                        // Try alternative JSON patterns
+                        jsonMatch = analysisText.match(/```json\n([\s\S]*?)\n```/);
+                        if (jsonMatch) jsonMatch[0] = jsonMatch[1];
+                    }
+                    
+                    if (!jsonMatch) {
+                        // Try finding JSON within markdown code blocks
+                        jsonMatch = analysisText.match(/```([\s\S]*?)```/);
+                        if (jsonMatch) jsonMatch[0] = jsonMatch[1];
+                    }
+                    
                     if (jsonMatch) {
-                        analysis = JSON.parse(jsonMatch[0]);
+                        // Clean the JSON string
+                        let jsonString = jsonMatch[0].trim();
+                        
+                        // Remove any markdown formatting
+                        jsonString = jsonString.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+                        
+                        console.log('Extracted JSON string:', jsonString);
+                        
+                        analysis = JSON.parse(jsonString);
+                        
+                        // Validate the analysis structure
+                        if (!analysis.predictions || !Array.isArray(analysis.predictions)) {
+                            throw new Error('Invalid analysis structure: missing predictions array');
+                        }
                         
                         // Add parsed analysis summary
                         aiReasoning.innerHTML += `
-                            <h5>Parsed Analysis Results:</h5>
+                            <h5>✅ Parsed Analysis Results:</h5>
                             <p><strong>Top Pick:</strong> ${analysis.topPick}</p>
                             <p><strong>Market Outlook:</strong> ${analysis.marketOutlook}</p>
                             <p><strong>Total Predictions:</strong> ${analysis.predictions.length} stocks analyzed</p>
@@ -1214,12 +1302,19 @@ Respond in JSON format:
                     }
                 } catch (parseError) {
                     console.error('Failed to parse AI response:', parseError);
+                    console.error('AI Response Text:', analysisText);
+                    
                     // Fallback: create basic analysis
                     analysis = this.createFallbackAnalysis(stockDataArray);
                     
                     aiReasoning.innerHTML += `
-                        <h5>Fallback Analysis Used:</h5>
-                        <p>AI response parsing failed, using technical analysis fallback algorithm.</p>
+                        <h5>⚠️ Fallback Analysis Used:</h5>
+                        <p>AI response parsing failed: ${parseError.message}</p>
+                        <p>Using technical analysis fallback algorithm instead.</p>
+                        <details>
+                            <summary>Click to see raw AI response</summary>
+                            <pre style="font-size: 0.7rem; max-height: 200px; overflow-y: auto;">${analysisText}</pre>
+                        </details>
                     `;
                 }
                 
