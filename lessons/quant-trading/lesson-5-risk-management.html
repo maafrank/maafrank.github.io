@@ -69,6 +69,15 @@
           <h2>The Foundation of Successful Trading</h2>
           <p>Risk management is the cornerstone of profitable trading. While finding profitable strategies is important, preserving capital and managing risk is what separates consistently profitable traders from those who blow up their accounts. This lesson will teach you sophisticated risk management techniques used by professional trading firms.</p>
           
+          <div class="exercise-box">
+            <h3><i class="fa fa-university"></i> Why Risk Management Is Everything in Professional Trading</h3>
+            <p><strong>The Asymmetry of Returns:</strong> A 50% loss requires a 100% gain to break even. This mathematical reality means that preserving capital during bad periods is more important than maximizing gains during good periods. Professional traders focus on "not losing money" rather than "making money" because survival leads to long-term profitability.</p>
+            
+            <p><strong>Institutional Reality:</strong> Hedge funds and proprietary trading firms have strict risk limits because their investors don't tolerate large drawdowns. A fund that loses 20% in a month will lose clients, even if it recovers. Risk management isn't academic - it's about business survival and career preservation.</p>
+            
+            <p><strong>Leverage and Ruin:</strong> Many promising trading strategies fail not because they're unprofitable, but because they're overleveraged. Without proper position sizing, even a 60% win rate strategy can lead to ruin if the losing trades are too large. Risk management transforms good strategies into great ones by optimizing the bet size.</p>
+          </div>
+          
           <div class="risk-info">
             <h3><i class="fa fa-exclamation-triangle"></i> Core Risk Management Principles</h3>
             <ul>
@@ -83,6 +92,17 @@
 
           <h2>Types of Risk in Trading</h2>
           <p>Understanding different types of risk helps us build comprehensive risk management systems.</p>
+          
+          <div class="risk-info">
+            <h3><i class="fa fa-search"></i> The Hidden Risks That Destroy Trading Accounts</h3>
+            <p><strong>Market Risk:</strong> This is what most people think of as "trading risk" - the chance that prices move against you. But it's actually the most manageable risk because it's visible and measurable. Professional firms spend more time worrying about the other risks.</p>
+            
+            <p><strong>Model Risk:</strong> Your backtests look great, but what if your model is wrong? What if market conditions change? Renaissance Technologies addresses this by running hundreds of different models and constantly updating them. Never rely on a single model or timeframe.</p>
+            
+            <p><strong>Regime Risk:</strong> Markets shift between trending and mean-reverting regimes, high and low volatility periods, risk-on and risk-off environments. A momentum strategy that works in trending markets can destroy capital during sideways periods. Professional traders constantly monitor regime changes.</p>
+            
+            <p><strong>Operational Risk:</strong> The most overlooked but potentially devastating risk. System failures, data errors, connectivity issues, and human mistakes have caused more trading disasters than market moves. Redundancy and monitoring are essential.</p>
+          </div>
 
           <div class="risk-grid">
             <div class="risk-card">
@@ -124,6 +144,15 @@
 
           <h2>Setting Up Risk Management Framework</h2>
           <p>Let's build a comprehensive risk management system with Python.</p>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-calculator"></i> The Mathematics of Professional Risk Management</h3>
+            <p><strong>Portfolio Risk vs. Position Risk:</strong> Individual position risk doesn't simply add up to portfolio risk because of correlations. During market crashes, correlations increase dramatically - assets that normally move independently suddenly move together. This is why we need both position-level AND portfolio-level risk limits.</p>
+            
+            <p><strong>Volatility Scaling:</strong> We annualize volatility by multiplying by √252 because volatility scales with the square root of time in random walk models. This isn't just convention - it's fundamental to how financial risks compound over time and forms the basis for options pricing models like Black-Scholes.</p>
+            
+            <p><strong>Risk Budgeting:</strong> Professional funds allocate risk like they allocate capital. Instead of saying "invest $10,000 in Apple," they say "allocate 2% of our risk budget to Apple." This ensures that high-volatility positions don't dominate the portfolio's risk profile even if they're small in dollar terms.</p>
+          </div>
           
           <div class="code-section">
             <h3>🛡️ Risk Management Framework</h3>
@@ -246,6 +275,17 @@ for symbol, data in portfolio_data.items():
 
           <h2>Value at Risk (VaR) Analysis</h2>
           <p>VaR is a statistical measure that quantifies the maximum expected loss over a specific time period at a given confidence level.</p>
+          
+          <div class="var-box">
+            <h3><i class="fa fa-area-chart"></i> VaR: The Language of Professional Risk Management</h3>
+            <p><strong>Why Banks Use VaR:</strong> VaR translates complex portfolio risks into a single number that executives can understand: "There's a 5% chance we'll lose more than $10 million tomorrow." This common language allows risk comparison across different trading desks, asset classes, and strategies. Regulators require banks to report VaR because it standardizes risk measurement.</p>
+            
+            <p><strong>Historical vs. Parametric VaR:</strong> Historical VaR uses actual past returns, capturing real market behavior including fat tails and skewness. Parametric VaR assumes normal distributions, which underestimates crash risk but is computationally faster. Professional firms use both methods as cross-checks.</p>
+            
+            <p><strong>Expected Shortfall (ES):</strong> VaR tells you the threshold, but ES tells you the average loss when you exceed that threshold. During the 2008 crisis, many banks found their actual losses were much worse than VaR predicted because VaR doesn't measure tail risk severity. ES addresses this weakness.</p>
+            
+            <p><strong>Real-World Application:</strong> Trading desks use VaR for daily risk reporting, position sizing, and stress testing. A desk with $1M daily VaR might be limited to $100K per position to ensure diversification. VaR also drives capital allocation - higher VaR businesses require more regulatory capital.</p>
+          </div>
 
           <div class="var-box">
             <h3><i class="fa fa-calculator"></i> VaR Interpretation</h3>
