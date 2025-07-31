@@ -596,14 +596,14 @@
                 <div class="footer-info" style="margin-bottom: 20px;">
                     <h4><i class="fa fa-info-circle"></i> How It Works</h4>
                     <p>
-                        This AI-powered tool analyzes <strong>real market data</strong> for the top 10 most popular ETFs. 
+                        This AI-powered tool analyzes <strong>real market data</strong> for the top 5 most popular ETFs. 
                         The system evaluates multiple technical indicators including price momentum, volume analysis, 
                         and market trends to predict which ETFs are most likely to have a positive day.
                     </p>
                 </div>
                 
                 <button class="analysis-button" id="analyzeButton" disabled>
-                    <i class="fa fa-magic"></i> Analyze Top 10 ETFs with AI Prediction
+                    <i class="fa fa-magic"></i> Analyze Top 5 ETFs with AI Prediction
                 </button>
                 
                 <div class="loading-spinner" id="loadingSpinner">
@@ -672,18 +672,13 @@
     <script type="module">
         import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
 
-        // Top 10 most popular ETFs for analysis
+        // Top 5 most popular ETFs for analysis
         const TOP_STOCKS = [
             { symbol: 'SPY', name: 'SPDR S&P 500 ETF' },
             { symbol: 'QQQ', name: 'Invesco QQQ ETF' },
             { symbol: 'VOO', name: 'Vanguard S&P 500 ETF' },
             { symbol: 'VTI', name: 'Vanguard Total Stock Market ETF' },
-            { symbol: 'IVV', name: 'iShares Core S&P 500 ETF' },
-            { symbol: 'VEA', name: 'Vanguard FTSE Developed Markets ETF' },
-            { symbol: 'IEMG', name: 'iShares Core MSCI Emerging Markets ETF' },
-            { symbol: 'VWO', name: 'Vanguard FTSE Emerging Markets ETF' },
-            { symbol: 'AGG', name: 'iShares Core U.S. Aggregate Bond ETF' },
-            { symbol: 'BND', name: 'Vanguard Total Bond Market ETF' }
+            { symbol: 'IVV', name: 'iShares Core S&P 500 ETF' }
         ];
 
         class StockAnalyzer {
@@ -886,106 +881,78 @@
                 const fetchLog = document.getElementById('fetchLog');
                 const fetchProgress = document.getElementById('fetchProgress');
                 
-                this.addFetchLogEntry('🚀 Starting ETF data retrieval for top 10 ETFs...', 'info');
-                this.addFetchLogEntry('📊 Free tier: Using 5 parallel requests per minute to respect rate limits', 'info');
+                this.addFetchLogEntry('🚀 Starting ETF data retrieval for top 5 ETFs...', 'info');
+                this.addFetchLogEntry('⚡ Fetching all 5 ETFs in parallel (instant results!)...', 'info');
                 
-                const maxRequests = 10;
-                const batchSize = 5; // Free tier allows 5 requests per minute
-                const totalBatches = Math.ceil(maxRequests / batchSize);
+                const maxRequests = 5;
                 
-                let totalProcessed = 0;
-                
-                for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-                    const startIdx = batchIndex * batchSize;
-                    const endIdx = Math.min(startIdx + batchSize, maxRequests);
-                    const batchStocks = TOP_STOCKS.slice(startIdx, endIdx);
-                    
-                    this.addFetchLogEntry(`--- Batch ${batchIndex + 1}/${totalBatches}: Processing ${batchStocks.length} stocks in parallel ---`, 'info');
-                    
-                    // Create promises for all stocks in this batch
-                    const batchPromises = batchStocks.map(async (stock) => {
-                        try {
-                            this.addFetchLogEntry(`⏳ Requesting ${stock.symbol} (${stock.name})...`, 'info');
-                            
-                            const prevUrl = `https://api.polygon.io/v2/aggs/ticker/${stock.symbol}/prev?adjusted=true&apikey=${this.apiKey}`;
-                            const response = await fetch(prevUrl);
-                            const data = await response.json();
-                            
-                            if (data.results && data.results.length > 0) {
-                                const result = data.results[0];
-                                const price = result.c; // Close price
-                                const open = result.o; // Open price
-                                const high = result.h; // High price
-                                const low = result.l; // Low price
-                                const volume = result.v; // Volume
-                                
-                                const change = price - open;
-                                const changePercent = ((change / open) * 100);
-                                
-                                // Calculate technical indicators
-                                const technical = this.calculateTechnicalIndicators({
-                                    open, high, low, close: price, volume
-                                });
-                                
-                                this.stockData[stock.symbol] = {
-                                    symbol: stock.symbol,
-                                    name: stock.name,
-                                    price: price,
-                                    change: change,
-                                    changePercent: changePercent,
-                                    volume: volume,
-                                    high: high,
-                                    low: low,
-                                    open: open,
-                                    previousClose: price,
-                                    technical: technical
-                                };
-                                
-                                return { success: true, stock: stock.symbol, price, changePercent, rsi: technical.rsi };
-                            } else {
-                                return { success: false, stock: stock.symbol, error: 'No data available' };
-                            }
-                        } catch (error) {
-                            return { success: false, stock: stock.symbol, error: error.message };
-                        }
-                    });
-                    
-                    // Execute all requests in this batch in parallel
-                    const batchResults = await Promise.all(batchPromises);
-                    
-                    // Process results and update progress
-                    batchResults.forEach(result => {
-                        totalProcessed++;
-                        const progressPercent = (totalProcessed / maxRequests) * 100;
-                        fetchProgress.style.width = progressPercent + '%';
+                // Create promises for all ETFs at once (5 parallel requests - within free tier limit)
+                const allPromises = TOP_STOCKS.map(async (stock, index) => {
+                    try {
+                        this.addFetchLogEntry(`⏳ Requesting ${stock.symbol} (${stock.name})...`, 'info');
                         
-                        if (result.success) {
-                            this.addFetchLogEntry(`✓ ${result.stock}: $${result.price.toFixed(2)} (${result.changePercent > 0 ? '+' : ''}${result.changePercent.toFixed(2)}%) RSI: ${result.rsi.toFixed(1)}`, 'success');
+                        const prevUrl = `https://api.polygon.io/v2/aggs/ticker/${stock.symbol}/prev?adjusted=true&apikey=${this.apiKey}`;
+                        const response = await fetch(prevUrl);
+                        const data = await response.json();
+                        
+                        if (data.results && data.results.length > 0) {
+                            const result = data.results[0];
+                            const price = result.c; // Close price
+                            const open = result.o; // Open price
+                            const high = result.h; // High price
+                            const low = result.l; // Low price
+                            const volume = result.v; // Volume
+                            
+                            const change = price - open;
+                            const changePercent = ((change / open) * 100);
+                            
+                            // Calculate technical indicators
+                            const technical = this.calculateTechnicalIndicators({
+                                open, high, low, close: price, volume
+                            });
+                            
+                            this.stockData[stock.symbol] = {
+                                symbol: stock.symbol,
+                                name: stock.name,
+                                price: price,
+                                change: change,
+                                changePercent: changePercent,
+                                volume: volume,
+                                high: high,
+                                low: low,
+                                open: open,
+                                previousClose: price,
+                                technical: technical
+                            };
+                            
+                            return { success: true, stock: stock.symbol, price, changePercent, rsi: technical.rsi };
                         } else {
-                            this.addFetchLogEntry(`✗ ${result.stock}: ${result.error}`, 'info');
+                            return { success: false, stock: stock.symbol, error: 'No data available' };
                         }
-                    });
-                    
-                    const successCount = batchResults.filter(r => r.success).length;
-                    this.addFetchLogEntry(`✅ Batch ${batchIndex + 1} completed: ${successCount}/${batchResults.length} successful`, 'success');
-                    
-                    // Wait before next batch (except for the last batch)
-                    if (batchIndex < totalBatches - 1) {
-                        this.addFetchLogEntry('⏱️ Waiting 60 seconds before next batch (rate limit compliance)...', 'info');
-                        
-                        // Countdown timer for user feedback
-                        for (let countdown = 60; countdown > 0; countdown--) {
-                            const countdownEntry = document.querySelector('.fetch-log-entry:last-child');
-                            if (countdownEntry && countdownEntry.textContent.includes('Waiting')) {
-                                countdownEntry.textContent = `[${new Date().toLocaleTimeString()}] ⏱️ Next batch in ${countdown} seconds (rate limit: 5 requests/minute)`;
-                            }
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                        }
+                    } catch (error) {
+                        return { success: false, stock: stock.symbol, error: error.message };
                     }
-                }
+                });
                 
-                this.addFetchLogEntry(`🎉 Completed: Retrieved data for ${Object.keys(this.stockData).length} ETFs using optimized batching`, 'success');
-                this.addFetchLogEntry(`⚡ Processed ${totalProcessed} ETFs in ${totalBatches} parallel batches`, 'success');
+                // Execute all 5 requests in parallel
+                this.addFetchLogEntry('📡 All 5 API requests sent simultaneously...', 'info');
+                const results = await Promise.all(allPromises);
+                
+                // Process results and update progress
+                results.forEach((result, index) => {
+                    const progressPercent = ((index + 1) / maxRequests) * 100;
+                    fetchProgress.style.width = progressPercent + '%';
+                    
+                    if (result.success) {
+                        this.addFetchLogEntry(`✓ ${result.stock}: $${result.price.toFixed(2)} (${result.changePercent > 0 ? '+' : ''}${result.changePercent.toFixed(2)}%) RSI: ${result.rsi.toFixed(1)}`, 'success');
+                    } else {
+                        this.addFetchLogEntry(`✗ ${result.stock}: ${result.error}`, 'info');
+                    }
+                });
+                
+                const successCount = results.filter(r => r.success).length;
+                this.addFetchLogEntry(`🎉 Completed: Retrieved data for ${successCount} ETFs in parallel (~2 seconds!)`, 'success');
+                this.addFetchLogEntry(`⚡ No waiting required - all within free tier rate limit`, 'success');
             }
             
             async fetchStockDataFallback() {
@@ -1146,7 +1113,7 @@
     - Gap: ${tech.gapPercent.toFixed(2)}%`;
                 }).join('\n\n');
                 
-                const prompt = `As an expert ETF analyst, analyze these 10 popular ETFs and predict which is most likely to have a positive day. Use the comprehensive technical analysis data provided.
+                const prompt = `As an expert ETF analyst, analyze these 5 popular ETFs and predict which is most likely to have a positive day. Use the comprehensive technical analysis data provided.
 
 ETF DATA WITH TECHNICAL INDICATORS:
 ${marketSummary}
@@ -1398,7 +1365,7 @@ Respond in JSON format:
     - Gap: ${tech.gapPercent.toFixed(2)}%`;
                 }).join('\n\n');
                 
-                const prompt = `As an expert ETF analyst, analyze these 10 popular ETFs and predict which is most likely to have a positive day. Use the comprehensive technical analysis data provided.
+                const prompt = `As an expert ETF analyst, analyze these 5 popular ETFs and predict which is most likely to have a positive day. Use the comprehensive technical analysis data provided.
 
 ETF DATA WITH TECHNICAL INDICATORS:
 ${marketSummary}
