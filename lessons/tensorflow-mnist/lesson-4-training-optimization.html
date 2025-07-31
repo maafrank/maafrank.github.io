@@ -1,0 +1,599 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Lesson 4: Training & Optimization - TensorFlow Course</title>
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+      .lesson-container { min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px 0; }
+      .lesson-header { text-align: center; color: #333; margin-bottom: 40px; padding: 40px 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 15px; }
+      .lesson-header h1 { font-size: 2.8rem; margin-bottom: 15px; color: #ff6b35; }
+      .lesson-header .lesson-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; font-size: 1rem; color: #666; }
+      .back-link { position: absolute; top: 20px; left: 20px; color: #ff6b35; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; z-index: 10; }
+      .back-link:hover { color: #e55a2b; text-decoration: none; }
+      .lesson-content { background: white; border-radius: 15px; padding: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 30px; }
+      .lesson-content h2 { color: #ff6b35; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #f0f2f5; }
+      .lesson-content h3 { color: #333; margin: 25px 0 15px 0; }
+      .lesson-content p { line-height: 1.8; color: #555; margin-bottom: 20px; }
+      .code-section { background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 30px; border-radius: 15px; margin: 30px 0; }
+      .code-example { background: #2d3748; border-radius: 10px; padding: 20px; margin: 20px 0; overflow-x: auto; }
+      .code-example pre { margin: 0; background: none !important; padding: 0 !important; }
+      .code-example code { color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+      .output-box { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4299e1; }
+      .exercise-box { background: #e8f4fd; border-left: 4px solid #007bff; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .exercise-box h3 { color: #007bff; margin-bottom: 20px; }
+      .training-info { background: #d4edda; border-left: 4px solid #28a745; padding: 25px; border-radius: 10px; margin: 30px 0; }
+      .training-info h3 { color: #28a745; margin-bottom: 20px; }
+      .navigation-buttons { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; gap: 15px; }
+      .btn-nav { padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; }
+      .btn-primary { background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; }
+      .btn-primary:hover { color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4); }
+      .btn-secondary { background: #6c757d; color: white; }
+      .btn-secondary:hover { background: #5a6268; color: white; text-decoration: none; }
+      .tip-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      .tip-box h4 { color: #856404; margin-bottom: 10px; }
+      .progress-chart { background: #f8f9fa; border: 2px solid #dee2e6; padding: 20px; border-radius: 10px; margin: 20px 0; }
+    </style>
+  </head>
+  
+  <body>
+    <a href="../tensorflow-course.html" class="back-link"><i class="fa fa-arrow-left"></i> Back to Course</a>
+    
+    <div class="lesson-container">
+      <div class="container">
+        <div class="lesson-header">
+          <h1><i class="fa fa-cogs"></i> Training & Optimization</h1>
+          <p>Train your neural network and watch it learn to recognize digits</p>
+          <div class="lesson-meta">
+            <span><i class="fa fa-clock-o"></i> 50-60 minutes</span>
+            <span><i class="fa fa-bar-chart"></i> Intermediate Level</span>
+            <span><i class="fa fa-code"></i> Hands-on Training</span>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h2>The Training Process</h2>
+          <p>Training a neural network is like teaching it through examples. The network makes predictions, we tell it the correct answers, and it adjusts its internal parameters (weights and biases) to improve future predictions.</p>
+          
+          <div class="training-info">
+            <h3><i class="fa fa-info-circle"></i> Training Process Overview</h3>
+            <ol>
+              <li><strong>Forward Pass:</strong> Network makes predictions on training data</li>
+              <li><strong>Loss Calculation:</strong> Compare predictions to actual labels</li>
+              <li><strong>Backward Pass:</strong> Calculate gradients (how to adjust weights)</li>
+              <li><strong>Parameter Update:</strong> Adjust weights using optimizer</li>
+              <li><strong>Repeat:</strong> Continue until the network learns or we decide to stop</li>
+            </ol>
+          </div>
+
+          <h2>Setting Up for Training</h2>
+          <p>Let's prepare our model and data for training.</p>
+          
+          <div class="code-section">
+            <h3>🚀 Training Setup</h3>
+            <div class="code-example">
+              <pre><code class="language-python">import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+# Load and preprocess data
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+# Normalize and reshape
+x_train = x_train.astype('float32') / 255.0
+x_test = x_test.astype('float32') / 255.0
+x_train_flat = x_train.reshape(-1, 784)
+x_test_flat = x_test.reshape(-1, 784)
+
+# Create validation split
+validation_split = 0.2
+val_size = int(len(x_train_flat) * validation_split)
+
+x_val = x_train_flat[:val_size]
+y_val = y_train[:val_size]
+x_train_final = x_train_flat[val_size:]
+y_train_final = y_train[val_size:]
+
+print(f"Training samples: {len(x_train_final)}")
+print(f"Validation samples: {len(x_val)}")
+print(f"Test samples: {len(x_test_flat)}")
+
+# Build the model
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(128, activation='relu', input_shape=(784,)),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+print("Model ready for training!")</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Output:</strong><br>
+              Training samples: 48000<br>
+              Validation samples: 12000<br>
+              Test samples: 10000<br>
+              Model ready for training!
+            </div>
+          </div>
+
+          <h2>Your First Training Run</h2>
+          <p>Let's train the model and watch it learn! We'll start with a short training run to see the process.</p>
+
+          <div class="code-example">
+            <pre><code class="language-python"># Train the model for 5 epochs
+print("Starting training...")
+start_time = datetime.now()
+
+history = model.fit(
+    x_train_final, y_train_final,
+    epochs=5,
+    batch_size=32,
+    validation_data=(x_val, y_val),
+    verbose=1  # Show training progress
+)
+
+end_time = datetime.now()
+training_time = (end_time - start_time).total_seconds()
+print(f"\nTraining completed in {training_time:.2f} seconds!")
+
+# Display final metrics
+final_loss = history.history['loss'][-1]
+final_acc = history.history['accuracy'][-1]
+final_val_loss = history.history['val_loss'][-1]
+final_val_acc = history.history['val_accuracy'][-1]
+
+print(f"Final training accuracy: {final_acc:.4f}")
+print(f"Final validation accuracy: {final_val_acc:.4f}")</code></pre>
+          </div>
+
+          <h2>Understanding Training Output</h2>
+          <p>Let's decode what happens during each epoch of training.</p>
+
+          <div class="tip-box">
+            <h4><i class="fa fa-lightbulb-o"></i> Training Output Explained</h4>
+            <ul>
+              <li><strong>Epoch:</strong> One complete pass through all training data</li>
+              <li><strong>1500/1500:</strong> Number of batches processed (48,000 samples ÷ 32 batch size)</li>
+              <li><strong>loss:</strong> How wrong the model's predictions are (lower is better)</li>
+              <li><strong>accuracy:</strong> Percentage of correct predictions (higher is better)</li>
+              <li><strong>val_loss & val_accuracy:</strong> Performance on validation data (unseen during training)</li>
+            </ul>
+          </div>
+
+          <h2>Visualizing Training Progress</h2>
+          <p>Graphs help us understand how well our model is learning.</p>
+          
+          <div class="code-example">
+            <pre><code class="language-python"># Plot training history
+def plot_training_history(history):
+    """Plot training and validation metrics"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    
+    # Plot accuracy
+    ax1.plot(history.history['accuracy'], 'b-', label='Training Accuracy')
+    ax1.plot(history.history['val_accuracy'], 'r-', label='Validation Accuracy')
+    ax1.set_title('Model Accuracy')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Accuracy')
+    ax1.legend()
+    ax1.grid(True)
+    
+    # Plot loss
+    ax2.plot(history.history['loss'], 'b-', label='Training Loss')
+    ax2.plot(history.history['val_loss'], 'r-', label='Validation Loss')
+    ax2.set_title('Model Loss')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Loss')
+    ax2.legend()
+    ax2.grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Visualize our training
+plot_training_history(history)
+
+# Print improvement summary
+initial_acc = history.history['accuracy'][0]
+final_acc = history.history['accuracy'][-1]
+improvement = final_acc - initial_acc
+
+print(f"Accuracy improvement: {initial_acc:.4f} → {final_acc:.4f} (+{improvement:.4f})")
+print(f"That's a {improvement*100:.2f}% improvement!")</code></pre>
+          </div>
+
+          <h2>Testing Predictions After Training</h2>
+          <p>Let's see how our trained model performs on actual digit images.</p>
+          
+          <div class="code-example">
+            <pre><code class="language-python"># Test the trained model
+def test_model_predictions(model, x_test, y_test, num_samples=8):
+    """Test model predictions on random samples"""
+    # Select random test samples
+    test_indices = np.random.choice(len(x_test), num_samples, replace=False)
+    
+    plt.figure(figsize=(16, 8))
+    
+    for i, idx in enumerate(test_indices):
+        # Get prediction
+        image = x_test[idx:idx+1]
+        prediction = model.predict(image, verbose=0)
+        predicted_class = np.argmax(prediction[0])
+        confidence = np.max(prediction[0])
+        actual_class = y_test[idx]
+        
+        # Determine if prediction is correct
+        is_correct = predicted_class == actual_class
+        color = 'green' if is_correct else 'red'
+        
+        # Plot image
+        plt.subplot(2, num_samples, i+1)
+        plt.imshow(x_test.reshape(-1, 28, 28)[idx], cmap='gray')
+        plt.title(f'True: {actual_class}', color='black')
+        plt.axis('off')
+        
+        # Plot prediction probabilities
+        plt.subplot(2, num_samples, i+1+num_samples)
+        bars = plt.bar(range(10), prediction[0], color=['red' if j == predicted_class else 'lightblue' for j in range(10)])
+        plt.title(f'Pred: {predicted_class} ({confidence:.2f})', color=color)
+        plt.xlabel('Digit')
+        plt.ylabel('Probability')
+        plt.xticks(range(10))
+        plt.ylim(0, 1)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Test our model
+print("Testing trained model predictions:")
+test_model_predictions(model, x_test_flat, y_test)</code></pre>
+          </div>
+
+          <h2>Longer Training Session</h2>
+          <p>Let's train for more epochs to see further improvement.</p>
+          
+          <div class="code-section">
+            <h3>🏃‍♂️ Extended Training</h3>
+            <div class="code-example">
+              <pre><code class="language-python"># Train for more epochs
+print("Training for 15 more epochs...")
+
+# Continue training from where we left off
+extended_history = model.fit(
+    x_train_final, y_train_final,
+    epochs=15,
+    batch_size=32,
+    validation_data=(x_val, y_val),
+    verbose=1,
+    initial_epoch=5  # Continue from epoch 5
+)
+
+# Combine training histories
+combined_history = {
+    'accuracy': history.history['accuracy'] + extended_history.history['accuracy'],
+    'val_accuracy': history.history['val_accuracy'] + extended_history.history['val_accuracy'],
+    'loss': history.history['loss'] + extended_history.history['loss'],
+    'val_loss': history.history['val_loss'] + extended_history.history['val_loss']
+}
+
+# Create a mock history object for plotting
+class MockHistory:
+    def __init__(self, history_dict):
+        self.history = history_dict
+
+combined_mock_history = MockHistory(combined_history)
+
+# Plot the complete training history
+print("Complete training progress:")
+plot_training_history(combined_mock_history)
+
+# Evaluate on test set
+test_loss, test_accuracy = model.evaluate(x_test_flat, y_test, verbose=0)
+print(f"\nFinal Test Results:")
+print(f"Test Accuracy: {test_accuracy:.4f} ({test_accuracy*100:.2f}%)")
+print(f"Test Loss: {test_loss:.4f}")
+
+# Calculate improvement
+total_improvement = combined_history['accuracy'][-1] - combined_history['accuracy'][0]
+print(f"Total accuracy improvement: {total_improvement:.4f} ({total_improvement*100:.2f}%)")</code></pre>
+            </div>
+            
+            <div class="output-box">
+              <strong>Expected Results:</strong><br>
+              Test Accuracy: ~0.9750 (97.50%)<br>
+              Test Loss: ~0.0800<br>
+              Total improvement: ~85-90%
+            </div>
+          </div>
+
+          <h2>Understanding Optimizers</h2>
+          <p>The optimizer determines how the model updates its weights. Let's compare different optimizers.</p>
+          
+          <div class="code-example">
+            <pre><code class="language-python"># Compare different optimizers
+optimizers_to_test = {
+    'SGD': tf.keras.optimizers.SGD(learning_rate=0.01),
+    'Adam': tf.keras.optimizers.Adam(learning_rate=0.001),
+    'RMSprop': tf.keras.optimizers.RMSprop(learning_rate=0.001),
+}
+
+optimizer_results = {}
+
+for name, optimizer in optimizers_to_test.items():
+    print(f"\nTesting {name} optimizer...")
+    
+    # Create a fresh model
+    test_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(784,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(10, activation='softmax')
+    ])
+    
+    # Compile with different optimizer
+    test_model.compile(
+        optimizer=optimizer,
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    # Train for 5 epochs
+    history = test_model.fit(
+        x_train_final, y_train_final,
+        epochs=5,
+        batch_size=32,
+        validation_data=(x_val, y_val),
+        verbose=0  # Silent training
+    )
+    
+    # Store results
+    final_acc = history.history['val_accuracy'][-1]
+    optimizer_results[name] = final_acc
+    print(f"{name} final validation accuracy: {final_acc:.4f}")
+
+# Compare results
+print("\n=== OPTIMIZER COMPARISON ===")
+for name, acc in sorted(optimizer_results.items(), key=lambda x: x[1], reverse=True):
+    print(f"{name}: {acc:.4f} ({acc*100:.2f}%)")
+
+# Visualize comparison
+plt.figure(figsize=(10, 6))
+names = list(optimizer_results.keys())
+accuracies = list(optimizer_results.values())
+bars = plt.bar(names, accuracies, color=['blue', 'orange', 'green'])
+plt.title('Optimizer Comparison (5 Epochs)')
+plt.ylabel('Validation Accuracy')
+plt.ylim(0, 1)
+
+# Add value labels on bars
+for bar, acc in zip(bars, accuracies):
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+             f'{acc:.3f}', ha='center', va='bottom')
+
+plt.show()</code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4><i class="fa fa-lightbulb-o"></i> Optimizer Comparison</h4>
+            <ul>
+              <li><strong>SGD (Stochastic Gradient Descent):</strong> Simple, consistent, but can be slow</li>
+              <li><strong>Adam:</strong> Adaptive learning rates, usually fastest convergence</li>
+              <li><strong>RMSprop:</strong> Good for recurrent networks, adaptive learning rates</li>
+              <li><strong>AdaGrad:</strong> Good for sparse data, but learning rate may decay too quickly</li>
+            </ul>
+          </div>
+
+          <h2>Learning Rate and Batch Size Effects</h2>
+          <p>These hyperparameters significantly affect training performance.</p>
+          
+          <div class="code-example">
+            <pre><code class="language-python"># Test different learning rates
+learning_rates = [0.1, 0.01, 0.001, 0.0001]
+lr_results = {}
+
+print("Testing different learning rates...")
+for lr in learning_rates:
+    print(f"\nTesting learning rate: {lr}")
+    
+    # Create fresh model
+    test_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(784,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(10, activation='softmax')
+    ])
+    
+    # Compile with different learning rate
+    test_model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    # Train for 3 epochs (quick test)
+    try:
+        history = test_model.fit(
+            x_train_final, y_train_final,
+            epochs=3,
+            batch_size=32,
+            validation_data=(x_val, y_val),
+            verbose=0
+        )
+        
+        final_acc = history.history['val_accuracy'][-1]
+        lr_results[lr] = final_acc
+        print(f"Learning rate {lr}: {final_acc:.4f}")
+        
+    except Exception as e:
+        print(f"Learning rate {lr}: Failed - {str(e)}")
+        lr_results[lr] = 0.0
+
+# Visualize learning rate effects
+plt.figure(figsize=(10, 6))
+lrs = list(lr_results.keys())
+accs = list(lr_results.values())
+
+plt.semilogx(lrs, accs, 'bo-', linewidth=2, markersize=8)
+plt.title('Learning Rate Effect on Performance')
+plt.xlabel('Learning Rate')
+plt.ylabel('Validation Accuracy (3 epochs)')
+plt.grid(True)
+
+# Annotate points
+for lr, acc in zip(lrs, accs):
+    plt.annotate(f'{acc:.3f}', (lr, acc), textcoords="offset points", xytext=(0,10), ha='center')
+
+plt.show()
+
+print("\nBest learning rate:", max(lr_results.items(), key=lambda x: x[1]))</code></pre>
+          </div>
+
+          <div class="exercise-box">
+            <h3><i class="fa fa-code"></i> Hands-On Exercise</h3>
+            <p>Time to experiment with training parameters!</p>
+            
+            <h4>Exercise 1: Custom Training Loop</h4>
+            <p>Create a custom training setup with the following specifications:</p>
+            <ul>
+              <li>Build a model with 3 hidden layers (256, 128, 64 neurons)</li>
+              <li>Use Adam optimizer with learning rate 0.001</li>
+              <li>Train for 10 epochs with batch size 64</li>
+              <li>Plot training progress and evaluate on test set</li>
+            </ul>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Your solution here
+def create_and_train_custom_model():
+    """Create and train a custom model"""
+    # Build model
+    model = tf.keras.Sequential([
+        # Your architecture here
+    ])
+    
+    # Compile model
+    model.compile(
+        # Your compilation settings here
+    )
+    
+    # Train model
+    history = model.fit(
+        # Your training parameters here
+    )
+    
+    # Evaluate model
+    test_loss, test_acc = model.evaluate(x_test_flat, y_test, verbose=0)
+    
+    return model, history, test_acc
+
+# Test your implementation
+custom_model, custom_history, custom_test_acc = create_and_train_custom_model()
+print(f"Your model test accuracy: {custom_test_acc:.4f}")
+
+# Plot your results
+plot_training_history(custom_history)</code></pre>
+            </div>
+            
+            <h4>Exercise 2: Early Stopping</h4>
+            <p>Implement early stopping to prevent overfitting:</p>
+            
+            <div class="code-example">
+              <pre><code class="language-python"># Implement early stopping
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    patience=3,
+    restore_best_weights=True
+)
+
+# Your model with early stopping
+model_with_es = tf.keras.Sequential([
+    # Your model architecture
+])
+
+model_with_es.compile(
+    # Your compilation settings
+)
+
+# Train with early stopping
+history_es = model_with_es.fit(
+    x_train_final, y_train_final,
+    epochs=50,  # Large number, but will stop early
+    batch_size=32,
+    validation_data=(x_val, y_val),
+    callbacks=[early_stopping],
+    verbose=0
+)
+
+print(f"Training stopped at epoch: {len(history_es.history['loss'])}")
+print(f"Best validation accuracy: {max(history_es.history['val_accuracy']):.4f}")
+
+# Plot early stopping results
+plot_training_history(history_es)</code></pre>
+            </div>
+          </div>
+
+          <h2>Training Best Practices</h2>
+          
+          <div class="training-info">
+            <h3><i class="fa fa-lightbulb-o"></i> Training Tips</h3>
+            <ul>
+              <li><strong>Start Simple:</strong> Begin with fewer epochs and adjust based on results</li>
+              <li><strong>Monitor Both Metrics:</strong> Watch training AND validation performance</li>
+              <li><strong>Use Validation Split:</strong> Always keep some data unseen during training</li>
+              <li><strong>Save Best Models:</strong> Use callbacks to save the best performing model</li>
+              <li><strong>Experiment:</strong> Try different architectures, learning rates, and batch sizes</li>
+              <li><strong>Be Patient:</strong> Good models sometimes need many epochs to converge</li>
+            </ul>
+          </div>
+
+          <h2>What's Next?</h2>
+          <p>Excellent work! You've successfully trained your first neural network. Here's what you've accomplished:</p>
+          <ul>
+            <li><strong>Model Training:</strong> Used the fit() method to train your network</li>
+            <li><strong>Progress Monitoring:</strong> Visualized training and validation metrics</li>
+            <li><strong>Hyperparameter Testing:</strong> Compared different optimizers and learning rates</li>
+            <li><strong>Performance Evaluation:</strong> Achieved ~97% accuracy on MNIST</li>
+            <li><strong>Best Practices:</strong> Learned about validation splits and early stopping</li>
+          </ul>
+          
+          <p>Your model is now trained and performing well! In the next lesson, we'll dive deeper into evaluating model performance and techniques to improve accuracy even further.</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <a href="lesson-3-first-neural-network.html" class="btn-nav btn-secondary">
+            <i class="fa fa-arrow-left"></i> Previous: First Neural Network
+          </a>
+          <a href="lesson-5-evaluation-improvement.html" class="btn-nav btn-primary">
+            Next: Evaluation & Improvement <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+      // Mark lesson as completed when user scrolls to bottom
+      window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+          localStorage.setItem('tensorflow_lesson_4_completed', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>

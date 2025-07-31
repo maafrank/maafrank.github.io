@@ -1,0 +1,645 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+    <title>Quantitative Trading with ML Course - Matthew Frank</title>
+    <link rel="shortcut icon" type="image/icon" href="../assets/logo/favicon.png"/>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/flaticon.css">
+    <link rel="stylesheet" href="../assets/css/animate.css">
+    <link rel="stylesheet" href="../assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../assets/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/bootsnav.css">	
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+
+    <style>
+      .academy-hero {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        padding: 100px 0 80px;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .academy-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+      }
+      
+      .academy-hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
+      }
+      
+      .academy-hero p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+      }
+      
+      .back-to-academy {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.3);
+        position: relative;
+        z-index: 2;
+      }
+      
+      .back-to-academy:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        text-decoration: none;
+      }
+      
+      .academy-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+      }
+      
+      .intro-section {
+        background: white;
+        padding: 60px 0;
+        text-align: center;
+      }
+      
+      .intro-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      .intro-content h2 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      
+      .intro-content p {
+        font-size: 1.2rem;
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+      
+      .lesson-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        height: 100%;
+        border-left: 5px solid #28a745;
+        position: relative;
+      }
+      
+      .lesson-card:hover {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+      }
+      
+      .lesson-number {
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      
+      .lesson-icon {
+        font-size: 3rem;
+        margin: 20px 0;
+        color: #28a745;
+      }
+      
+      .lesson-card h3 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      
+      .lesson-card p {
+        color: #666;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+      
+      .lesson-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .lesson-btn:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        transform: translateY(-2px);
+      }
+      
+      .lesson-btn.completed {
+        background: #007bff;
+      }
+      
+      .lesson-btn.completed:hover {
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+      }
+      
+      .lesson-btn.coming-soon {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+      
+      .progress-indicator {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 0.9rem;
+      }
+      
+      .progress-bar {
+        width: 60px;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+      
+      .section-heading {
+        margin-bottom: 60px;
+        text-align: center;
+      }
+      
+      .section-heading h2 {
+        font-size: 2.8rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+      
+      .section-heading .subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
+      .stats-section {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        padding: 60px 0;
+        color: white;
+        text-align: center;
+      }
+      
+      .stat-item {
+        margin-bottom: 30px;
+      }
+      
+      .stat-number {
+        font-size: 3rem;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+      }
+      
+      .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+      
+      .prerequisites {
+        background: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 5px;
+      }
+      
+      .prerequisites h4 {
+        color: #721c24;
+        margin-bottom: 15px;
+      }
+      
+      .prerequisites ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      
+      .prerequisites li {
+        margin-bottom: 8px;
+        color: #333;
+      }
+      
+      .tech-stack {
+        background: #d4edda;
+        border-left: 4px solid #28a745;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 5px;
+      }
+      
+      .tech-stack h4 {
+        color: #155724;
+        margin-bottom: 15px;
+      }
+      
+      .coming-soon-notice {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 25px;
+        margin: 30px 0;
+        border-radius: 5px;
+        text-align: center;
+      }
+      
+      .coming-soon-notice h3 {
+        color: #856404;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Academy Hero Section -->
+    <section class="academy-hero">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1><i class="fa fa-line-chart"></i> Quantitative Trading with ML</h1>
+            <p>Apply machine learning to financial markets and algorithmic trading</p>
+            <a href="../ml-academy.html" class="back-to-academy">
+              <i class="fa fa-arrow-left"></i> Back to Academy
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lessons Section -->
+    <section class="academy-section">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Course Curriculum</h2>
+          <p class="subtitle">Build real trading algorithms using machine learning and quantitative finance</p>
+        </div>
+        
+        <!-- First Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 1 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">1</div>
+              <div class="lesson-icon">
+                <i class="fa fa-university"></i>
+              </div>
+              <h3>Financial Markets & Data</h3>
+              <p>Introduction to financial markets, instruments, and how to acquire and clean financial data for analysis.</p>
+              <a href="quant-trading/lesson-1-financial-markets.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-1"></div>
+                </div>
+                <span id="progress-text-quant-1">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 2 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">2</div>
+              <div class="lesson-icon">
+                <i class="fa fa-area-chart"></i>
+              </div>
+              <h3>Technical Analysis & Indicators</h3>
+              <p>Learn technical analysis fundamentals and implement popular trading indicators using Python.</p>
+              <a href="quant-trading/lesson-2-technical-analysis.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-2"></div>
+                </div>
+                <span id="progress-text-quant-2">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 3 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">3</div>
+              <div class="lesson-icon">
+                <i class="fa fa-trending-up"></i>
+              </div>
+              <h3>Time Series Analysis</h3>
+              <p>Master time series forecasting techniques specifically designed for financial data and price prediction.</p>
+              <a href="quant-trading/lesson-3-time-series.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-3"></div>
+                </div>
+                <span id="progress-text-quant-3">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Second Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 4 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">4</div>
+              <div class="lesson-icon">
+                <i class="fa fa-rocket"></i>
+              </div>
+              <h3>Momentum Trading Strategy</h3>
+              <p>Build your first algorithmic trading strategy based on momentum indicators and machine learning signals.</p>
+              <a href="quant-trading/lesson-4-momentum-strategy.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-4"></div>
+                </div>
+                <span id="progress-text-quant-4">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 5 -->  
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">5</div>
+              <div class="lesson-icon">
+                <i class="fa fa-shield"></i>
+              </div>
+              <h3>Risk Management & Position Sizing</h3>
+              <p>Learn essential risk management techniques and optimal position sizing algorithms for trading strategies.</p>
+              <a href="quant-trading/lesson-5-risk-management.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-5"></div>
+                </div>
+                <span id="progress-text-quant-5">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 6 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">6</div>
+              <div class="lesson-icon">
+                <i class="fa fa-pie-chart"></i>
+              </div>
+              <h3>Portfolio Optimization</h3>
+              <p>Implement modern portfolio theory and machine learning approaches to optimize multi-asset portfolios.</p>
+              <a href="quant-trading/lesson-6-portfolio-optimization.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-6"></div>
+                </div>
+                <span id="progress-text-quant-6">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Third Row of Lessons -->
+        <div class="row">
+          <!-- Lesson 7 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">7</div>
+              <div class="lesson-icon">
+                <i class="fa fa-comments"></i>
+              </div>
+              <h3>Sentiment Analysis Trading</h3>
+              <p>Use natural language processing to analyze market sentiment from news and social media for trading signals.</p>
+              <a href="quant-trading/lesson-7-sentiment-analysis.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-7"></div>
+                </div>
+                <span id="progress-text-quant-7">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lesson 8 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="lesson-card">
+              <div class="lesson-number">8</div>
+              <div class="lesson-icon">
+                <i class="fa fa-history"></i>
+              </div>
+              <h3>Backtesting & Strategy Evaluation</h3>
+              <p>Build robust backtesting frameworks and learn how to properly evaluate and validate trading strategies.</p>
+              <a href="quant-trading/lesson-8-backtesting-evaluation.html" class="lesson-btn">Start Learning</a>
+              <div class="progress-indicator">
+                <span>Progress:</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-quant-8"></div>
+                </div>
+                <span id="progress-text-quant-8">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 text-center" style="margin-top: 40px;">
+            <p style="color: #666; font-size: 1.2rem;">
+              📈 <strong>Want to be notified when this course launches?</strong> Check back soon for updates!
+            </p>
+            <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #007bff;">
+              <h4 style="color: #007bff; margin-bottom: 15px;"><i class="fa fa-info-circle"></i> What You'll Build</h4>
+              <ul style="text-align: left; max-width: 600px; margin: 0 auto; color: #333;">
+                <li>Complete momentum trading algorithm with ML signals</li>
+                <li>Risk management and position sizing system</li>
+                <li>Multi-asset portfolio optimization framework</li>
+                <li>Sentiment analysis trading bot</li>
+                <li>Comprehensive backtesting and evaluation system</li>
+                <li>Real-time trading dashboard and monitoring tools</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro-section">
+      <div class="container">
+        <div class="intro-content">
+          <h2>Master Algorithmic Trading with Machine Learning</h2>
+          <p>
+            This advanced course combines quantitative finance with machine learning to create sophisticated trading strategies. You'll learn to analyze market data, build predictive models, and implement automated trading systems using real financial datasets.
+          </p>
+          <p>
+            From fundamental analysis to advanced portfolio optimization, you'll gain the skills needed to work in quantitative finance, hedge funds, or develop your own trading algorithms.
+          </p>
+          
+          <div class="prerequisites">
+            <h4><i class="fa fa-exclamation-triangle"></i> Prerequisites</h4>
+            <ul>
+              <li>Completed AI/ML Fundamentals course</li>
+              <li>Strong Python programming skills</li>
+              <li>Basic understanding of financial markets and instruments</li>
+              <li>Familiarity with statistics and probability</li>
+              <li>Experience with pandas and NumPy</li>
+            </ul>
+          </div>
+          
+          <div class="tech-stack">
+            <h4><i class="fa fa-cogs"></i> Technologies & Libraries</h4>
+            <ul>
+              <li><strong>Python:</strong> Primary programming language</li>
+              <li><strong>pandas:</strong> Data manipulation and analysis</li>
+              <li><strong>NumPy:</strong> Numerical computing</li>
+              <li><strong>scikit-learn:</strong> Machine learning algorithms</li>
+              <li><strong>yfinance:</strong> Financial data retrieval</li>
+              <li><strong>backtrader:</strong> Backtesting framework</li>
+              <li><strong>TA-Lib:</strong> Technical analysis indicators</li>
+              <li><strong>matplotlib/plotly:</strong> Data visualization</li>
+            </ul>
+          </div>
+          
+          <div class="tech-stack">
+            <h4><i class="fa fa-rocket"></i> Ready to Start Trading!</h4>
+            <p>This course is now available! You'll build real trading algorithms using machine learning and work with actual market data from major exchanges.</p>
+            <p><strong>What You'll Build:</strong> Complete algorithmic trading system with backtesting, risk management, and live market integration.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">8</span>
+              <span class="stat-label">Advanced Lessons</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">3+</span>
+              <span class="stat-label">Trading Strategies</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">6-7</span>
+              <span class="stat-label">Hours of Content</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-item">
+              <span class="stat-number">Real</span>
+              <span class="stat-label">Market Data</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Include JavaScript -->
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../assets/js/bootsnav.js"></script>
+    
+    <script>
+      // Update lesson progress based on localStorage flags
+      function updateProgress() {
+        const totalLessons = 8;
+
+        for (let i = 1; i <= totalLessons; i++) {
+          const completed = localStorage.getItem(`quant_lesson_${i}_completed`) === 'true';
+          const bar = document.getElementById(`progress-quant-${i}`);
+          const text = document.getElementById(`progress-text-quant-${i}`);
+
+          if (completed) {
+            if (bar) bar.style.width = '100%';
+            if (text) text.textContent = '100%';
+
+            const button = document.querySelector(`a[href="quant-trading/lesson-${i}-${getQuantLessonSlug(i)}.html"]`);
+            if (button) {
+              button.classList.add('completed');
+              button.innerHTML = '<i class="fa fa-check"></i> Completed';
+            }
+          }
+        }
+      }
+
+      function getQuantLessonSlug(num) {
+        const slugs = [
+          'financial-markets',
+          'technical-analysis',
+          'time-series',
+          'momentum-strategy',
+          'risk-management',
+          'portfolio-optimization',
+          'sentiment-analysis',
+          'backtesting-evaluation'
+        ];
+        return slugs[num - 1];
+      }
+
+      document.addEventListener('DOMContentLoaded', updateProgress);
+    </script>
+  </body>
+</html>

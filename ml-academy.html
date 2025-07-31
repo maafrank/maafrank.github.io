@@ -40,18 +40,6 @@
     <!--responsive.css-->
     <link rel="stylesheet" href="assets/css/responsive.css">
 
-    <!-- MathJax for mathematical notation -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          displayMath: [['$$', '$$'], ['\\[', '\\]']]
-        }
-      };
-    </script>
-
     <style>
       .academy-hero {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -108,7 +96,7 @@
         text-decoration: none;
       }
       
-      .academy-section {
+      .courses-section {
         padding: 80px 0;
         background: #f8f9fa;
       }
@@ -138,108 +126,160 @@
         margin-bottom: 20px;
       }
       
-      .lesson-card {
+      .course-card {
         background: white;
-        border-radius: 15px;
-        padding: 30px;
+        border-radius: 20px;
+        padding: 40px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.4s ease;
         margin-bottom: 30px;
         height: 100%;
-        border-left: 5px solid #667eea;
+        border-top: 5px solid #667eea;
         position: relative;
+        overflow: hidden;
       }
       
-      .lesson-card:hover {
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        transform: translateY(-5px);
-      }
-      
-      .lesson-number {
+      .course-card::before {
+        content: '';
         position: absolute;
-        top: -15px;
-        left: 20px;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .course-card:hover::before {
+        left: 100%;
+      }
+      
+      .course-card:hover {
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        transform: translateY(-10px);
+      }
+      
+      .course-card.fundamentals { border-top-color: #667eea; }
+      .course-card.tensorflow { border-top-color: #ff6b35; }
+      .course-card.quant { border-top-color: #28a745; }
+      
+      .course-icon {
+        font-size: 4rem;
+        margin: 20px 0 30px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       
-      .lesson-icon {
-        font-size: 3rem;
-        margin: 20px 0;
-        color: #667eea;
+      .course-card.tensorflow .course-icon {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       
-      .lesson-card h3 {
-        font-size: 1.6rem;
-        margin-bottom: 15px;
+      .course-card.quant .course-icon {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .course-card h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
         color: #333;
+        font-weight: 700;
       }
       
-      .lesson-card p {
+      .course-card p {
         color: #666;
         margin-bottom: 25px;
-        line-height: 1.6;
-        font-size: 1rem;
+        line-height: 1.7;
+        font-size: 1.1rem;
       }
       
-      .lesson-btn {
+      .course-meta {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+        font-size: 0.95rem;
+        color: #888;
+      }
+      
+      .course-meta span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .course-btn {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 12px 30px;
-        border-radius: 25px;
+        padding: 15px 35px;
+        border-radius: 30px;
         text-decoration: none;
         display: inline-block;
         transition: all 0.3s ease;
         border: none;
         font-weight: 600;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
       }
       
-      .lesson-btn:hover {
+      .course-btn:hover {
         color: white;
         text-decoration: none;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         transform: translateY(-2px);
       }
       
-      .lesson-btn.completed {
-        background: #28a745;
+      .course-card.tensorflow .course-btn {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
       }
       
-      .lesson-btn.completed:hover {
-        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+      .course-card.tensorflow .course-btn:hover {
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
       }
       
-      .progress-indicator {
-        margin-top: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        font-size: 0.9rem;
+      .course-card.quant .course-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       }
       
-      .progress-bar {
-        width: 60px;
-        height: 6px;
-        background: #e9ecef;
-        border-radius: 3px;
-        overflow: hidden;
+      .course-card.quant .course-btn:hover {
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
       }
       
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        transition: width 0.3s ease;
-        width: 0%;
+      .difficulty-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .difficulty-beginner {
+        background: #d4edda;
+        color: #155724;
+      }
+      
+      .difficulty-intermediate {
+        background: #fff3cd;
+        color: #856404;
+      }
+      
+      .difficulty-advanced {
+        background: #f8d7da;
+        color: #721c24;
       }
       
       .section-heading {
@@ -283,25 +323,45 @@
         opacity: 0.9;
       }
       
-      .prerequisites {
-        background: #e8f4fd;
-        border-left: 4px solid #007bff;
-        padding: 20px;
-        margin: 30px 0;
-        border-radius: 5px;
+      .coming-soon {
+        opacity: 0.7;
+        position: relative;
       }
       
-      .prerequisites h4 {
+      .coming-soon::after {
+        content: 'Coming Soon';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        z-index: 10;
+      }
+      
+      .feature-highlights {
+        background: #e8f4fd;
+        border-left: 4px solid #007bff;
+        padding: 25px;
+        margin: 30px 0;
+        border-radius: 10px;
+      }
+      
+      .feature-highlights h4 {
         color: #007bff;
         margin-bottom: 15px;
       }
       
-      .prerequisites ul {
+      .feature-highlights ul {
         margin: 0;
         padding-left: 20px;
       }
       
-      .prerequisites li {
+      .feature-highlights li {
         margin-bottom: 8px;
         color: #333;
       }
@@ -315,10 +375,126 @@
         <div class="row">
           <div class="col-md-12">
             <h1>🧠 AI/ML Academy</h1>
-            <p>Master the fundamentals of Artificial Intelligence and Machine Learning</p>
+            <p>Choose your learning path and master AI & Machine Learning</p>
             <a href="index.html" class="back-to-portfolio">
               <i class="fa fa-arrow-left"></i> Back to Portfolio
             </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses-section">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Choose Your Learning Path</h2>
+          <p class="subtitle">Each course is designed to provide deep, practical knowledge in specific areas of AI and ML</p>
+        </div>
+        
+        <div class="row">
+          <!-- AI/ML Fundamentals Course -->
+          <div class="col-md-6 col-lg-4">
+            <div class="course-card fundamentals">
+              <div class="difficulty-badge difficulty-beginner">Beginner</div>
+              <div class="course-icon">
+                <i class="fa fa-graduation-cap"></i>
+              </div>
+              <h3>AI/ML Fundamentals</h3>
+              <p>Master the core concepts of artificial intelligence and machine learning. Perfect for beginners who want to understand how AI works from the ground up.</p>
+              
+              <div class="course-meta">
+                <span><i class="fa fa-book"></i> 9 Lessons</span>
+                <span><i class="fa fa-clock-o"></i> 6-8 Hours</span>
+                <span><i class="fa fa-question-circle"></i> 70+ Quizzes</span>
+              </div>
+              
+              <div style="text-align: left; margin: 20px 0; font-size: 0.95rem; color: #666;">
+                <strong>You'll Learn:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>AI vs ML concepts and applications</li>
+                  <li>Neural networks and deep learning</li>
+                  <li>Mathematics behind ML algorithms</li>
+                  <li>Training, evaluation, and optimization</li>
+                  <li>Unsupervised and reinforcement learning</li>
+                </ul>
+              </div>
+              
+              <a href="lessons/fundamentals-course.html" class="course-btn">Start Learning</a>
+            </div>
+          </div>
+          
+          <!-- TensorFlow & MNIST Course -->
+          <div class="col-md-6 col-lg-4">
+            <div class="course-card tensorflow">
+              <div class="difficulty-badge difficulty-intermediate">Intermediate</div>
+              <div class="course-icon">
+                <i class="fa fa-code"></i>
+              </div>
+              <h3>TensorFlow & Neural Networks</h3>
+              <p>Build and train your first neural network using TensorFlow. Learn hands-on implementation with the classic MNIST digit recognition dataset.</p>
+              
+              <div class="course-meta">
+                <span><i class="fa fa-book"></i> 6 Lessons</span>
+                <span><i class="fa fa-clock-o"></i> 4-5 Hours</span>
+                <span><i class="fa fa-code"></i> 5+ Projects</span>
+              </div>
+              
+              <div style="text-align: left; margin: 20px 0; font-size: 0.95rem; color: #666;">
+                <strong>You'll Build:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>Complete MNIST digit classifier</li>
+                  <li>Custom neural network architectures</li>
+                  <li>Model optimization and tuning</li>
+                  <li>Data preprocessing pipelines</li>
+                  <li>Model deployment strategies</li>
+                </ul>
+              </div>
+              
+              <a href="lessons/tensorflow-course.html" class="course-btn">Start Coding</a>
+            </div>
+          </div>
+          
+          <!-- Quantitative Trading Course -->
+          <div class="col-md-6 col-lg-4">
+            <div class="course-card quant">
+              <div class="difficulty-badge difficulty-advanced">Advanced</div>
+              <div class="course-icon">
+                <i class="fa fa-line-chart"></i>
+              </div>
+              <h3>Quantitative Trading with ML</h3>
+              <p>Apply machine learning to financial markets. Learn to build algorithmic trading strategies using real market data and advanced ML techniques.</p>
+              
+              <div class="course-meta">
+                <span><i class="fa fa-book"></i> 8 Lessons</span>
+                <span><i class="fa fa-clock-o"></i> 6-7 Hours</span>
+                <span><i class="fa fa-line-chart"></i> 3+ Strategies</span>
+              </div>
+              
+              <div style="text-align: left; margin: 20px 0; font-size: 0.95rem; color: #666;">
+                <strong>You'll Create:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>Momentum trading algorithms</li>
+                  <li>Risk management systems</li>
+                  <li>Portfolio optimization models</li>
+                  <li>Market sentiment analysis</li>
+                  <li>Backtesting frameworks</li>
+                </ul>
+              </div>
+              
+              <a href="lessons/quant-course.html" class="course-btn">Start Trading</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12 text-center" style="margin-top: 40px;">
+            <p style="color: #666; font-size: 1.2rem;">
+              🎯 <strong>New to AI/ML?</strong> Start with Fundamentals → Move to TensorFlow → Explore Quantitative Trading
+            </p>
+            <p style="color: #888; font-size: 1rem; margin-top: 20px;">
+              Each course builds valuable skills that complement the others. Take them in any order based on your interests and goals.
+            </p>
           </div>
         </div>
       </div>
@@ -328,20 +504,22 @@
     <section class="intro-section">
       <div class="container">
         <div class="intro-content">
-          <h2>Welcome to the Future of Learning</h2>
+          <h2>Welcome to Your AI Journey</h2>
           <p>
-            Dive deep into the world of Artificial Intelligence and Machine Learning through this comprehensive, interactive learning experience. Each lesson builds upon the previous one, taking you from basic concepts to advanced applications.
+            Explore multiple specialized learning paths designed to take you from beginner to expert in different areas of AI and Machine Learning. Each course is crafted with hands-on projects, interactive content, and real-world applications.
           </p>
           <p>
-            This academy covers everything from neural network fundamentals to real-world implementations, with interactive quizzes and practical examples to reinforce your understanding.
+            Whether you're starting with fundamentals, diving into practical implementation, or exploring specialized applications, we have a course tailored for your goals.
           </p>
           
-          <div class="prerequisites">
-            <h4><i class="fa fa-lightbulb-o"></i> Prerequisites</h4>
+          <div class="feature-highlights">
+            <h4><i class="fa fa-star"></i> What Makes Our Academy Special</h4>
             <ul>
-              <li>Basic understanding of mathematics (algebra, calculus)</li>
-              <li>Familiarity with programming concepts</li>
-              <li>Curiosity about how machines learn!</li>
+              <li>Interactive lessons with quizzes and practical exercises</li>
+              <li>Real code examples and hands-on projects</li>
+              <li>Progress tracking and completion certificates</li>
+              <li>Multiple learning paths for different career goals</li>
+              <li>Updated content reflecting latest industry practices</li>
             </ul>
           </div>
         </div>
@@ -354,234 +532,27 @@
         <div class="row">
           <div class="col-md-3 col-sm-6">
             <div class="stat-item">
-              <span class="stat-number">8</span>
-              <span class="stat-label">Comprehensive Lessons</span>
+              <span class="stat-number">3</span>
+              <span class="stat-label">Specialized Courses</span>
             </div>
           </div>
           <div class="col-md-3 col-sm-6">
             <div class="stat-item">
-              <span class="stat-number">60+</span>
-              <span class="stat-label">Interactive Quiz Questions</span>
+              <span class="stat-number">25+</span>
+              <span class="stat-label">Hands-on Lessons</span>
             </div>
           </div>
           <div class="col-md-3 col-sm-6">
             <div class="stat-item">
-              <span class="stat-number">5-7</span>
-              <span class="stat-label">Hours of Content</span>
+              <span class="stat-number">100+</span>
+              <span class="stat-label">Quiz Questions</span>
             </div>
           </div>
           <div class="col-md-3 col-sm-6">
             <div class="stat-item">
               <span class="stat-number">∞</span>
-              <span class="stat-label">Learning Opportunities</span>
+              <span class="stat-label">Career Opportunities</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Lessons Section -->
-    <section class="academy-section">
-      <div class="container">
-        <div class="section-heading">
-          <h2>Course Curriculum</h2>
-          <p class="subtitle">Progress through each lesson to build a comprehensive understanding of AI and Machine Learning</p>
-        </div>
-        
-        <!-- First Row of Lessons -->
-        <div class="row">
-          <!-- Lesson 1 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">1</div>
-              <div class="lesson-icon">
-                <i class="fa fa-rocket"></i>
-              </div>
-              <h3>Introduction to AI & ML</h3>
-              <p>Start your journey by understanding what AI and ML are, their differences, types, and real-world applications that shape our daily lives.</p>
-              <a href="lessons/lesson-1-intro.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-1"></div>
-                </div>
-                <span id="progress-text-1">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Lesson 2 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">2</div>
-              <div class="lesson-icon">
-                <i class="fa fa-sitemap"></i>
-              </div>
-              <h3>Neural Networks Fundamentals</h3>
-              <p>Explore the building blocks of deep learning: neurons, layers, weights, biases, and activation functions that make networks "think".</p>
-              <a href="lessons/lesson-2-neural-networks.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-2"></div>
-                </div>
-                <span id="progress-text-2">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Lesson 3 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">3</div>
-              <div class="lesson-icon">
-                <i class="fa fa-calculator"></i>
-              </div>
-              <h3>The Mathematics Behind ML</h3>
-              <p>Understand the mathematical foundations: linear algebra, calculus, and probability theory that power machine learning algorithms.</p>
-              <a href="lessons/lesson-3-mathematics.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-3"></div>
-                </div>
-                <span id="progress-text-3">0%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Second Row of Lessons -->
-        <div class="row">
-          <!-- Lesson 4 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">4</div>
-              <div class="lesson-icon">
-                <i class="fa fa-arrow-right"></i>
-              </div>
-              <h3>Forward Propagation</h3>
-              <p>Learn how data flows through neural networks, from input to output, and how predictions are generated through mathematical transformations.</p>
-              <a href="lessons/lesson-4-forward-prop.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-4"></div>
-                </div>
-                <span id="progress-text-4">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Lesson 5 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">5</div>
-              <div class="lesson-icon">
-                <i class="fa fa-refresh"></i>
-              </div>
-              <h3>Backpropagation & Training</h3>
-              <p>Discover how neural networks learn through backpropagation, gradient descent, and loss functions to improve their performance.</p>
-              <a href="lessons/lesson-5-backprop.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-5"></div>
-                </div>
-                <span id="progress-text-5">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Lesson 6 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">6</div>
-              <div class="lesson-icon">
-                <i class="fa fa-cubes"></i>
-              </div>
-              <h3>Deep Learning Architectures</h3>
-              <p>Explore advanced architectures: Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Transformers.</p>
-              <a href="lessons/lesson-6-architectures.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-6"></div>
-                </div>
-                <span id="progress-text-6">0%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Third Row of Lessons -->
-        <div class="row">
-          <!-- Lesson 7 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">7</div>
-              <div class="lesson-icon">
-                <i class="fa fa-line-chart"></i>
-              </div>
-              <h3>Model Evaluation & Optimization</h3>
-              <p>Master evaluation metrics, hyperparameter tuning, regularization techniques, and strategies to prevent overfitting.</p>
-              <a href="lessons/lesson-7-evaluation.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-7"></div>
-                </div>
-                <span id="progress-text-7">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Lesson 8 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card">
-              <div class="lesson-number">8</div>
-              <div class="lesson-icon">
-                <i class="fa fa-globe"></i>
-              </div>
-              <h3>Real-World Applications</h3>
-              <p>See AI/ML in action across industries: computer vision, natural language processing, recommendation systems, and autonomous vehicles.</p>
-              <a href="lessons/lesson-8-applications.html" class="lesson-btn">Start Learning</a>
-              <div class="progress-indicator">
-                <span>Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="progress-8"></div>
-                </div>
-                <span id="progress-text-8">0%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Completion Certificate -->
-          <div class="col-md-6 col-lg-4">
-            <div class="lesson-card" style="border-left-color: #28a745;">
-              <div class="lesson-number" style="background: #28a745;">🏆</div>
-              <div class="lesson-icon" style="color: #28a745;">
-                <i class="fa fa-certificate"></i>
-              </div>
-              <h3>Complete the Academy</h3>
-              <p>Finish all lessons and quizzes to earn your AI/ML Academy completion certificate and showcase your knowledge!</p>
-              <a href="#" class="lesson-btn" style="background: #6c757d; cursor: not-allowed;" id="certificate-btn">Complete All Lessons</a>
-              <div class="progress-indicator">
-                <span>Overall Progress:</span>
-                <div class="progress-bar">
-                  <div class="progress-fill" id="overall-progress"></div>
-                </div>
-                <span id="overall-progress-text">0%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-12 text-center" style="margin-top: 40px;">
-            <p style="color: #666; font-size: 1.2rem;">
-              🎯 <strong>Ready to become an AI/ML expert?</strong> Start with Lesson 1 and work your way through!
-            </p>
           </div>
         </div>
       </div>
@@ -593,54 +564,31 @@
     <script src="assets/js/bootsnav.js"></script>
     
     <script>
-      // Progress tracking functionality
-      function updateProgress() {
-        let completedLessons = 0;
-        const totalLessons = 8;
+      // Add some interactive animations
+      document.addEventListener('DOMContentLoaded', function() {
+        // Animate course cards on scroll
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
         
-        for (let i = 1; i <= totalLessons; i++) {
-          const completed = localStorage.getItem(`lesson_${i}_completed`) === 'true';
-          const progressElement = document.getElementById(`progress-${i}`);
-          const progressTextElement = document.getElementById(`progress-text-${i}`);
-          
-          if (completed) {
-            progressElement.style.width = '100%';
-            progressTextElement.textContent = '100%';
-            completedLessons++;
-            
-            // Update button to show completed
-            const button = document.querySelector(`a[href="lessons/lesson-${i}-${getLessonSlug(i)}.html"]`);
-            if (button) {
-              button.classList.add('completed');
-              button.innerHTML = '<i class="fa fa-check"></i> Completed';
+        const observer = new IntersectionObserver(function(entries) {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
             }
-          }
-        }
+          });
+        }, observerOptions);
         
-        // Update overall progress
-        const overallProgress = (completedLessons / totalLessons) * 100;
-        document.getElementById('overall-progress').style.width = overallProgress + '%';
-        document.getElementById('overall-progress-text').textContent = Math.round(overallProgress) + '%';
-        
-        // Enable certificate if all lessons completed
-        if (completedLessons === totalLessons) {
-          const certificateBtn = document.getElementById('certificate-btn');
-          certificateBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-          certificateBtn.style.cursor = 'pointer';
-          certificateBtn.textContent = 'Get Certificate';
-          certificateBtn.onclick = function() {
-            alert('Congratulations! You have completed the AI/ML Academy! 🎉\n\nYou have demonstrated mastery of:\n• AI & ML fundamentals\n• Neural network concepts\n• Mathematical foundations\n• Training algorithms\n• Real-world applications\n\nWell done!');
-          };
-        }
-      }
-      
-      function getLessonSlug(lessonNum) {
-        const slugs = ['intro', 'neural-networks', 'mathematics', 'forward-prop', 'backprop', 'architectures', 'evaluation', 'applications'];
-        return slugs[lessonNum - 1];
-      }
-      
-      // Initialize progress on page load
-      document.addEventListener('DOMContentLoaded', updateProgress);
+        // Initially hide course cards
+        document.querySelectorAll('.course-card').forEach(card => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          observer.observe(card);
+        });
+      });
     </script>
   </body>
 </html>
