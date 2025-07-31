@@ -603,13 +603,42 @@
     <script src="../assets/js/bootsnav.js"></script>
     
     <script>
-      // Progress tracking functionality (placeholder for when course is available)
+      // Update lesson progress based on localStorage flags
       function updateProgress() {
-        // Will be implemented when course content is available
-        console.log('Quantitative Trading course coming soon!');
+        const totalLessons = 8;
+
+        for (let i = 1; i <= totalLessons; i++) {
+          const completed = localStorage.getItem(`quant_lesson_${i}_completed`) === 'true';
+          const bar = document.getElementById(`progress-quant-${i}`);
+          const text = document.getElementById(`progress-text-quant-${i}`);
+
+          if (completed) {
+            if (bar) bar.style.width = '100%';
+            if (text) text.textContent = '100%';
+
+            const button = document.querySelector(`a[href="quant-trading/lesson-${i}-${getQuantLessonSlug(i)}.html"]`);
+            if (button) {
+              button.classList.add('completed');
+              button.innerHTML = '<i class="fa fa-check"></i> Completed';
+            }
+          }
+        }
       }
-      
-      // Initialize progress on page load
+
+      function getQuantLessonSlug(num) {
+        const slugs = [
+          'financial-markets',
+          'technical-analysis',
+          'time-series',
+          'momentum-strategy',
+          'risk-management',
+          'portfolio-optimization',
+          'sentiment-analysis',
+          'backtesting-evaluation'
+        ];
+        return slugs[num - 1];
+      }
+
       document.addEventListener('DOMContentLoaded', updateProgress);
     </script>
   </body>
