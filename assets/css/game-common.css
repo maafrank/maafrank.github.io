@@ -1,0 +1,61 @@
+/* Common game page styles */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+  min-height: 100vh;
+}
+.game-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+.game-header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.game-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.game-controls {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+}
+.game-controls p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+.btn-game {
+  background: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+.btn-game:hover {
+  background: #f0f0f0;
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
+.back-link {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+.back-link:hover {
+  text-decoration: none;
+}
