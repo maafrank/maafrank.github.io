@@ -24,3 +24,20 @@ Welcome to the repository for my personal portfolio website, hosted at <a href="
 5. <a href="https://maafrank.github.io/#experience" target="_blank">**Experience**</a>: A detailed look at my professional journey.
 6. <a href="https://maafrank.github.io/#projects" target="_blank">**Projects**</a>: Highlights of my work and contributions to various projects.
 7. <a href="https://maafrank.github.io/#contact" target="_blank">**Contact**</a>: A form to reach out to me directly along with contact information.
+## Local Development
+
+To test the site locally, run:
+
+```bash
+python -m http.server 8000
+```
+
+Then visit [http://localhost:8000](http://localhost:8000) in your browser.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
