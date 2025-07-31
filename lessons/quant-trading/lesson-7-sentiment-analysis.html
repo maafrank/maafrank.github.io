@@ -386,6 +386,19 @@ print(news_df['sentiment_label'].value_counts())</code></pre>
               Sentiment Distribution: 4 positive, 4 negative, 2 neutral
             </div>
           </div>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-lightbulb-o"></i> Decoding the Sentiment Analysis Results</h3>
+            <p><strong>Understanding Combined Scores:</strong> We weight VADER at 60% and TextBlob at 40% because VADER handles financial text better - it understands intensifiers like "absolutely crushing earnings" and negations like "not disappointing." TextBlob provides a useful sanity check and catches some nuances VADER misses.</p>
+            
+            <p><strong>Keyword Extraction Significance:</strong> Our keyword detection isn't just pattern matching - it's signal extraction. When we see "beat," "exceed," and "strong" together, it's a much stronger positive signal than any single word. Professional systems use Named Entity Recognition to identify companies, people, and financial metrics automatically.</p>
+            
+            <p><strong>Threshold Selection:</strong> Our 0.1 threshold for positive/negative classification seems small, but it's intentional. Financial markets are sensitive - even mildly positive news can move stocks. Professional traders often use multiple thresholds: 0.1 for weak signals, 0.3 for moderate, 0.5+ for strong signals.</p>
+            
+            <p><strong>Preprocessing Decisions:</strong> We remove financial stop words like "stock" and "price" because they appear in every financial article but carry no sentiment. However, we keep domain-specific terms like "earnings" and "revenue" because their context (beat earnings vs missed earnings) determines sentiment.</p>
+            
+            <p><strong>Real-Time Applications:</strong> In live trading, this analysis happens in milliseconds. News feeds are processed instantly, sentiment scores are calculated, and trading signals are generated before human traders even see the headlines. Speed is everything in sentiment-driven trading.</p>
+          </div>
 
           <h2>Building a Financial News Sentiment Model</h2>
           <p>Let's create a specialized sentiment model trained on financial text data.</p>
@@ -626,6 +639,21 @@ for headline in test_headlines:
 print(f"\n=== Most Important Features for Sentiment Classification ===")
 feature_importance = financial_model.get_feature_importance(15)
 print(feature_importance)</code></pre>
+          </div>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-brain"></i> Understanding Machine Learning for Financial Sentiment</h3>
+            <p><strong>Why Synthetic Training Data Works:</strong> Our template-based approach creates thousands of realistic financial headlines quickly. While real labeled data is better, synthetic data helps us understand model behavior and provides a baseline. Professional firms often start with synthetic data before investing in expensive human labeling.</p>
+            
+            <p><strong>TF-IDF Feature Engineering:</strong> We use TF-IDF (Term Frequency-Inverse Document Frequency) because it captures word importance better than simple word counts. Words like "beats" and "disappoints" get high TF-IDF scores because they're frequent in financial news but rare in general text. The bigram feature (ngram_range=(1,2)) captures phrases like "beats expectations."</p>
+            
+            <p><strong>Random Forest Choice:</strong> Random Forest works well for text classification because it handles sparse features (most words don't appear in most documents) and provides feature importance rankings. It's also interpretable - we can see which words/phrases drive sentiment predictions, crucial for regulatory compliance in finance.</p>
+            
+            <p><strong>Model Performance Interpretation:</strong> An 85%+ test accuracy on financial sentiment is excellent because financial text can be ambiguous. "Apple announces product recall" could be negative (safety issues) or neutral (routine maintenance). Professional models often achieve 75-85% accuracy on real financial news.</p>
+            
+            <p><strong>Feature Importance Insights:</strong> The most important features will likely be words like "beats," "exceeds," "disappoints," and "plunges." These are pure sentiment words in financial contexts. Bigrams like "analyst expectations" and "quarterly earnings" provide context that single words miss.</p>
+            
+            <p><strong>Confidence Scores Matter:</strong> Our confidence scores help traders filter signals. High-confidence positive sentiment (>0.8) might trigger immediate buying, while low-confidence signals (0.4-0.6) might just be monitored. Professional systems often require confidence >0.7 for automated trading.</p>
           </div>
 
           <h2>Real-Time Sentiment Data Collection</h2>
@@ -896,6 +924,21 @@ def plot_sentiment_comparison(sentiment_results):
 print("\nCreating sentiment analysis visualization...")
 plot_sentiment_comparison(sentiment_results)</code></pre>
             </div>
+          </div>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-clock-o"></i> Real-Time Sentiment Collection Architecture</h3>
+            <p><strong>Simulated News Feed Logic:</strong> Our news simulation is smarter than random - it uses recent stock performance to bias news sentiment. If a stock is up 5%, we're more likely to generate positive news. This mimics reality where news often follows price movements, creating feedback loops that sentiment traders exploit.</p>
+            
+            <p><strong>Confidence-Weighted Aggregation:</strong> Instead of simple averaging, we weight sentiment scores by confidence. A high-confidence negative article (-0.8 with 0.9 confidence) has more impact than a low-confidence positive article (0.3 with 0.5 confidence). This approach filters noise and focuses on clear signals.</p>
+            
+            <p><strong>Sentiment Momentum Calculation:</strong> Our momentum metric measures how sentiment is changing over time, not just current sentiment level. A stock moving from neutral to positive sentiment might be a better buy signal than one that's been positive for weeks. Professional traders watch sentiment velocity, not just sentiment level.</p>
+            
+            <p><strong>Data Retention Strategy:</strong> We only keep 7 days of sentiment history because older sentiment becomes less relevant for trading decisions. This also manages memory usage in production systems that process thousands of articles daily. Professional systems often use exponential decay to weight recent sentiment more heavily.</p>
+            
+            <p><strong>Visualization Insights:</strong> Our sentiment comparison chart helps identify relative opportunities. If most stocks show neutral sentiment but one shows strong positive sentiment with high confidence, that's a potential trade signal. Professional dashboards update these charts in real-time for hundreds of stocks simultaneously.</p>
+            
+            <p><strong>Production Considerations:</strong> Real systems would need error handling for API failures, rate limiting to avoid being blocked, duplicate detection to avoid processing the same article twice, and sophisticated entity recognition to link news to specific stocks (especially important for merger announcements affecting multiple companies).</p>
           </div>
 
           <h2>Building Sentiment-Driven Trading Strategies</h2>
@@ -1182,6 +1225,23 @@ def analyze_sentiment_price_relationship(strategy_results):
 # Analyze sentiment-price relationships
 analyze_sentiment_price_relationship(strategy_results)</code></pre>
             </div>
+          </div>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-chart-line"></i> Sentiment Trading Strategy Deep Dive</h3>
+            <p><strong>Multi-Factor Signal Generation:</strong> Our strategy doesn't rely on sentiment alone - it requires both positive sentiment AND positive price momentum for a buy signal. This reduces false positives because sentiment can be wrong or priced in. Professional sentiment strategies always combine multiple factors to improve signal quality.</p>
+            
+            <p><strong>Confidence Thresholds:</strong> We require 60% confidence before acting on sentiment signals. This filters out ambiguous news that could be interpreted either way. In volatile markets, firms often raise confidence thresholds to 70-80% to reduce noise trading, while in trending markets they might lower thresholds to capture more opportunities.</p>
+            
+            <p><strong>Position Sizing Logic:</strong> Our position size combines sentiment strength and confidence - stronger, more confident signals get larger positions. A weakly positive sentiment (0.2) with high confidence (0.9) gets a smaller position than strongly positive sentiment (0.8) with high confidence. This dynamic sizing optimizes risk-adjusted returns.</p>
+            
+            <p><strong>Signal Explanation System:</strong> Every trade includes a text explanation of why the signal was generated. This is crucial for regulatory compliance, strategy debugging, and investor communication. Professional systems log not just what trades were made, but why the algorithm made those decisions.</p>
+            
+            <p><strong>Real-Time Execution:</strong> Our strategy runs in real-time, processing news as it arrives and immediately generating trading signals. In practice, milliseconds matter - the first trader to act on breaking news gets the best prices. Professional systems often co-locate servers near exchanges to minimize latency.</p>
+            
+            <p><strong>Portfolio Risk Management:</strong> The 10% maximum position size prevents over-concentration, even if sentiment signals are very strong. Professional firms often use even lower limits (2-5%) and monitor portfolio-level exposure to sentiment factors, ensuring no single news event can cause catastrophic losses.</p>
+            
+            <p><strong>Performance Analysis:</strong> Our sentiment-price relationship analysis helps validate strategy effectiveness. If sentiment consistently disagrees with price movements, the sentiment model needs recalibration. Professional teams continuously monitor signal quality and adjust parameters based on live performance data.</p>
           </div>
 
           <div class="exercise-box">
