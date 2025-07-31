@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Code Reviewer - Matthew Frank</title>
+    <meta name="description" content="AI-powered code review tool running entirely in your browser with WebLLM">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../../assets/logo/favicon.png" type="image/png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/flaticon.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    
+    <style>
+        .code-reviewer-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+        }
+        
+        .reviewer-header {
+            background: white;
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .reviewer-header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .reviewer-header p {
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+        
+        .model-selector {
+            margin: 15px 0;
+        }
+        
+        .model-selector select {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .code-form {
+            background: white;
+            padding: 30px;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-section select,
+        .form-section textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-section select:focus,
+        .form-section textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .code-input {
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 200px;
+            background: #f8f9fa;
+        }
+        
+        .context-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-section {
+            flex: 1;
+        }
+        
+        .review-button {
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .review-button:hover:not(:disabled) {
+            background: #0056b3;
+        }
+        
+        .review-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .review-output {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            padding: 30px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .review-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .review-section h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .review-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .review-item.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .review-item.error {
+            border-left-color: #dc3545;
+        }
+        
+        .review-item.success {
+            border-left-color: #28a745;
+        }
+        
+        .review-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .review-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .code-snippet {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .status-indicator {
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        
+        .status-indicator.loading {
+            color: #007bff;
+        }
+        
+        .status-indicator.error {
+            color: #dc3545;
+        }
+        
+        .status-indicator.ready {
+            color: #28a745;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .example-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .example-link {
+            padding: 5px 12px;
+            background: #e9ecef;
+            color: #495057;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .example-link:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .severity-icon {
+            font-size: 16px;
+        }
+        
+        .severity-icon.error { color: #dc3545; }
+        .severity-icon.warning { color: #ffc107; }
+        .severity-icon.info { color: #17a2b8; }
+        .severity-icon.success { color: #28a745; }
+    </style>
+</head>
+
+<body>
+    <div class="code-reviewer-container">
+        <a href="../../webapps.html" class="back-button">
+            <i class="fa fa-arrow-left"></i> Back to Web Apps
+        </a>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="reviewer-header">
+                        <h1><i class="fa fa-code"></i> Code Reviewer</h1>
+                        <p>AI-powered code analysis and review tool - runs entirely in your browser</p>
+                        
+                        <div class="model-selector">
+                            <label for="modelSelect">Model: </label>
+                            <select id="modelSelect">
+                                <option value="Phi-3.5-mini-instruct-q4f16_1-MLC">Phi-3.5 Mini (Fast, 2.2GB)</option>
+                                <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B (Balanced, 2.0GB)</option>
+                                <option value="Qwen2.5-3B-Instruct-q4f16_1-MLC">Qwen 2.5 3B (Quality, 2.2GB)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="code-form">
+                        <div class="form-row">
+                            <div class="form-section">
+                                <label for="language">Programming Language</label>
+                                <select id="language" disabled>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="csharp">C#</option>
+                                    <option value="go">Go</option>
+                                    <option value="rust">Rust</option>
+                                    <option value="typescript">TypeScript</option>
+                                    <option value="php">PHP</option>
+                                    <option value="ruby">Ruby</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-section">
+                                <label for="reviewType">Review Focus</label>
+                                <select id="reviewType" disabled>
+                                    <option value="general">General Review</option>
+                                    <option value="performance">Performance</option>
+                                    <option value="security">Security</option>
+                                    <option value="style">Code Style</option>
+                                    <option value="bugs">Bug Detection</option>
+                                    <option value="best-practices">Best Practices</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <label for="codeInput">Code to Review</label>
+                            <textarea id="codeInput" class="code-input" placeholder="Paste your code here..." disabled></textarea>
+                            <div class="example-links">
+                                <button class="example-link" onclick="loadExample('javascript')">JS Example</button>
+                                <button class="example-link" onclick="loadExample('python')">Python Example</button>
+                                <button class="example-link" onclick="loadExample('java')">Java Example</button>
+                                <button class="example-link" onclick="loadExample('bug')">Buggy Code</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <label for="contextInput">Additional Context (Optional)</label>
+                            <textarea id="contextInput" class="context-input" placeholder="Provide any additional context about the code, its purpose, constraints, or specific areas you'd like reviewed..." disabled></textarea>
+                        </div>
+                        
+                        <button id="reviewButton" class="review-button" disabled>
+                            <i class="fa fa-search"></i> Analyze Code
+                        </button>
+                        
+                        <div class="status-indicator" id="statusIndicator">
+                            Select a model to start reviewing code
+                        </div>
+                    </div>
+                    
+                    <div class="review-output" id="reviewOutput" style="display: none;">
+                        <div class="loading-spinner" id="loadingSpinner">
+                            <div class="spinner"></div>
+                            <p>Analyzing your code...</p>
+                        </div>
+                        
+                        <div id="reviewResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebLLM -->
+    <script type="module">
+        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+        class CodeReviewer {
+            constructor() {
+                this.engine = null;
+                this.currentModel = null;
+                this.isLoading = false;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.setupExamples();
+            }
+            
+            initializeElements() {
+                this.modelSelect = document.getElementById('modelSelect');
+                this.language = document.getElementById('language');
+                this.reviewType = document.getElementById('reviewType');
+                this.codeInput = document.getElementById('codeInput');
+                this.contextInput = document.getElementById('contextInput');
+                this.reviewButton = document.getElementById('reviewButton');
+                this.statusIndicator = document.getElementById('statusIndicator');
+                this.reviewOutput = document.getElementById('reviewOutput');
+                this.loadingSpinner = document.getElementById('loadingSpinner');
+                this.reviewResults = document.getElementById('reviewResults');
+            }
+            
+            bindEvents() {
+                this.modelSelect.addEventListener('change', () => this.loadModel());
+                this.reviewButton.addEventListener('click', () => this.reviewCode());
+                
+                // Enable review button when code is provided
+                this.codeInput.addEventListener('input', () => this.validateForm());
+            }
+            
+            setupExamples() {
+                this.examples = {
+                    javascript: `function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// Usage
+for (let i = 0; i < 10; i++) {
+    console.log(fibonacci(i));
+}`,
+                    python: `def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    return quicksort(left) + middle + quicksort(right)
+
+# Usage
+numbers = [3, 6, 8, 10, 1, 2, 1]
+print(quicksort(numbers))`,
+                    java: `public class Calculator {
+    private double result;
+    
+    public void add(double number) {
+        result += number;
+    }
+    
+    public void subtract(double number) {
+        result -= number;
+    }
+    
+    public double getResult() {
+        return result;
+    }
+    
+    public static void main(String[] args) {
+        Calculator calc = new Calculator();
+        calc.add(10);
+        calc.subtract(3);
+        System.out.println(calc.getResult());
+    }
+}`,
+                    bug: `function processUsers(users) {
+    var results = [];
+    
+    for (var i = 0; i < users.length; i++) {
+        setTimeout(function() {
+            if (users[i].age >= 18) {
+                results.push(users[i].name);
+            }
+        }, 100);
+    }
+    
+    return results;
+}`
+                };
+            }
+            
+            async loadModel() {
+                const selectedModel = this.modelSelect.value;
+                
+                if (this.currentModel === selectedModel && this.engine) {
+                    return;
+                }
+                
+                this.isLoading = true;
+                this.updateStatus('Loading model... This may take a moment on first load.', 'loading');
+                this.disableForm();
+                
+                try {
+                    if (this.engine) {
+                        await this.engine.unload();
+                    }
+                    
+                    this.engine = await CreateMLCEngine(selectedModel, {
+                        initProgressCallback: (progress) => {
+                            const percent = Math.round(progress.progress * 100);
+                            this.updateStatus(`Loading model: ${percent}%`, 'loading');
+                        }
+                    });
+                    
+                    this.currentModel = selectedModel;
+                    this.updateStatus('Model loaded! Paste your code to get started.', 'ready');
+                    this.enableForm();
+                    
+                } catch (error) {
+                    console.error('Failed to load model:', error);
+                    this.updateStatus('Failed to load model. Please try again.', 'error');
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+            
+            async reviewCode() {
+                if (!this.validateForm() || this.isLoading || !this.engine) return;
+                
+                this.reviewOutput.style.display = 'block';
+                this.loadingSpinner.classList.add('show');
+                this.reviewResults.innerHTML = '';
+                this.reviewButton.disabled = true;
+                
+                const reviewData = {
+                    code: this.codeInput.value,
+                    language: this.language.value,
+                    reviewType: this.reviewType.value,
+                    context: this.contextInput.value
+                };
+                
+                const prompt = this.buildReviewPrompt(reviewData);
+                
+                try {
+                    const response = await this.engine.chat.completions.create({
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.3,
+                        max_tokens: 1500,
+                    });
+                    
+                    const reviewContent = response.choices[0].message.content;
+                    
+                    this.loadingSpinner.classList.remove('show');
+                    this.displayReview(reviewContent);
+                    
+                } catch (error) {
+                    console.error('Error reviewing code:', error);
+                    this.loadingSpinner.classList.remove('show');
+                    this.reviewResults.innerHTML = '<p style="color: #dc3545; text-align: center;">Failed to review code. Please try again.</p>';
+                } finally {
+                    this.reviewButton.disabled = false;
+                }
+            }
+            
+            buildReviewPrompt(data) {
+                const focusMap = {
+                    'general': 'overall code quality, readability, and potential improvements',
+                    'performance': 'performance optimizations and efficiency',
+                    'security': 'security vulnerabilities and best practices',
+                    'style': 'code style, formatting, and conventions',
+                    'bugs': 'potential bugs and logical errors',
+                    'best-practices': 'adherence to best practices and design patterns'
+                };
+                
+                const focus = focusMap[data.reviewType] || 'general code review';
+                
+                return `Please review this ${data.language} code with focus on ${focus}.
+
+Code:
+\`\`\`${data.language}
+${data.code}
+\`\`\`
+
+${data.context ? `Additional Context: ${data.context}` : ''}
+
+Please provide:
+1. **Overall Assessment** - Brief summary of code quality
+2. **Issues Found** - List any problems, bugs, or concerns
+3. **Suggestions** - Specific recommendations for improvement
+4. **Best Practices** - Relevant best practices that could be applied
+
+Format your response with clear sections and be specific about line numbers or code sections when possible.`;
+            }
+            
+            displayReview(reviewContent) {
+                // Parse and format the review content
+                let formattedContent = reviewContent
+                    .replace(/\*\*(.*?)\*\*/g, '<h3><i class="fa fa-check-circle severity-icon success"></i> $1</h3>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/```([\s\S]*?)```/g, '<div class="code-snippet">$1</div>')
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/^/, '<p>')
+                    .replace(/$/, '</p>');
+                
+                // Wrap in a review section
+                this.reviewResults.innerHTML = `
+                    <div class="review-section">
+                        ${formattedContent}
+                    </div>
+                `;
+            }
+            
+            validateForm() {
+                const isValid = this.codeInput.value.trim() && 
+                               this.engine && 
+                               !this.isLoading;
+                
+                this.reviewButton.disabled = !isValid;
+                return isValid;
+            }
+            
+            enableForm() {
+                const elements = [this.language, this.reviewType, this.codeInput, this.contextInput];
+                elements.forEach(el => el.disabled = false);
+                this.validateForm();
+            }
+            
+            disableForm() {
+                const elements = [this.language, this.reviewType, this.codeInput, 
+                                this.contextInput, this.reviewButton];
+                elements.forEach(el => el.disabled = true);
+            }
+            
+            updateStatus(message, type = '') {
+                this.statusIndicator.textContent = message;
+                this.statusIndicator.className = `status-indicator ${type}`;
+            }
+        }
+        
+        // Load example code
+        window.loadExample = function(type) {
+            const codeInput = document.getElementById('codeInput');
+            const languageSelect = document.getElementById('language');
+            
+            if (window.codeReviewer.examples[type]) {
+                codeInput.value = window.codeReviewer.examples[type];
+                
+                // Set appropriate language
+                if (type === 'javascript' || type === 'bug') {
+                    languageSelect.value = 'javascript';
+                } else if (type === 'python') {
+                    languageSelect.value = 'python';
+                } else if (type === 'java') {
+                    languageSelect.value = 'java';
+                }
+                
+                window.codeReviewer.validateForm();
+            }
+        };
+        
+        // Initialize the code reviewer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.codeReviewer = new CodeReviewer();
+        });
+    </script>
+</body>
+</html>
