@@ -380,6 +380,169 @@
             margin-bottom: 20px;
             font-size: 0.9rem;
         }
+        
+        /* Analysis Details Styles */
+        .analysis-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .analysis-step {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .analysis-step h4 {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            margin: 0;
+            padding: 15px;
+            color: #333;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .step-content {
+            padding: 15px;
+        }
+        
+        .step-content p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        .fetch-log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #495057;
+            line-height: 1.4;
+        }
+        
+        .fetch-log-entry {
+            margin-bottom: 3px;
+        }
+        
+        .fetch-log-entry.success {
+            color: #28a745;
+        }
+        
+        .fetch-log-entry.info {
+            color: #007bff;
+        }
+        
+        .technical-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tech-stat {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .tech-stat-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        
+        .tech-stat-value {
+            color: #666;
+        }
+        
+        .model-input-preview {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #495057;
+            white-space: pre-wrap;
+        }
+        
+        .ai-reasoning {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #495057;
+        }
+        
+        .ai-reasoning h5 {
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .ai-reasoning .raw-response {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -446,6 +609,44 @@
                 <div class="loading-spinner" id="loadingSpinner">
                     <div class="spinner"></div>
                     <p>AI is analyzing market data and predicting stock movements...</p>
+                </div>
+                
+                <!-- Detailed Analysis View -->
+                <div class="analysis-details" id="analysisDetails" style="display: none;">
+                    <div class="analysis-step" id="step1">
+                        <h4><i class="fa fa-download"></i> Step 1: Fetching Market Data</h4>
+                        <div class="step-content" id="step1Content">
+                            <p>Retrieving real-time stock data for 25 popular stocks and ETFs...</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="fetchProgress"></div>
+                            </div>
+                            <div class="fetch-log" id="fetchLog"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-step" id="step2" style="display: none;">
+                        <h4><i class="fa fa-calculator"></i> Step 2: Technical Analysis Calculations</h4>
+                        <div class="step-content" id="step2Content">
+                            <p>Computing RSI, momentum, volume analysis, candlestick patterns, and volatility metrics...</p>
+                            <div class="technical-summary" id="technicalSummary"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-step" id="step3" style="display: none;">
+                        <h4><i class="fa fa-feed"></i> Step 3: AI Model Input</h4>
+                        <div class="step-content" id="step3Content">
+                            <p>Preparing comprehensive dataset for AI analysis...</p>
+                            <div class="model-input-preview" id="modelInputPreview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-step" id="step4" style="display: none;">
+                        <h4><i class="fa fa-brain"></i> Step 4: AI Analysis & Reasoning</h4>
+                        <div class="step-content" id="step4Content">
+                            <p>AI model is evaluating technical indicators and generating predictions...</p>
+                            <div class="ai-reasoning" id="aiReasoning"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="stocksContainer">
@@ -670,12 +871,21 @@
                 this.loadingSpinner.classList.add('show');
                 this.stocksGrid.innerHTML = '';
                 
+                // Show detailed analysis view
+                document.getElementById('analysisDetails').style.display = 'block';
+                
                 try {
-                    // Fetch stock data
-                    await this.fetchStockData();
+                    // Step 1: Fetch stock data with detailed logging
+                    await this.fetchStockDataWithDetails();
                     
-                    // Analyze with AI
-                    await this.performAIAnalysis();
+                    // Step 2: Show technical analysis calculations
+                    this.showTechnicalAnalysisStep();
+                    
+                    // Step 3: Show AI model input
+                    this.showModelInputStep();
+                    
+                    // Step 4: Analyze with AI and show reasoning
+                    await this.performAIAnalysisWithDetails();
                     
                 } catch (error) {
                     console.error('Analysis failed:', error);
@@ -685,6 +895,252 @@
                     this.loadingSpinner.classList.remove('show');
                     this.checkReadiness();
                 }
+            }
+            
+            async fetchStockDataWithDetails() {
+                const fetchLog = document.getElementById('fetchLog');
+                const fetchProgress = document.getElementById('fetchProgress');
+                
+                this.addFetchLogEntry('Starting data retrieval for 25 stocks/ETFs...', 'info');
+                
+                // Get yesterday's date for end-of-day data
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const dateStr = yesterday.toISOString().split('T')[0];
+                
+                let requestCount = 0;
+                const maxRequests = 25; // Analyze all stocks
+                
+                for (const stock of TOP_STOCKS.slice(0, maxRequests)) {
+                    try {
+                        // Update progress
+                        const progressPercent = ((requestCount + 1) / maxRequests) * 100;
+                        fetchProgress.style.width = progressPercent + '%';
+                        
+                        this.addFetchLogEntry(`Fetching ${stock.symbol} (${stock.name})...`, 'info');
+                        
+                        // Fetch current day data and previous close for technical analysis
+                        const prevUrl = `https://api.polygon.io/v2/aggs/ticker/${stock.symbol}/prev?adjusted=true&apikey=${this.apiKey}`;
+                        
+                        const response = await fetch(prevUrl);
+                        const data = await response.json();
+                        
+                        if (data.results && data.results.length > 0) {
+                            const result = data.results[0];
+                            const price = result.c; // Close price
+                            const open = result.o; // Open price
+                            const high = result.h; // High price
+                            const low = result.l; // Low price
+                            const volume = result.v; // Volume
+                            
+                            const change = price - open;
+                            const changePercent = ((change / open) * 100);
+                            
+                            // Calculate technical indicators
+                            const technical = this.calculateTechnicalIndicators({
+                                open, high, low, close: price, volume
+                            });
+                            
+                            this.stockData[stock.symbol] = {
+                                symbol: stock.symbol,
+                                name: stock.name,
+                                price: price,
+                                change: change,
+                                changePercent: changePercent,
+                                volume: volume,
+                                high: high,
+                                low: low,
+                                open: open,
+                                previousClose: price,
+                                technical: technical
+                            };
+                            
+                            this.addFetchLogEntry(`✓ ${stock.symbol}: $${price.toFixed(2)} (${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%) RSI: ${technical.rsi.toFixed(1)}`, 'success');
+                        } else {
+                            this.addFetchLogEntry(`✗ Failed to fetch ${stock.symbol} - no data available`, 'info');
+                        }
+                        
+                        requestCount++;
+                        
+                        // Respect rate limits - wait 12 seconds between requests (5 requests/minute)
+                        if (requestCount < maxRequests) {
+                            await new Promise(resolve => setTimeout(resolve, 12000));
+                        }
+                        
+                    } catch (error) {
+                        this.addFetchLogEntry(`✗ Error fetching ${stock.symbol}: ${error.message}`, 'info');
+                        console.error(`Error fetching ${stock.symbol}:`, error);
+                    }
+                }
+                
+                this.addFetchLogEntry(`Completed: Retrieved data for ${Object.keys(this.stockData).length} stocks`, 'success');
+            }
+            
+            addFetchLogEntry(message, type = 'info') {
+                const fetchLog = document.getElementById('fetchLog');
+                const entry = document.createElement('div');
+                entry.className = `fetch-log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                fetchLog.appendChild(entry);
+                fetchLog.scrollTop = fetchLog.scrollHeight;
+            }
+            
+            showTechnicalAnalysisStep() {
+                document.getElementById('step2').style.display = 'block';
+                const technicalSummary = document.getElementById('technicalSummary');
+                const stockDataArray = Object.values(this.stockData);
+                
+                // Calculate aggregate statistics
+                const avgRSI = stockDataArray.reduce((sum, stock) => sum + stock.technical.rsi, 0) / stockDataArray.length;
+                const bullishCount = stockDataArray.filter(stock => stock.technical.candlestickPattern.includes('Bullish')).length;
+                const highVolumeCount = stockDataArray.filter(stock => stock.technical.volumeIntensity === 'High').length;
+                const positiveChange = stockDataArray.filter(stock => stock.changePercent > 0).length;
+                
+                technicalSummary.innerHTML = `
+                    <div class="tech-stat">
+                        <div class="tech-stat-label">Average RSI</div>
+                        <div class="tech-stat-value">${avgRSI.toFixed(1)}</div>
+                    </div>
+                    <div class="tech-stat">
+                        <div class="tech-stat-label">Bullish Patterns</div>
+                        <div class="tech-stat-value">${bullishCount} / 25 stocks</div>
+                    </div>
+                    <div class="tech-stat">
+                        <div class="tech-stat-label">High Volume</div>
+                        <div class="tech-stat-value">${highVolumeCount} / 25 stocks</div>
+                    </div>
+                    <div class="tech-stat">
+                        <div class="tech-stat-label">Positive Change</div>
+                        <div class="tech-stat-value">${positiveChange} / 25 stocks</div>
+                    </div>
+                `;
+            }
+            
+            showModelInputStep() {
+                document.getElementById('step3').style.display = 'block';
+                const modelInputPreview = document.getElementById('modelInputPreview');
+                const stockDataArray = Object.values(this.stockData);
+                
+                // Show a preview of the data that will be sent to the AI (first 3 stocks)
+                const previewData = stockDataArray.slice(0, 3).map(stock => {
+                    const tech = stock.technical;
+                    return `${stock.symbol} (${stock.name}):
+  Price: $${stock.price.toFixed(2)} (${stock.changePercent > 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)
+  Volume: ${stock.volume.toLocaleString()} (${tech.volumeIntensity})
+  Technical Analysis:
+    - RSI: ${tech.rsi.toFixed(1)} (${tech.rsi > 70 ? 'Overbought' : tech.rsi < 30 ? 'Oversold' : 'Neutral'})
+    - Momentum: ${(tech.momentum * 100).toFixed(2)}%
+    - Price Position: ${tech.pricePosition.toFixed(1)}% of daily range
+    - Candlestick: ${tech.candlestickPattern}
+    - Volatility: ${tech.volatility.toFixed(2)}%
+    - Gap: ${tech.gapPercent.toFixed(2)}%`;
+                }).join('\n\n');
+                
+                modelInputPreview.textContent = previewData + '\n\n... (22 more stocks with similar technical analysis data)';
+            }
+            
+            async performAIAnalysisWithDetails() {
+                document.getElementById('step4').style.display = 'block';
+                const aiReasoning = document.getElementById('aiReasoning');
+                
+                aiReasoning.innerHTML = '<p>Preparing data for AI model...</p>';
+                
+                const stockDataArray = Object.values(this.stockData);
+                
+                if (stockDataArray.length === 0) {
+                    throw new Error('No stock data available');
+                }
+                
+                // Prepare data for AI analysis with technical indicators
+                const marketSummary = stockDataArray.map(stock => {
+                    const tech = stock.technical;
+                    return `${stock.symbol} (${stock.name}):
+  Price: $${stock.price.toFixed(2)} (${stock.changePercent > 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)
+  Volume: ${stock.volume.toLocaleString()} (${tech.volumeIntensity})
+  Technical Analysis:
+    - RSI: ${tech.rsi.toFixed(1)} (${tech.rsi > 70 ? 'Overbought' : tech.rsi < 30 ? 'Oversold' : 'Neutral'})
+    - Momentum: ${(tech.momentum * 100).toFixed(2)}%
+    - Price Position: ${tech.pricePosition.toFixed(1)}% of daily range
+    - Candlestick: ${tech.candlestickPattern}
+    - Volatility: ${tech.volatility.toFixed(2)}%
+    - Gap: ${tech.gapPercent.toFixed(2)}%`;
+                }).join('\n\n');
+                
+                const prompt = `As an expert quantitative analyst, analyze these 25 popular stocks/ETFs and predict which is most likely to have a positive day. Use the comprehensive technical analysis data provided.
+
+STOCK DATA WITH TECHNICAL INDICATORS:
+${marketSummary}
+
+Evaluation Criteria:
+1. **Technical Momentum**: RSI levels, price momentum, gap analysis
+2. **Volume Analysis**: Volume intensity and price/volume relationship  
+3. **Candlestick Patterns**: Bullish/bearish signals from intraday action
+4. **Price Action**: Position within daily range, volatility assessment
+5. **Risk/Reward**: Balance potential upside with volatility risk
+
+For each stock, provide a prediction score from 1-100 (higher = more likely positive) based on:
+- Strong technical indicators (RSI 30-70 range preferred)
+- Positive momentum with reasonable volatility
+- Bullish candlestick patterns
+- Healthy volume levels
+- Favorable price positioning
+
+Respond in JSON format:
+{
+  "predictions": [
+    {"symbol": "SPY", "score": 85, "reasoning": "Strong bullish momentum with RSI at 65, high volume confirms trend..."},
+    ...
+  ],
+  "topPick": "SPY",
+  "marketOutlook": "Overall market technical analysis summary"
+}`;
+
+                aiReasoning.innerHTML = '<p>Sending data to AI model and waiting for analysis...</p>';
+
+                const response = await this.engine.chat.completions.create({
+                    messages: [{ role: 'user', content: prompt }],
+                    temperature: 0.3,
+                    max_tokens: 2000,
+                });
+                
+                const analysisText = response.choices[0].message.content;
+                let analysis;
+                
+                // Show the raw AI response
+                aiReasoning.innerHTML = `
+                    <h5>AI Model Response:</h5>
+                    <p>The AI model has completed its analysis. Here's the reasoning process:</p>
+                    <div class="raw-response">${analysisText}</div>
+                `;
+                
+                try {
+                    // Extract JSON from response
+                    const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        analysis = JSON.parse(jsonMatch[0]);
+                        
+                        // Add parsed analysis summary
+                        aiReasoning.innerHTML += `
+                            <h5>Parsed Analysis Results:</h5>
+                            <p><strong>Top Pick:</strong> ${analysis.topPick}</p>
+                            <p><strong>Market Outlook:</strong> ${analysis.marketOutlook}</p>
+                            <p><strong>Total Predictions:</strong> ${analysis.predictions.length} stocks analyzed</p>
+                        `;
+                    } else {
+                        throw new Error('No JSON found in response');
+                    }
+                } catch (parseError) {
+                    console.error('Failed to parse AI response:', parseError);
+                    // Fallback: create basic analysis
+                    analysis = this.createFallbackAnalysis(stockDataArray);
+                    
+                    aiReasoning.innerHTML += `
+                        <h5>Fallback Analysis Used:</h5>
+                        <p>AI response parsing failed, using technical analysis fallback algorithm.</p>
+                    `;
+                }
+                
+                this.displayResults(analysis);
             }
             
             async fetchStockData() {
