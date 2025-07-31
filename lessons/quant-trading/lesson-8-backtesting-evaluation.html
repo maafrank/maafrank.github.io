@@ -1416,6 +1416,13 @@ print("Run: mc_analyzer, results, analysis = run_monte_carlo_example()")
             console.log('🎉 Lesson 8: Backtesting & Strategy Evaluation loaded successfully!');
             console.log('🎓 Congratulations on completing the Quantitative Trading with ML course!');
         });
+
+        // Mark lesson as completed when user scrolls to bottom
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                localStorage.setItem('quant_lesson_8_completed', 'true');
+            }
+        });
     </script>
 </body>
 </html>
