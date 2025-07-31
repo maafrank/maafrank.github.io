@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Apps - Matthew Frank</title>
+    <meta name="description" content="Interactive AI-powered web applications built with WebLLM - run entirely in your browser">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/logo/favicon.png" type="image/png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/bootsnav.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <style>
+        .webapps-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .section-heading h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .section-heading .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 50px;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .app-icon {
+            font-size: 4rem;
+            color: #007bff;
+            margin-bottom: 25px;
+        }
+        
+        .app-card h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .app-card p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .app-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .app-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .features-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #eee;
+        }
+        
+        .features-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .features-section > .row:first-child p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 20px 15px;
+        }
+        
+        .feature-item i {
+            font-size: 2.5rem;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        
+        .feature-item h4 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .feature-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Start Navigation -->
+    <nav class="navbar navbar-default navbar-fixed dark bootsnav">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="index.html">Matthew Frank</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-menu">
+                <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="ml-academy.html">ML Academy</a></li>
+                    <li><a href="games.html">Games</a></li>
+                    <li class="active"><a href="webapps.html">Web Apps</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Navigation -->
+
+    <!-- Start Header -->
+    <section id="home" class="home">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="home-content text-center">
+                        <div class="home-content-inner">
+                            <h1>AI-Powered Web Apps</h1>
+                            <h2>Interactive applications running entirely in your browser</h2>
+                            <p>Experience the power of AI with WebLLM - no server required, complete privacy, works offline</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Header -->
+
+    <!-- Web Apps Section -->
+    <section class="webapps-section">
+        <div class="container">
+            <div class="section-heading text-center">
+                <h2>AI-Powered Web Apps</h2>
+                <p class="subtitle">Click on any app below to get started!</p>
+            </div>
+            
+            <!-- Apps Row -->
+            <div class="row">
+                <!-- ChatBot App -->
+                <div class="col-md-4 col-sm-6">
+                    <div class="app-card">
+                        <div class="app-icon">
+                            <i class="fa fa-comments-o"></i>
+                        </div>
+                        <h3>AI ChatBot</h3>
+                        <p>Chat with AI models running entirely in your browser. Get help with coding, writing, questions, and more!</p>
+                        <a href="webapps/ChatBot/index.html" class="app-btn">Start Chatting</a>
+                    </div>
+                </div>
+
+                <!-- Course Creator App -->
+                <div class="col-md-4 col-sm-6">
+                    <div class="app-card">
+                        <div class="app-icon">
+                            <i class="fa fa-graduation-cap"></i>
+                        </div>
+                        <h3>Course Creator</h3>
+                        <p>Generate structured learning materials and course outlines using AI. Perfect for educators and learners!</p>
+                        <a href="webapps/CourseCreator/index.html" class="app-btn">Create Course</a>
+                    </div>
+                </div>
+
+                <!-- Code Reviewer App -->
+                <div class="col-md-4 col-sm-6">
+                    <div class="app-card">
+                        <div class="app-icon">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <h3>Code Reviewer</h3>
+                        <p>Get AI-powered code analysis and suggestions. Improve your code quality and learn best practices!</p>
+                        <a href="webapps/CodeReviewer/index.html" class="app-btn">Review Code</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h3>✨ Powered by WebLLM Technology</h3>
+                        <p>All apps run entirely in your browser with complete privacy and offline capability</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="feature-item">
+                            <i class="fa fa-shield"></i>
+                            <h4>100% Private</h4>
+                            <p>No data leaves your device</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="feature-item">
+                            <i class="fa fa-download"></i>
+                            <h4>Works Offline</h4>
+                            <p>Use without internet connection</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="feature-item">
+                            <i class="fa fa-bolt"></i>
+                            <h4>GPU Accelerated</h4>
+                            <p>Fast performance with WebGPU</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="feature-item">
+                            <i class="fa fa-key"></i>
+                            <h4>No API Keys</h4>
+                            <p>No setup or registration required</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Start Footer -->
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="footer-copyright text-center">
+                        <p>&copy; 2024 Matthew Frank. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer -->
+
+    <!-- JS -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootsnav.js"></script>
+    <script src="assets/js/jquery.sticky.js"></script>
+    <script src="assets/js/jquery.appear.js"></script>
+    <script src="assets/js/progressbar.js"></script>
+    <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="assets/js/custom.js"></script>
+</body>
+</html>

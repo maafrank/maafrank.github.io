@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Course Creator - Matthew Frank</title>
+    <meta name="description" content="AI-powered course generation tool running entirely in your browser with WebLLM">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../../assets/logo/favicon.png" type="image/png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/flaticon.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .course-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-header {
+            background: white;
+            border-radius: 15px 15px 0 0;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .course-header h1 {
+            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .course-header .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        /* Multi-Step Progress Bar */
+        .multi-step-progress {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: none;
+        }
+        
+        .multi-step-progress.show {
+            display: block;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 2px;
+            background: #007bff;
+            transition: width 0.5s ease;
+            z-index: 2;
+        }
+        
+        .progress-step {
+            background: white;
+            border: 3px solid #e9ecef;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #666;
+            z-index: 3;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            border-color: #007bff;
+            color: #007bff;
+            background: white;
+        }
+        
+        .progress-step.completed {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+        
+        .step-label {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .progress-step.active .step-label {
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        /* Model Selection Screen */
+        .model-selection {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .model-selection h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .model-selection p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .model-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .model-button {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 240px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .model-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,123,255,0.2);
+            border-color: #007bff;
+        }
+        
+        .model-button.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .model-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .model-specs {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .model-description {
+            font-size: 0.85rem;
+            color: #777;
+            line-height: 1.4;
+        }
+        
+        .model-icon {
+            font-size: 2.5rem;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .progress-container.show {
+            display: block;
+        }
+        
+        .progress-bar-custom {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Main Interface */
+        .course-main {
+            background: white;
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .course-main.active {
+            display: flex;
+        }
+        
+        .model-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 0;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .model-info-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .model-info .current-model {
+            font-weight: 600;
+            color: #1976d2;
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .model-info .model-details {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        .switch-model-btn {
+            background: transparent;
+            border: 1px solid #007bff;
+            color: #007bff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch-model-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        /* Content Areas */
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .content-area.active {
+            display: block;
+        }
+        
+        /* Step 1: Curriculum Creation */
+        .form-section {
+            margin-bottom: 25px;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-section label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1rem;
+        }
+        
+        .form-section input,
+        .form-section textarea,
+        .form-section select {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-section input:focus,
+        .form-section textarea:focus,
+        .form-section select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        
+        .form-section textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .quick-templates {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .template-btn {
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #495057;
+        }
+        
+        .template-btn:hover {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        /* Step 2: Curriculum Review */
+        .curriculum-review {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+        }
+        
+        .curriculum-content h3 {
+            color: #007bff;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin: 20px 0 15px 0;
+        }
+        
+        .lesson-selector {
+            margin: 20px 0;
+        }
+        
+        .lesson-item {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .lesson-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 10px rgba(0,123,255,0.1);
+        }
+        
+        .lesson-item.selected {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+        
+        .lesson-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .lesson-item.selected .lesson-checkbox {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .lesson-info {
+            flex: 1;
+        }
+        
+        .lesson-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .lesson-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Step 3: Lesson Generation */
+        .lesson-generation {
+            text-align: center;
+        }
+        
+        .generation-progress {
+            margin: 30px 0;
+        }
+        
+        .current-lesson {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .progress-stats {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .lesson-queue {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+        
+        .queue-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+        }
+        
+        .queue-status.completed {
+            background: #28a745;
+        }
+        
+        .queue-status.generating {
+            background: #007bff;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .queue-status.pending {
+            background: #6c757d;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Step 4: Course Review */
+        .course-review {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+        
+        .lesson-nav {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+        
+        .nav-lesson {
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-lesson:hover {
+            background: #e9ecef;
+        }
+        
+        .nav-lesson.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .lesson-content {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+            overflow-y: auto;
+        }
+        
+        /* Buttons */
+        .action-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .action-button.primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .action-button.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+        
+        .action-button.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .action-button.success:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        }
+        
+        .action-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        /* Loading States */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-spinner.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Export Options */
+        .export-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .export-button {
+            padding: 12px 24px;
+            border: 2px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .export-button:hover {
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .model-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .model-button {
+                min-width: 280px;
+            }
+            
+            .course-container {
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-review {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .progress-steps::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../../webapps.html" class="back-button">
+        <i class="fa fa-arrow-left"></i> Back to Web Apps
+    </a>
+    
+    <div class="course-container">
+        <!-- Header -->
+        <div class="course-header">
+            <h1><i class="fa fa-graduation-cap"></i> Course Creator</h1>
+            <p class="subtitle">Complete course creation system • From curriculum to full lessons</p>
+        </div>
+        
+        <!-- Multi-Step Progress -->
+        <div class="multi-step-progress" id="multiStepProgress">
+            <div class="progress-steps">
+                <div class="progress-line" id="progressLine"></div>
+                
+                <div class="progress-step active" data-step="1">
+                    <i class="fa fa-list-alt"></i>
+                    <div class="step-label">Create Curriculum</div>
+                </div>
+                
+                <div class="progress-step" data-step="2">
+                    <i class="fa fa-check-square-o"></i>
+                    <div class="step-label">Select Lessons</div>
+                </div>
+                
+                <div class="progress-step" data-step="3">
+                    <i class="fa fa-magic"></i>
+                    <div class="step-label">Generate Content</div>
+                </div>
+                
+                <div class="progress-step" data-step="4">
+                    <i class="fa fa-edit"></i>
+                    <div class="step-label">Review Course</div>
+                </div>
+                
+                <div class="progress-step" data-step="5">
+                    <i class="fa fa-download"></i>
+                    <div class="step-label">Export</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Model Selection Screen -->
+        <div class="model-selection" id="modelSelection">
+            <h2>Choose Your AI Model</h2>
+            <p>Select a model to download and start creating complete courses with full lesson content.</p>
+            
+            <div class="model-buttons">
+                <div class="model-button" data-model="Phi-3.5-mini-instruct-q4f16_1-MLC">
+                    <div class="model-icon">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <div class="model-name">Phi-3.5 Mini</div>
+                    <div class="model-specs">Fast • 2.2GB • Microsoft</div>
+                    <div class="model-description">Quick content generation. Good for basic courses and structured lessons.</div>
+                </div>
+                
+                <div class="model-button" data-model="Llama-3.2-3B-Instruct-q4f16_1-MLC">
+                    <div class="model-icon">
+                        <i class="fa fa-balance-scale"></i>
+                    </div>
+                    <div class="model-name">Llama 3.2 3B</div>
+                    <div class="model-specs">Balanced • 2.0GB • Meta</div>
+                    <div class="model-description">Comprehensive lessons with detailed explanations. Great for educational content.</div>
+                </div>
+                
+                <div class="model-button" data-model="Qwen2.5-3B-Instruct-q4f16_1-MLC">
+                    <div class="model-icon">
+                        <i class="fa fa-diamond"></i>
+                    </div>
+                    <div class="model-name">Qwen 2.5 3B</div>
+                    <div class="model-specs">Quality • 2.2GB • Alibaba</div>
+                    <div class="model-description">Rich, detailed lesson content with examples and exercises. Best for in-depth courses.</div>
+                </div>
+            </div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar-custom">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Preparing to download...</div>
+            </div>
+        </div>
+        
+        <!-- Main Course Creation Interface -->
+        <div class="course-main" id="courseMain">
+            <!-- Model Info Bar -->
+            <div class="model-info" id="modelInfo">
+                <div class="model-info-left">
+                    <div>
+                        <div class="current-model" id="currentModelName">Model Name</div>
+                        <div class="model-details" id="currentModelDetails">Model details</div>
+                    </div>
+                </div>
+                <button class="switch-model-btn" id="switchModelBtn">Switch Model</button>
+            </div>
+            
+            <!-- Step 1: Curriculum Creation -->
+            <div class="content-area active" id="step1">
+                <h2>Step 1: Create Course Curriculum</h2>
+                
+                <div class="form-section">
+                    <label for="courseTitle">Course Title *</label>
+                    <input type="text" id="courseTitle" placeholder="e.g., Introduction to Machine Learning" disabled>
+                    <div class="quick-templates">
+                        <button class="template-btn" onclick="fillTemplate('ml')">Machine Learning</button>
+                        <button class="template-btn" onclick="fillTemplate('web')">Web Development</button>
+                        <button class="template-btn" onclick="fillTemplate('data')">Data Science</button>
+                        <button class="template-btn" onclick="fillTemplate('python')">Python Programming</button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-section">
+                        <label for="targetAudience">Target Audience</label>
+                        <select id="targetAudience" disabled>
+                            <option value="complete-beginner">Complete Beginner</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate" selected>Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="professional">Professional</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label for="lessonCount">Number of Lessons</label>
+                        <select id="lessonCount" disabled>
+                            <option value="6">6 Lessons</option>
+                            <option value="8" selected>8 Lessons</option>
+                            <option value="10">10 Lessons</option>
+                            <option value="12">12 Lessons</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label for="courseFormat">Course Format</label>
+                        <select id="courseFormat" disabled>
+                            <option value="theoretical">Theoretical Focus</option>
+                            <option value="practical" selected>Practical/Hands-on</option>
+                            <option value="mixed">Theory + Practice</option>
+                            <option value="project">Project-Based</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <label for="courseDescription">Course Description & Learning Objectives *</label>
+                    <textarea id="courseDescription" placeholder="Describe what students will learn, key topics to cover, and learning objectives..." disabled></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button id="generateCurriculumBtn" class="action-button primary" disabled>
+                        <i class="fa fa-magic"></i> Generate Curriculum
+                    </button>
+                </div>
+                
+                <div class="loading-spinner" id="curriculumSpinner">
+                    <div class="spinner"></div>
+                    <p><strong>Creating course curriculum...</strong></p>
+                </div>
+            </div>
+            
+            <!-- Step 2: Lesson Selection -->
+            <div class="content-area" id="step2">
+                <h2>Step 2: Review Curriculum & Select Lessons</h2>
+                
+                <div class="curriculum-review" id="curriculumReview">
+                    <!-- Generated curriculum content will appear here -->
+                </div>
+                
+                <div class="lesson-selector" id="lessonSelector">
+                    <h3>Select Lessons to Generate Full Content:</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Choose which lessons you want to create detailed content for. You can always add more later.</p>
+                    
+                    <div class="button-group" style="margin-bottom: 20px;">
+                        <button onclick="selectAllLessons()" class="action-button" style="background: #17a2b8; color: white;">
+                            <i class="fa fa-check-square"></i> Select All
+                        </button>
+                        <button onclick="deselectAllLessons()" class="action-button" style="background: #6c757d; color: white;">
+                            <i class="fa fa-square-o"></i> Deselect All
+                        </button>
+                    </div>
+                    
+                    <div id="lessonItems">
+                        <!-- Lesson selection items will appear here -->
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="goToStep(1)" class="action-button" style="background: #6c757d; color: white;">
+                        <i class="fa fa-arrow-left"></i> Back
+                    </button>
+                    <button id="generateLessonsBtn" class="action-button success" onclick="startLessonGeneration()">
+                        <i class="fa fa-magic"></i> Generate Selected Lessons
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Lesson Generation -->
+            <div class="content-area" id="step3">
+                <div class="lesson-generation">
+                    <h2>Step 3: Generating Lesson Content</h2>
+                    
+                    <div class="generation-progress">
+                        <div class="current-lesson" id="currentLessonTitle">Preparing...</div>
+                        <div class="progress-stats" id="progressStats">Getting ready to generate lessons...</div>
+                        
+                        <div class="progress-bar-custom" style="margin: 20px 0;">
+                            <div class="progress-fill" id="lessonProgressFill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-queue" id="lessonQueue">
+                        <!-- Generation queue will appear here -->
+                    </div>
+                    
+                    <div class="button-group" style="margin-top: 30px;">
+                        <button id="pauseGenerationBtn" class="action-button" style="background: #ffc107; color: #212529; display: none;">
+                            <i class="fa fa-pause"></i> Pause Generation
+                        </button>
+                        <button id="continueToReviewBtn" class="action-button primary" style="display: none;" onclick="goToStep(4)">
+                            <i class="fa fa-arrow-right"></i> Review Generated Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Course Review -->
+            <div class="content-area" id="step4">
+                <h2>Step 4: Review & Edit Your Course</h2>
+                
+                <div class="course-review">
+                    <div class="lesson-nav" id="lessonNav">
+                        <h4 style="margin-top: 0;">Course Lessons</h4>
+                        <!-- Lesson navigation will appear here -->
+                    </div>
+                    
+                    <div class="lesson-content" id="lessonContentView">
+                        <p style="text-align: center; color: #666; margin-top: 100px;">
+                            Select a lesson from the left to view its content.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="goToStep(3)" class="action-button" style="background: #6c757d; color: white;">
+                        <i class="fa fa-arrow-left"></i> Back to Generation
+                    </button>
+                    <button id="exportCourseBtn" class="action-button success" onclick="goToStep(5)">
+                        <i class="fa fa-download"></i> Export Complete Course
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Export -->
+            <div class="content-area" id="step5">
+                <h2>Step 5: Export Your Complete Course</h2>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <h3>🎉 Course Creation Complete!</h3>
+                    <p style="color: #666; font-size: 1.1rem;">Your course is ready for export. Choose your preferred format below.</p>
+                </div>
+                
+                <div class="export-section">
+                    <div class="export-buttons">
+                        <button class="export-button" onclick="exportFullCourse('markdown')">
+                            <i class="fa fa-download"></i> Complete Course (Markdown)
+                        </button>
+                        <button class="export-button" onclick="exportFullCourse('html')">
+                            <i class="fa fa-download"></i> Complete Course (HTML)
+                        </button>
+                        <button class="export-button" onclick="exportFullCourse('pdf')">
+                            <i class="fa fa-file-pdf-o"></i> Complete Course (PDF)
+                        </button>
+                        <button class="export-button" onclick="exportLessonsZip()">
+                            <i class="fa fa-archive"></i> Individual Lessons (ZIP)
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="button-group" style="margin-top: 40px;">
+                    <button onclick="startNewCourse()" class="action-button primary">
+                        <i class="fa fa-plus"></i> Create New Course
+                    </button>
+                    <button onclick="goToStep(4)" class="action-button" style="background: #6c757d; color: white;">
+                        <i class="fa fa-arrow-left"></i> Back to Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebLLM and Application Logic -->
+    <script>
+        // This will contain the comprehensive course creation system
+        // I'll continue with the implementation in the next part due to length
+    </script>
+    
+    <script type="module">
+        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+        class AdvancedCourseCreator {
+            constructor() {
+                this.engine = null;
+                this.currentModel = null;
+                this.isLoading = false;
+                this.currentStep = 1;
+                this.generatedCurriculum = null;
+                this.selectedLessons = [];
+                this.generatedLessons = {};
+                this.lessonGenerationQueue = [];
+                this.isGeneratingLessons = false;
+                
+                this.initializeElements();
+                this.bindEvents();
+            }
+            
+            initializeElements() {
+                // Main containers
+                this.modelSelection = document.getElementById('modelSelection');
+                this.courseMain = document.getElementById('courseMain');
+                this.multiStepProgress = document.getElementById('multiStepProgress');
+                this.progressLine = document.getElementById('progressLine');
+                
+                // Model selection
+                this.progressContainer = document.getElementById('progressContainer');
+                this.progressFill = document.getElementById('progressFill');
+                this.progressText = document.getElementById('progressText');
+                this.currentModelName = document.getElementById('currentModelName');
+                this.currentModelDetails = document.getElementById('currentModelDetails');
+                this.switchModelBtn = document.getElementById('switchModelBtn');
+                
+                // Form elements
+                this.courseTitle = document.getElementById('courseTitle');
+                this.targetAudience = document.getElementById('targetAudience');
+                this.lessonCount = document.getElementById('lessonCount');
+                this.courseFormat = document.getElementById('courseFormat');
+                this.courseDescription = document.getElementById('courseDescription');
+                this.generateCurriculumBtn = document.getElementById('generateCurriculumBtn');
+                this.curriculumSpinner = document.getElementById('curriculumSpinner');
+                
+                // Step 2 elements
+                this.curriculumReview = document.getElementById('curriculumReview');
+                this.lessonSelector = document.getElementById('lessonSelector');
+                this.lessonItems = document.getElementById('lessonItems');
+                this.generateLessonsBtn = document.getElementById('generateLessonsBtn');
+                
+                // Step 3 elements
+                this.currentLessonTitle = document.getElementById('currentLessonTitle');
+                this.progressStats = document.getElementById('progressStats');
+                this.lessonProgressFill = document.getElementById('lessonProgressFill');
+                this.lessonQueue = document.getElementById('lessonQueue');
+                this.continueToReviewBtn = document.getElementById('continueToReviewBtn');
+                
+                // Step 4 elements
+                this.lessonNav = document.getElementById('lessonNav');
+                this.lessonContentView = document.getElementById('lessonContentView');
+            }
+            
+            bindEvents() {
+                // Model selection buttons
+                document.querySelectorAll('.model-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const modelId = e.currentTarget.dataset.model;
+                        this.loadModel(modelId, e.currentTarget);
+                    });
+                });
+                
+                // Form validation
+                [this.courseTitle, this.courseDescription].forEach(input => {
+                    input.addEventListener('input', () => this.validateStep1());
+                });
+                
+                // Step 1 button
+                this.generateCurriculumBtn.addEventListener('click', () => this.generateCurriculum());
+                
+                // Switch model button
+                this.switchModelBtn.addEventListener('click', () => this.switchModel());
+            }
+            
+            async loadModel(modelId, buttonElement) {
+                if (this.isLoading) return;
+                
+                this.isLoading = true;
+                buttonElement.classList.add('loading');
+                this.progressContainer.classList.add('show');
+                this.progressText.textContent = 'Initializing download...';
+                this.progressFill.style.width = '0%';
+                
+                // Disable all model buttons
+                document.querySelectorAll('.model-button').forEach(btn => {
+                    btn.style.pointerEvents = 'none';
+                    btn.style.opacity = '0.6';
+                });
+                
+                try {
+                    if (this.engine) {
+                        await this.engine.unload();
+                    }
+                    
+                    this.engine = await CreateMLCEngine(modelId, {
+                        initProgressCallback: (progress) => {
+                            const percent = Math.round(progress.progress * 100);
+                            this.progressFill.style.width = percent + '%';
+                            
+                            if (percent < 10) {
+                                this.progressText.textContent = 'Preparing download...';
+                            } else if (percent < 100) {
+                                this.progressText.textContent = `Downloading model: ${percent}%`;
+                            } else {
+                                this.progressText.textContent = 'Finalizing setup...';
+                            }
+                        }
+                    });
+                    
+                    this.currentModel = modelId;
+                    
+                    this.updateModelInfo(modelId);
+                    this.showMainInterface();
+                    this.enableStep1();
+                    
+                } catch (error) {
+                    console.error('Failed to load model:', error);
+                    this.progressText.textContent = 'Failed to load model. Please try again.';
+                    this.progressText.style.color = '#dc3545';
+                    
+                    setTimeout(() => {
+                        document.querySelectorAll('.model-button').forEach(btn => {
+                            btn.style.pointerEvents = 'auto';
+                            btn.style.opacity = '1';
+                        });
+                        buttonElement.classList.remove('loading');
+                        this.progressContainer.classList.remove('show');
+                    }, 2000);
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+            
+            updateModelInfo(modelId) {
+                const modelDetails = {
+                    'Phi-3.5-mini-instruct-q4f16_1-MLC': {
+                        name: 'Phi-3.5 Mini',
+                        details: 'Fast generation • Good for structured courses'
+                    },
+                    'Llama-3.2-3B-Instruct-q4f16_1-MLC': {
+                        name: 'Llama 3.2 3B',
+                        details: 'Balanced quality • Comprehensive lesson content'
+                    },
+                    'Qwen2.5-3B-Instruct-q4f16_1-MLC': {
+                        name: 'Qwen 2.5 3B',
+                        details: 'High quality • Detailed educational content'
+                    }
+                };
+                
+                const info = modelDetails[modelId];
+                this.currentModelName.textContent = info.name;
+                this.currentModelDetails.textContent = info.details;
+            }
+            
+            showMainInterface() {
+                this.modelSelection.style.display = 'none';
+                this.courseMain.classList.add('active');
+                this.multiStepProgress.classList.add('show');
+                this.courseTitle.focus();
+            }
+            
+            switchModel() {
+                this.courseMain.classList.remove('active');
+                this.multiStepProgress.classList.remove('show');
+                this.modelSelection.style.display = 'block';
+                this.progressContainer.classList.remove('show');
+                
+                // Reset state
+                this.currentStep = 1;
+                this.updateProgressBar();
+                
+                // Re-enable all buttons
+                document.querySelectorAll('.model-button').forEach(btn => {
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    btn.classList.remove('loading');
+                });
+            }
+            
+            enableStep1() {
+                const elements = [this.courseTitle, this.targetAudience, this.lessonCount, 
+                                this.courseFormat, this.courseDescription];
+                elements.forEach(el => el.disabled = false);
+                this.validateStep1();
+            }
+            
+            validateStep1() {
+                const isValid = this.courseTitle.value.trim() && 
+                               this.courseDescription.value.trim() && 
+                               this.engine && 
+                               !this.isLoading;
+                
+                this.generateCurriculumBtn.disabled = !isValid;
+                return isValid;
+            }
+            
+            updateProgressBar() {
+                const steps = document.querySelectorAll('.progress-step');
+                const progressLine = document.getElementById('progressLine');
+                
+                steps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    
+                    if (index + 1 < this.currentStep) {
+                        step.classList.add('completed');
+                        step.innerHTML = '<i class="fa fa-check"></i>';
+                    } else if (index + 1 === this.currentStep) {
+                        step.classList.add('active');
+                    } else {
+                        // Reset to original icon
+                        const icons = ['fa-list-alt', 'fa-check-square-o', 'fa-magic', 'fa-edit', 'fa-download'];
+                        step.innerHTML = `<i class="fa ${icons[index]}"></i>`;
+                    }
+                });
+                
+                // Update progress line
+                const progressPercent = ((this.currentStep - 1) / 4) * 100;
+                progressLine.style.width = progressPercent + '%';
+            }
+            
+            goToStep(step) {
+                // Hide all content areas
+                document.querySelectorAll('.content-area').forEach(area => {
+                    area.classList.remove('active');
+                });
+                
+                // Show target step
+                document.getElementById(`step${step}`).classList.add('active');
+                
+                this.currentStep = step;
+                this.updateProgressBar();
+            }
+            
+            async generateCurriculum() {
+                if (!this.validateStep1()) return;
+                
+                this.curriculumSpinner.classList.add('show');
+                this.generateCurriculumBtn.disabled = true;
+                
+                const courseData = {
+                    title: this.courseTitle.value,
+                    audience: this.targetAudience.value,
+                    lessons: this.lessonCount.value,
+                    description: this.courseDescription.value,
+                    format: this.courseFormat.value
+                };
+                
+                const prompt = this.buildCurriculumPrompt(courseData);
+                
+                try {
+                    const response = await this.engine.chat.completions.create({
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 2000,
+                    });
+                    
+                    this.generatedCurriculum = response.choices[0].message.content;
+                    this.curriculumSpinner.classList.remove('show');
+                    
+                    this.displayCurriculumReview();
+                    this.createLessonSelector();
+                    this.goToStep(2);
+                    
+                } catch (error) {
+                    console.error('Error generating curriculum:', error);
+                    this.curriculumSpinner.classList.remove('show');
+                    alert('Failed to generate curriculum. Please try again.');
+                } finally {
+                    this.generateCurriculumBtn.disabled = false;
+                }
+            }
+            
+            buildCurriculumPrompt(data) {
+                return `Create a detailed curriculum outline for "${data.title}".
+
+Course Details:
+- Target Audience: ${data.audience}
+- Number of Lessons: ${data.lessons}
+- Format: ${data.format}
+- Description: ${data.description}
+
+Please provide:
+
+1. **Course Overview** (2-3 sentences)
+
+2. **Learning Objectives** (4-6 specific outcomes)
+
+3. **Prerequisites** (what students need to know)
+
+4. **Lesson Breakdown** - For each of ${data.lessons} lessons:
+   - Lesson Title
+   - Duration estimate
+   - Key concepts covered
+   - Learning outcomes
+   - Brief description of activities
+
+Format with clear headers and structure. Keep it concise but comprehensive.`;
+            }
+            
+            displayCurriculumReview() {
+                let formattedContent = this.generatedCurriculum
+                    .replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>')
+                    .replace(/^#\s(.+)$/gm, '<h3>$1</h3>')
+                    .replace(/^##\s(.+)$/gm, '<h4>$1</h4>')
+                    .replace(/^-\s(.+)$/gm, '<li>$1</li>')
+                    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/^/, '<p>')
+                    .replace(/$/, '</p>');
+                
+                this.curriculumReview.innerHTML = `
+                    <div class="curriculum-content">
+                        ${formattedContent}
+                    </div>
+                `;
+            }
+            
+            createLessonSelector() {
+                // Extract lesson information from curriculum
+                const lessons = this.extractLessonsFromCurriculum();
+                
+                let lessonItemsHTML = '';
+                lessons.forEach((lesson, index) => {
+                    lessonItemsHTML += `
+                        <div class="lesson-item" onclick="toggleLessonSelection(${index})">
+                            <div class="lesson-checkbox" id="checkbox-${index}">
+                                <i class="fa fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="lesson-info">
+                                <div class="lesson-title">${lesson.title}</div>
+                                <div class="lesson-description">${lesson.description}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                this.lessonItems.innerHTML = lessonItemsHTML;
+                this.lessons = lessons; // Store for later use
+            }
+            
+            extractLessonsFromCurriculum() {
+                // Simple extraction logic - in a real app, this would be more sophisticated
+                const lessons = [];
+                const lines = this.generatedCurriculum.split('\n');
+                
+                let currentLesson = null;
+                for (let line of lines) {
+                    // Look for lesson patterns
+                    if (line.match(/Lesson \d+:/i) || line.match(/\d+\./)) {
+                        if (currentLesson) {
+                            lessons.push(currentLesson);
+                        }
+                        currentLesson = {
+                            title: line.replace(/^\d+\.?\s*/, '').replace(/Lesson \d+:\s*/i, '').trim(),
+                            description: ''
+                        };
+                    } else if (currentLesson && line.trim() && !line.match(/^\s*-/)) {
+                        currentLesson.description += line.trim() + ' ';
+                    }
+                }
+                
+                if (currentLesson) {
+                    lessons.push(currentLesson);
+                }
+                
+                // Fallback: create generic lessons if extraction failed
+                if (lessons.length === 0) {
+                    const lessonCount = parseInt(this.lessonCount.value);
+                    for (let i = 1; i <= lessonCount; i++) {
+                        lessons.push({
+                            title: `Lesson ${i}: Course Content`,
+                            description: 'Lesson content to be generated'
+                        });
+                    }
+                }
+                
+                return lessons;
+            }
+            
+            async startLessonGeneration() {
+                if (this.selectedLessons.length === 0) {
+                    alert('Please select at least one lesson to generate.');
+                    return;
+                }
+                
+                this.goToStep(3);
+                this.isGeneratingLessons = true;
+                
+                // Create generation queue
+                this.lessonGenerationQueue = this.selectedLessons.map(index => ({
+                    index,
+                    lesson: this.lessons[index],
+                    status: 'pending'
+                }));
+                
+                this.updateLessonQueue();
+                await this.generateLessonsSequentially();
+            }
+            
+            async generateLessonsSequentially() {
+                for (let i = 0; i < this.lessonGenerationQueue.length; i++) {
+                    const item = this.lessonGenerationQueue[i];
+                    
+                    if (!this.isGeneratingLessons) break;
+                    
+                    item.status = 'generating';
+                    this.updateLessonQueue();
+                    this.updateGenerationProgress(i, item.lesson.title);
+                    
+                    try {
+                        const lessonContent = await this.generateSingleLesson(item.lesson);
+                        this.generatedLessons[item.index] = {
+                            lesson: item.lesson,
+                            content: lessonContent
+                        };
+                        
+                        item.status = 'completed';
+                        this.updateLessonQueue();
+                        
+                    } catch (error) {
+                        console.error('Error generating lesson:', error);
+                        item.status = 'error';
+                        this.updateLessonQueue();
+                    }
+                }
+                
+                this.isGeneratingLessons = false;
+                this.currentLessonTitle.textContent = '🎉 All lessons generated!';
+                this.progressStats.textContent = 'Course generation complete. Ready for review.';
+                this.continueToReviewBtn.style.display = 'inline-block';
+                
+                this.setupLessonReview();
+            }
+            
+            async generateSingleLesson(lesson) {
+                const prompt = `Create detailed lesson content for: "${lesson.title}"
+
+Course Context: ${this.courseTitle.value}
+Target Audience: ${this.targetAudience.value}
+Course Format: ${this.courseFormat.value}
+
+Please create comprehensive lesson content including:
+
+1. **Lesson Overview** (what this lesson covers)
+
+2. **Learning Objectives** (3-4 specific objectives)
+
+3. **Content Sections** (detailed explanations with examples)
+   - Break into 3-4 main sections
+   - Include practical examples
+   - Add code samples if relevant
+   - Provide clear explanations
+
+4. **Activities/Exercises** (hands-on practice)
+
+5. **Assessment Questions** (3-5 questions to test understanding)
+
+6. **Additional Resources** (recommended reading/tools)
+
+Make it practical, engaging, and suitable for ${this.targetAudience.value} level students.`;
+                
+                const response = await this.engine.chat.completions.create({
+                    messages: [{ role: 'user', content: prompt }],
+                    temperature: 0.7,
+                    max_tokens: 2500,
+                });
+                
+                return response.choices[0].message.content;
+            }
+            
+            updateGenerationProgress(currentIndex, lessonTitle) {
+                this.currentLessonTitle.textContent = `Generating: ${lessonTitle}`;
+                this.progressStats.textContent = `Progress: ${currentIndex + 1} of ${this.lessonGenerationQueue.length} lessons`;
+                
+                const progressPercent = ((currentIndex + 1) / this.lessonGenerationQueue.length) * 100;
+                this.lessonProgressFill.style.width = progressPercent + '%';
+            }
+            
+            updateLessonQueue() {
+                let queueHTML = '';
+                this.lessonGenerationQueue.forEach(item => {
+                    let statusIcon = '';
+                    let statusClass = '';
+                    
+                    switch (item.status) {
+                        case 'completed':
+                            statusIcon = '<i class="fa fa-check"></i>';
+                            statusClass = 'completed';
+                            break;
+                        case 'generating':
+                            statusIcon = '<i class="fa fa-spinner fa-spin"></i>';
+                            statusClass = 'generating';
+                            break;
+                        case 'error':
+                            statusIcon = '<i class="fa fa-times"></i>';
+                            statusClass = 'error';
+                            break;
+                        default:
+                            statusIcon = (this.lessonGenerationQueue.indexOf(item) + 1).toString();
+                            statusClass = 'pending';
+                    }
+                    
+                    queueHTML += `
+                        <div class="queue-item">
+                            <div class="queue-status ${statusClass}">${statusIcon}</div>
+                            <div style="flex: 1;">
+                                <strong>${item.lesson.title}</strong>
+                                <div style="font-size: 0.8rem; color: #666; margin-top: 2px;">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                this.lessonQueue.innerHTML = queueHTML;
+            }
+            
+            setupLessonReview() {
+                // Create lesson navigation
+                let navHTML = '';
+                Object.keys(this.generatedLessons).forEach(index => {
+                    const lesson = this.generatedLessons[index];
+                    navHTML += `
+                        <div class="nav-lesson" onclick="showLessonContent(${index})">
+                            ${lesson.lesson.title}
+                        </div>
+                    `;
+                });
+                
+                this.lessonNav.innerHTML = `<h4 style="margin-top: 0;">Course Lessons</h4>` + navHTML;
+            }
+        }
+        
+        // Global functions for template handling and interactions
+        window.fillTemplate = function(type) {
+            const templates = {
+                'ml': {
+                    title: 'Introduction to Machine Learning',
+                    description: 'A comprehensive introduction to machine learning concepts, algorithms, and practical applications. Students will learn supervised and unsupervised learning techniques, work with real datasets, and build predictive models using Python and popular ML libraries.'
+                },
+                'web': {
+                    title: 'Full-Stack Web Development',
+                    description: 'Learn to build modern web applications from front-end to back-end. Covers HTML, CSS, JavaScript, React, Node.js, databases, and deployment. Students will create responsive, interactive web applications.'
+                },
+                'data': {
+                    title: 'Data Science Fundamentals',
+                    description: 'Master the essential skills of data science including data collection, cleaning, analysis, and visualization. Learn Python, pandas, matplotlib, and statistical analysis techniques.'
+                },
+                'python': {
+                    title: 'Python Programming for Beginners',
+                    description: 'Learn Python programming from scratch with hands-on projects. Covers basic syntax, data structures, functions, object-oriented programming, and popular libraries.'
+                }
+            };
+            
+            const template = templates[type];
+            if (template) {
+                document.getElementById('courseTitle').value = template.title;
+                document.getElementById('courseDescription').value = template.description;
+                window.courseCreator.validateStep1();
+            }
+        };
+        
+        window.goToStep = function(step) {
+            window.courseCreator.goToStep(step);
+        };
+        
+        window.toggleLessonSelection = function(index) {
+            const item = document.querySelector(`.lesson-item:nth-child(${index + 1})`);
+            const checkbox = document.getElementById(`checkbox-${index}`);
+            const checkIcon = checkbox.querySelector('i');
+            
+            if (window.courseCreator.selectedLessons.includes(index)) {
+                // Deselect
+                window.courseCreator.selectedLessons = window.courseCreator.selectedLessons.filter(i => i !== index);
+                item.classList.remove('selected');
+                checkIcon.style.display = 'none';
+            } else {
+                // Select
+                window.courseCreator.selectedLessons.push(index);
+                item.classList.add('selected');
+                checkIcon.style.display = 'block';
+            }
+        };
+        
+        window.selectAllLessons = function() {
+            window.courseCreator.selectedLessons = window.courseCreator.lessons.map((_, i) => i);
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                item.classList.add('selected');
+                document.getElementById(`checkbox-${index}`).querySelector('i').style.display = 'block';
+            });
+        };
+        
+        window.deselectAllLessons = function() {
+            window.courseCreator.selectedLessons = [];
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                item.classList.remove('selected');
+                document.getElementById(`checkbox-${index}`).querySelector('i').style.display = 'none';
+            });
+        };
+        
+        window.startLessonGeneration = function() {
+            window.courseCreator.startLessonGeneration();
+        };
+        
+        window.showLessonContent = function(index) {
+            // Update navigation
+            document.querySelectorAll('.nav-lesson').forEach(nav => nav.classList.remove('active'));
+            document.querySelectorAll('.nav-lesson')[Object.keys(window.courseCreator.generatedLessons).indexOf(index.toString())].classList.add('active');
+            
+            // Show lesson content
+            const lesson = window.courseCreator.generatedLessons[index];
+            let formattedContent = lesson.content
+                .replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>')
+                .replace(/^#\s(.+)$/gm, '<h3>$1</h3>')
+                .replace(/^##\s(.+)$/gm, '<h4>$1</h4>')
+                .replace(/^###\s(.+)$/gm, '<h5>$1</h5>')
+                .replace(/^-\s(.+)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+                .replace(/```([\s\S]*?)```/g, '<pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;"><code>$1</code></pre>')
+                .replace(/`([^`]+)`/g, '<code style="background: #f8f9fa; padding: 2px 4px; border-radius: 3px;">$1</code>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^/, '<p>')
+                .replace(/$/, '</p>');
+            
+            window.courseCreator.lessonContentView.innerHTML = `
+                <h2>${lesson.lesson.title}</h2>
+                ${formattedContent}
+            `;
+        };
+        
+        window.exportFullCourse = function(format) {
+            const courseTitle = window.courseCreator.courseTitle.value;
+            let fullContent = `# ${courseTitle}\n\n`;
+            fullContent += window.courseCreator.generatedCurriculum + '\n\n';
+            fullContent += '# Course Lessons\n\n';
+            
+            Object.keys(window.courseCreator.generatedLessons).forEach(index => {
+                const lesson = window.courseCreator.generatedLessons[index];
+                fullContent += `## ${lesson.lesson.title}\n\n`;
+                fullContent += lesson.content + '\n\n';
+                fullContent += '---\n\n';
+            });
+            
+            if (format === 'markdown') {
+                const blob = new Blob([fullContent], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${courseTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-complete-course.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else if (format === 'html') {
+                const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <title>${courseTitle}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 0 auto; padding: 40px 20px; line-height: 1.6; color: #333; }
+        h1, h2, h3 { color: #007bff; }
+        h2 { border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin: 40px 0 20px 0; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { background: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+        ul { padding-left: 25px; }
+        hr { margin: 50px 0; border: none; height: 2px; background: #e9ecef; }
+    </style>
+</head>
+<body>
+    ${fullContent.replace(/\n/g, '<br>').replace(/# (.*?)<br>/g, '<h1>$1</h1>').replace(/## (.*?)<br>/g, '<h2>$1</h2>').replace(/### (.*?)<br>/g, '<h3>$1</h3>')}
+</body>
+</html>`;
+                
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${courseTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-complete-course.html`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else if (format === 'pdf') {
+                // Open print dialog for PDF export
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${courseTitle}</title>
+                        <style>
+                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; line-height: 1.6; color: #333; }
+                            h1, h2, h3 { color: #333; page-break-after: avoid; }
+                            h2 { border-bottom: 2px solid #ccc; padding-bottom: 10px; margin: 30px 0 15px 0; }
+                            pre { background: #f8f9fa; padding: 15px; border-radius: 5px; page-break-inside: avoid; }
+                            @media print { body { margin: 0; padding: 15px; } }
+                        </style>
+                    </head>
+                    <body>
+                        ${fullContent.replace(/\n/g, '<br>').replace(/# (.*?)<br>/g, '<h1>$1</h1>').replace(/## (.*?)<br>/g, '<h2>$1</h2>').replace(/### (.*?)<br>/g, '<h3>$1</h3>')}
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                setTimeout(() => {
+                    printWindow.print();
+                }, 250);
+            }
+        };
+        
+        window.exportLessonsZip = function() {
+            // For now, export individual lesson files
+            Object.keys(window.courseCreator.generatedLessons).forEach(index => {
+                const lesson = window.courseCreator.generatedLessons[index];
+                const content = `# ${lesson.lesson.title}\n\n${lesson.content}`;
+                const blob = new Blob([content], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `lesson-${parseInt(index) + 1}-${lesson.lesson.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        };
+        
+        window.startNewCourse = function() {
+            if (confirm('Start a new course? This will clear all current progress.')) {
+                location.reload();
+            }
+        };
+        
+        // Initialize the course creator when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.courseCreator = new AdvancedCourseCreator();
+        });
+    </script>
+</body>
+</html>
