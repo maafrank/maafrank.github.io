@@ -69,6 +69,17 @@
           <h2>Understanding Momentum Trading</h2>
           <p>Momentum trading is based on the principle that assets that have performed well recently will continue to perform well in the near future, and vice versa. This strategy exploits the tendency of trends to persist due to behavioral biases and market inefficiencies.</p>
           
+          <div class="exercise-box">
+            <h3><i class="fa fa-rocket"></i> Why Momentum Strategies Work in Real Markets</h3>
+            <p><strong>Behavioral Finance Foundation:</strong> Momentum exists because humans are not perfectly rational. Investors exhibit "anchoring bias" (slow to update beliefs), "herding behavior" (following the crowd), and "confirmation bias" (seeking information that confirms their views). These psychological patterns create predictable price movements that algorithms can exploit.</p>
+            
+            <p><strong>Institutional Order Flow:</strong> Large institutions can't execute massive trades instantly without moving markets. They break large orders into smaller pieces over days or weeks, creating sustained buying or selling pressure. This institutional order flow creates the momentum patterns we're trying to capture.</p>
+            
+            <p><strong>Information Diffusion:</strong> Market-moving information doesn't spread instantly to all participants. Earnings surprises, analyst upgrades, or industry trends take time to be fully reflected in prices. Momentum strategies profit from this gradual information absorption process.</p>
+            
+            <p><strong>Professional Usage:</strong> Momentum is one of the most widely used factors in professional asset management. Renaissance Technologies, AQR, and other quantitative hedge funds have built billions of dollars in AUM using systematic momentum strategies.</p>
+          </div>
+          
           <div class="strategy-info">
             <h3><i class="fa fa-lightbulb-o"></i> Momentum Strategy Foundations</h3>
             <ul>
@@ -83,6 +94,17 @@
 
           <h2>Strategy Development Framework</h2>
           <p>Let's build our momentum strategy step by step, combining technical analysis with machine learning for enhanced signal generation.</p>
+          
+          <div class="strategy-info">
+            <h3><i class="fa fa-cogs"></i> Feature Engineering for Financial Markets</h3>
+            <p><strong>Multi-Timeframe Analysis:</strong> We calculate momentum across different timeframes (1-day, 5-day, 20-day, 60-day) because different types of investors operate on different horizons. Day traders create short-term momentum, swing traders drive intermediate-term trends, and institutional investors cause long-term momentum. Capturing all timeframes gives us a complete picture.</p>
+            
+            <p><strong>Moving Average Ratios:</strong> The ratio of faster MA to slower MA tells us trend strength and direction. When SMA_10/SMA_20 > 1.02, it indicates strong short-term upward momentum. Professional traders use these ratios to gauge trend sustainability and identify entry/exit points.</p>
+            
+            <p><strong>Volume Confirmation:</strong> Price momentum without volume confirmation is often weak and temporary. We include volume features because institutional buying/selling creates both price movement AND volume spikes. High volume validates price moves and suggests institutional participation.</p>
+            
+            <p><strong>Volatility Regime Detection:</strong> Markets alternate between low-volatility trending periods and high-volatility mean-reverting periods. Our volatility ratio helps identify which regime we're in, allowing the strategy to adapt its behavior accordingly.</p>
+          </div>
           
           <div class="code-section">
             <h3>🏗️ Strategy Framework Setup</h3>
@@ -246,6 +268,15 @@ print(f"Available features: {len(data.columns)} columns")</code></pre>
 
           <h2>Signal Generation System</h2>
           <p>Our momentum strategy will use multiple signal sources to generate robust trading decisions.</p>
+          
+          <div class="exercise-box">
+            <h3><i class="fa fa-signal"></i> The Science Behind Signal Generation</h3>
+            <p><strong>Combining Weak Signals:</strong> No single indicator is perfectly predictive, but combining multiple weak signals creates a strong overall signal. This is the foundation of ensemble methods in machine learning and multi-factor models in quantitative finance. Professional funds rarely rely on single indicators.</p>
+            
+            <p><strong>Signal Decay:</strong> Momentum signals have a "half-life" - they become less predictive over time as the information gets absorbed by the market. Our machine learning approach helps identify optimal holding periods and when to exit positions as signal strength decays.</p>
+            
+            <p><strong>False Signal Filtering:</strong> Raw technical indicators generate many false signals. By requiring multiple confirmations (price + volume + momentum + volatility alignment), we filter out noise and focus on high-probability setups. This reduces transaction costs and improves risk-adjusted returns.</p>
+          </div>
 
           <div class="momentum-grid">
             <div class="momentum-card">
