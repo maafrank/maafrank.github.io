@@ -1,0 +1,76 @@
+/* Common lesson page styles */
+.lesson-container {
+  min-height: 100vh;
+  padding: 30px 0;
+}
+.lesson-header {
+  text-align: center;
+  color: #333;
+  margin-bottom: 40px;
+  padding: 40px 0;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 15px;
+}
+.lesson-header .lesson-meta {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #666;
+}
+.back-link {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+.back-link:hover {
+  text-decoration: none;
+}
+.lesson-content {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+.lesson-content h3 {
+  color: #333;
+  margin: 25px 0 15px 0;
+}
+.lesson-content p {
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 20px;
+}
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.btn-nav {
+  padding: 12px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+.btn-secondary:hover {
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+}
