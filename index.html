@@ -1292,8 +1292,10 @@ Please answer questions about Matthew Frank based on this information. Be conver
             console.log('Model loaded successfully!');
             
             this.currentModel = selectedModel;
+            this.isLoading = false; // Explicitly reset loading state
             this.updateStatus('Model ready!', 'ready');
             this.enableInput();
+            console.log('Model loading completed successfully');
             
         } catch (error) {
             console.error(`Failed to load model (attempt ${retryCount + 1}):`, error);
@@ -1417,9 +1419,31 @@ Please answer questions about Matthew Frank based on this information. Be conver
     }
     
     async sendMessage() {
+        console.log('Send message triggered');
         const message = this.messageInput.value.trim();
-        if (!message || this.isLoading || !this.engine) return;
+        console.log('Message:', message);
+        console.log('Is loading:', this.isLoading);
+        console.log('Engine exists:', !!this.engine);
+        console.log('Input disabled:', this.messageInput.disabled);
+        console.log('Button disabled:', this.sendButton.disabled);
         
+        if (!message) {
+            console.log('No message, returning');
+            return;
+        }
+        
+        if (this.isLoading) {
+            console.log('Still loading, returning');
+            return;
+        }
+        
+        if (!this.engine) {
+            console.log('No engine, returning');
+            this.updateStatus('Please load a model first', 'error');
+            return;
+        }
+        
+        console.log('Sending message:', message);
         this.messageInput.value = '';
         this.addMessage(message, 'user');
         this.showTyping();
@@ -1498,8 +1522,10 @@ Please answer questions about Matthew Frank based on this information. Be conver
     }
     
     enableInput() {
+        console.log('Enabling input');
         this.messageInput.disabled = false;
         this.sendButton.disabled = false;
+        console.log('Input enabled - disabled state:', this.messageInput.disabled, this.sendButton.disabled);
     }
     
     disableInput() {
@@ -1510,6 +1536,17 @@ Please answer questions about Matthew Frank based on this information. Be conver
     updateStatus(message, type = '') {
         this.modelStatus.textContent = message;
         this.modelStatus.className = `model-status ${type}`;
+    }
+    
+    debugState() {
+        console.log('=== DEBUG STATE ===');
+        console.log('Engine:', !!this.engine);
+        console.log('IsLoading:', this.isLoading);
+        console.log('CurrentModel:', this.currentModel);
+        console.log('MessageInput disabled:', this.messageInput?.disabled);
+        console.log('SendButton disabled:', this.sendButton?.disabled);
+        console.log('MessageInput value:', this.messageInput?.value);
+        console.log('==================');
     }
 }
 
