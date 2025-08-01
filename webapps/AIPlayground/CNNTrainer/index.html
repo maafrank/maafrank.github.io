@@ -1,0 +1,2606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CNN Trainer - Matthew Frank</title>
+    <meta name="description" content="Interactive CNN training with MNIST dataset using TensorFlow.js">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../../../assets/logo/favicon.png" type="image/png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../assets/css/style.css">
+    
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="./real_mnist_data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .cnn-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .cnn-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .cnn-header h1 {
+            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .cnn-header .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+        }
+        
+        .control-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+        }
+        
+        .control-group input, .control-group select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .slider-value {
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #333;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .train-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .train-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        }
+        
+        .train-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .dataset-section, .model-section, .training-section, .testing-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mnist-samples {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .mnist-sample {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        .mnist-canvas {
+            border: 1px solid #ddd;
+            background: black;
+        }
+        
+        .dataset-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .model-architecture {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .layer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        .layer:last-child {
+            border-bottom: none;
+        }
+        
+        .layer-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .layer-shape {
+            color: #666;
+            font-family: monospace;
+        }
+        
+        .training-progress {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .training-progress.show {
+            display: block;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .progress-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .progress-item {
+            text-align: center;
+        }
+        
+        .progress-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .progress-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .drawing-canvas {
+            border: 3px solid #ddd;
+            background: black;
+            cursor: crosshair;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .canvas-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .canvas-button {
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .canvas-button:hover {
+            background: #5a6268;
+        }
+        
+        .predictions {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .prediction-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .prediction-item.top-prediction {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .prediction-digit {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .prediction-confidence {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .status-message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .training-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            color: #495057;
+        }
+        
+        .log-entry.success {
+            color: #28a745;
+        }
+        
+        .log-entry.error {
+            color: #dc3545;
+        }
+        
+        .log-entry.info {
+            color: #007bff;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .control-group label {
+                min-width: auto;
+            }
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .slider-container span {
+            min-width: 50px;
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+        }
+        
+        .circular-progress {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+        }
+        
+        .circular-progress svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .circular-progress-bg {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 8;
+        }
+        
+        .circular-progress-fill {
+            fill: none;
+            stroke: #4CAF50;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+        
+        .circular-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-button">
+        <i class="fa fa-arrow-left"></i> Back to AI Playground
+    </a>
+    
+    <div class="cnn-container">
+        <!-- Header -->
+        <div class="cnn-header">
+            <h1><i class="fa fa-brain"></i> Neural Network Trainer</h1>
+            <p class="subtitle">Interactive CNN training with MNIST handwritten digits • Part of AI Playground</p>
+            <div style="background: #e3f2fd; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 0.9rem; color: #1565c0;">
+                <i class="fa fa-info-circle"></i> <strong>AI Playground Module:</strong> Train your own neural network from scratch, watch the learning process, and test with drawings!
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-section">
+                <h4><i class="fa fa-cogs"></i> Training Configuration</h4>
+                
+                <div class="control-group">
+                    <label>Dataset:</label>
+                    <div style="background: #e8f5e8; padding: 10px; border-radius: 6px; color: #2d5a2d; font-weight: 600;">
+                        <i class="fa fa-database"></i> Full MNIST Dataset (60,000 train + 10,000 test)
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="learningRate">Learning Rate:</label>
+                    <select id="learningRate">
+                        <option value="0.001" selected>0.001 (Recommended)</option>
+                        <option value="0.01">0.01 (Fast)</option>
+                        <option value="0.0001">0.0001 (Conservative)</option>
+                    </select>
+                    
+                    <label for="epochs">Epochs:</label>
+                    <select id="epochs">
+                        <option value="5" selected>5 (Quick)</option>
+                        <option value="10">10 (Balanced)</option>
+                        <option value="20">20 (Thorough)</option>
+                    </select>
+                    
+                    <label for="batchSize">Batch Size:</label>
+                    <select id="batchSize">
+                        <option value="32" selected>32</option>
+                        <option value="64">64</option>
+                        <option value="128">128</option>
+                    </select>
+                    
+                    <label for="testSamples">Test Samples:</label>
+                    <div class="slider-container">
+                        <input type="range" id="testSamples" min="5000" max="10000" value="10000" step="5000">
+                        <span id="testSamplesValue">10000</span>
+                    </div>
+                </div>
+                
+                <div class="parameter-controls">
+                    <label for="trainSamples">Training Samples:</label>
+                    <div class="slider-container">
+                        <input type="range" id="trainSamples" min="5000" max="60000" value="20000" step="5000">
+                        <span id="trainSamplesValue">20000</span>
+                    </div>
+                </div>
+                
+                <button class="train-button" id="trainButton">
+                    <i class="fa fa-play"></i> Train CNN Network
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content Grid -->
+        <div class="main-content">
+            <!-- Dataset Section -->
+            <div class="dataset-section">
+                <h3 class="section-title">
+                    <i class="fa fa-database"></i> MNIST Dataset
+                </h3>
+                
+                <div id="datasetStatus" class="status-message status-info">
+                    Click "Train CNN Network" to download and explore the MNIST dataset
+                </div>
+                
+                <div id="mnistSamples" style="display: none;">
+                    <h5>Sample Handwritten Digits:</h5>
+                    <div class="mnist-samples" id="sampleGrid"></div>
+                    
+                    <div class="dataset-info">
+                        <div class="info-item">
+                            <div class="info-label">Training Size</div>
+                            <div class="info-value" id="datasetTrainSize">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Test Size</div>
+                            <div class="info-value" id="datasetTestSize">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Image Size</div>
+                            <div class="info-value">28x28</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Classes</div>
+                            <div class="info-value">10 (0-9)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model Architecture Section -->
+            <div class="model-section">
+                <h3 class="section-title">
+                    <i class="fa fa-sitemap"></i> CNN Architecture
+                </h3>
+                
+                <div class="model-architecture">
+                    <div class="layer">
+                        <span class="layer-name">Input</span>
+                        <span class="layer-shape">[28, 28, 1]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Conv2D (32 filters)</span>
+                        <span class="layer-shape">[26, 26, 32]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">MaxPool2D</span>
+                        <span class="layer-shape">[13, 13, 32]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Conv2D (64 filters)</span>
+                        <span class="layer-shape">[11, 11, 64]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">MaxPool2D</span>
+                        <span class="layer-shape">[5, 5, 64]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Flatten</span>
+                        <span class="layer-shape">[1600]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Dense (128 units)</span>
+                        <span class="layer-shape">[128]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Dropout (0.2)</span>
+                        <span class="layer-shape">[128]</span>
+                    </div>
+                    <div class="layer">
+                        <span class="layer-name">Dense (10 units)</span>
+                        <span class="layer-shape">[10]</span>
+                    </div>
+                </div>
+                
+                <div id="modelStatus" class="status-message status-info">
+                    Model will be created when training starts
+                </div>
+            </div>
+            
+            <!-- Training Progress Section -->
+            <div class="training-section full-width">
+                <h3 class="section-title">
+                    <i class="fa fa-line-chart"></i> Training Progress
+                </h3>
+                
+                <div id="trainingIdle" class="status-message status-info">
+                    Training progress will appear here once you start training the model
+                </div>
+                
+                <div class="training-progress" id="trainingProgress">
+                    <div class="circular-progress">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="circular-progress-bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="circular-progress-fill" id="circularProgress" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <div class="circular-progress-text" id="circularProgressText">0%</div>
+                    </div>
+                    
+                    <div class="progress-header">
+                        <div class="progress-info">
+                            <div class="progress-item">
+                                <div class="progress-label">Epoch</div>
+                                <div class="progress-value" id="currentEpoch">0/5</div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label">Time Elapsed</div>
+                                <div class="progress-value" id="timeElapsed">00:00</div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label">ETA</div>
+                                <div class="progress-value" id="eta">--:--</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="epochProgress"></div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Training Loss</div>
+                            <div class="metric-value" id="trainLoss">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Training Accuracy</div>
+                            <div class="metric-value" id="trainAccuracy">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Validation Loss</div>
+                            <div class="metric-value" id="valLoss">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Validation Accuracy</div>
+                            <div class="metric-value" id="valAccuracy">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="trainingChart"></canvas>
+                    </div>
+                    
+                    <div class="training-log" id="trainingLog"></div>
+                </div>
+            </div>
+            
+            <!-- Testing Section -->
+            <div class="testing-section">
+                <h3 class="section-title">
+                    <i class="fa fa-pencil"></i> Test Your Model
+                </h3>
+                
+                <div id="testingDisabled" class="status-message status-warning">
+                    Complete model training to test with your own handwritten digits
+                </div>
+                
+                <div id="testingInterface" style="display: none;">
+                    <h5>Draw a digit (0-9):</h5>
+                    <canvas id="drawingCanvas" class="drawing-canvas" width="280" height="280"></canvas>
+                    
+                    <div class="canvas-controls">
+                        <button class="canvas-button" id="clearCanvas">Clear</button>
+                        <button class="canvas-button" id="predictButton">Predict</button>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <h6>Model Input (28x28):</h6>
+                        <canvas id="debugCanvas" width="140" height="140" style="border: 1px solid #ddd; image-rendering: pixelated; background: black;"></canvas>
+                    </div>
+                    
+                    <h5>Model Predictions:</h5>
+                    <div class="predictions" id="predictions">
+                        <!-- Prediction items will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MNIST data loader class
+        class MnistData {
+            constructor() {
+                this.shuffledTrainIndex = 0;
+                this.shuffledTestIndex = 0;
+                this.NUM_CLASSES = 10;
+                this.NUM_DATASET_ELEMENTS = 65000;
+                this.NUM_TRAIN_ELEMENTS = 55000;
+                this.NUM_TEST_ELEMENTS = 10000;
+                this.IMAGE_SIZE = 784;
+            }
+            
+            async load(progressCallback) {
+                // Will be set by the caller - keep flexible for different dataset sizes
+                
+                this.datasetImages = new Float32Array(this.NUM_DATASET_ELEMENTS * this.IMAGE_SIZE);
+                this.datasetLabels = new Uint8Array(this.NUM_DATASET_ELEMENTS);
+                
+                // Generate in batches with progress updates
+                const batchSize = 100;
+                const numBatches = Math.ceil(this.NUM_DATASET_ELEMENTS / batchSize);
+                
+                for (let batch = 0; batch < numBatches; batch++) {
+                    const startIdx = batch * batchSize;
+                    const endIdx = Math.min(startIdx + batchSize, this.NUM_DATASET_ELEMENTS);
+                    
+                    // Generate batch of images with proper label alignment
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const digit = i % 10;
+                        const image = this.createStructuredDigit(digit, i);
+                        
+                        // Copy image data
+                        for (let j = 0; j < this.IMAGE_SIZE; j++) {
+                            this.datasetImages[i * this.IMAGE_SIZE + j] = image[j];
+                        }
+                        
+                        // Ensure label matches the digit we generated
+                        this.datasetLabels[i] = digit;
+                    }
+                    
+                    // Update progress
+                    const progress = Math.round(((batch + 1) / numBatches) * 100);
+                    if (progressCallback) {
+                        progressCallback(progress, `Generated ${endIdx}/${this.NUM_DATASET_ELEMENTS} samples...`);
+                    }
+                    
+                    // Allow UI to update
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+                
+                // Create train and test splits
+                this.trainIndices = tf.util.createShuffledIndices(this.NUM_TRAIN_ELEMENTS);
+                this.testIndices = tf.util.createShuffledIndices(this.NUM_TEST_ELEMENTS);
+                
+                if (progressCallback) {
+                    progressCallback(100, 'Dataset ready!');
+                }
+                
+                // Validate data-label alignment
+                this.validateDataLabelAlignment();
+            }
+            
+            createStructuredDigit(digit, seed) {
+                // Create simple, clear digit patterns that are easily recognizable
+                const image = new Array(784).fill(0);
+                const rng = this.seededRandom(seed);
+                
+                // Add more variation for larger dataset diversity
+                const offsetX = Math.floor((rng() - 0.5) * 4); // -2 to +2 offset
+                const offsetY = Math.floor((rng() - 0.5) * 4);
+                const intensity = 0.8 + rng() * 0.2; // 0.8 to 1.0 intensity
+                const scale = 0.8 + rng() * 0.4; // 0.8 to 1.2 scale
+                const thickness = 1 + Math.floor(rng() * 2); // 1-2 pixel thickness
+                
+                const centerX = 14 + offsetX;
+                const centerY = 14 + offsetY;
+                
+                switch(digit) {
+                    case 0:
+                        // Simple oval - draw outline with variations
+                        this.drawSimpleEllipse(image, centerX, centerY, 5 * scale, 7 * scale, intensity);
+                        if (thickness > 1) {
+                            this.drawSimpleEllipse(image, centerX, centerY, 4 * scale, 6 * scale, intensity * 0.7);
+                        }
+                        break;
+                    case 1:
+                        // Vertical line with variations
+                        for (let t = 0; t < thickness; t++) {
+                            this.drawSimpleLine(image, centerX + t - thickness/2, centerY - 8 * scale, centerX + t - thickness/2, centerY + 8 * scale, intensity);
+                        }
+                        if (rng() > 0.3) { // Optional serif
+                            this.drawSimpleLine(image, centerX - 1, centerY - 8 * scale, centerX + 1, centerY - 8 * scale, intensity);
+                        }
+                        break;
+                    case 2:
+                        // Top curve, middle line, bottom line with variations
+                        this.drawSimpleArc(image, centerX, centerY - 5 * scale, 4 * scale, 0, Math.PI, intensity);
+                        this.drawSimpleLine(image, centerX + 4 * scale, centerY - 1, centerX - 4 * scale, centerY + 3 * scale, intensity);
+                        this.drawSimpleLine(image, centerX - 4 * scale, centerY + 7 * scale, centerX + 4 * scale, centerY + 7 * scale, intensity);
+                        break;
+                    case 3:
+                        // Two horizontal curves on right with variations
+                        this.drawSimpleArc(image, centerX, centerY - 4 * scale, 4 * scale, -Math.PI/2, Math.PI/2, intensity);
+                        this.drawSimpleArc(image, centerX, centerY + 4 * scale, 4 * scale, -Math.PI/2, Math.PI/2, intensity);
+                        if (thickness > 1) {
+                            this.drawSimpleLine(image, centerX, centerY - 1, centerX + 2 * scale, centerY, intensity * 0.8);
+                        }
+                        break;
+                    case 4:
+                        // Vertical lines + horizontal line with variations
+                        for (let t = 0; t < thickness; t++) {
+                            this.drawSimpleLine(image, centerX - 3 * scale + t, centerY - 6 * scale, centerX - 3 * scale + t, centerY + 2 * scale, intensity);
+                            this.drawSimpleLine(image, centerX + 2 * scale + t, centerY - 8 * scale, centerX + 2 * scale + t, centerY + 8 * scale, intensity);
+                        }
+                        this.drawSimpleLine(image, centerX - 3 * scale, centerY + 2 * scale, centerX + 3 * scale, centerY + 2 * scale, intensity);
+                        break;
+                    case 5:
+                        // Top line, left line, bottom arc with variations
+                        this.drawSimpleLine(image, centerX - 4 * scale, centerY - 7 * scale, centerX + 3 * scale, centerY - 7 * scale, intensity);
+                        this.drawSimpleLine(image, centerX - 4 * scale, centerY - 7 * scale, centerX - 4 * scale, centerY, intensity);
+                        this.drawSimpleArc(image, centerX, centerY + 2 * scale, 4 * scale, -Math.PI/2, Math.PI/2, intensity);
+                        break;
+                    case 6:
+                        // Bottom circle + left line with variations
+                        this.drawSimpleCircle(image, centerX, centerY + 2 * scale, 4 * scale, intensity);
+                        for (let t = 0; t < thickness; t++) {
+                            this.drawSimpleLine(image, centerX - 4 * scale + t, centerY + 2 * scale, centerX - 4 * scale + t, centerY - 7 * scale, intensity);
+                        }
+                        break;
+                    case 7:
+                        // Top line + diagonal with variations
+                        this.drawSimpleLine(image, centerX - 4 * scale, centerY - 7 * scale, centerX + 4 * scale, centerY - 7 * scale, intensity);
+                        for (let t = 0; t < thickness; t++) {
+                            this.drawSimpleLine(image, centerX + 4 * scale - t, centerY - 7 * scale, centerX - 2 * scale - t, centerY + 8 * scale, intensity);
+                        }
+                        break;
+                    case 8:
+                        // Two circles stacked with variations
+                        this.drawSimpleCircle(image, centerX, centerY - 3 * scale, 3 * scale, intensity);
+                        this.drawSimpleCircle(image, centerX, centerY + 3 * scale, 3 * scale, intensity);
+                        if (thickness > 1) {
+                            this.drawSimpleCircle(image, centerX, centerY - 3 * scale, 2 * scale, intensity * 0.6);
+                            this.drawSimpleCircle(image, centerX, centerY + 3 * scale, 2 * scale, intensity * 0.6);
+                        }
+                        break;
+                    case 9:
+                        // Top circle + right line with variations
+                        this.drawSimpleCircle(image, centerX, centerY - 2 * scale, 4 * scale, intensity);
+                        for (let t = 0; t < thickness; t++) {
+                            this.drawSimpleLine(image, centerX + 4 * scale - t, centerY - 2 * scale, centerX + 4 * scale - t, centerY + 8 * scale, intensity);
+                        }
+                        break;
+                }
+                
+                return image;
+            }
+            
+            seededRandom(seed) {
+                // Simple seeded random number generator
+                let state = seed;
+                return function() {
+                    state = (state * 9301 + 49297) % 233280;
+                    return state / 233280;
+                };
+            }
+            
+            drawSimpleLine(image, x1, y1, x2, y2, intensity) {
+                // Simple line drawing using Bresenham's algorithm
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(y2 - y1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = y1 < y2 ? 1 : -1;
+                let err = dx - dy;
+                
+                let x = Math.round(x1), y = Math.round(y1);
+                while (true) {
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                    
+                    if (x === Math.round(x2) && y === Math.round(y2)) break;
+                    
+                    const e2 = 2 * err;
+                    if (e2 > -dy) { err -= dy; x += sx; }
+                    if (e2 < dx) { err += dx; y += sy; }
+                }
+            }
+            
+            drawSimpleCircle(image, cx, cy, radius, intensity) {
+                // Draw circle outline using midpoint algorithm
+                for (let angle = 0; angle < 2 * Math.PI; angle += 0.1) {
+                    const x = Math.round(cx + radius * Math.cos(angle));
+                    const y = Math.round(cy + radius * Math.sin(angle));
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                }
+            }
+            
+            drawSimpleEllipse(image, cx, cy, rx, ry, intensity) {
+                // Draw ellipse outline
+                for (let angle = 0; angle < 2 * Math.PI; angle += 0.05) {
+                    const x = Math.round(cx + rx * Math.cos(angle));
+                    const y = Math.round(cy + ry * Math.sin(angle));
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                }
+            }
+            
+            drawSimpleArc(image, cx, cy, radius, startAngle, endAngle, intensity) {
+                // Draw arc from startAngle to endAngle
+                for (let angle = startAngle; angle <= endAngle; angle += 0.05) {
+                    const x = Math.round(cx + radius * Math.cos(angle));
+                    const y = Math.round(cy + radius * Math.sin(angle));
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                }
+            }
+            
+            drawThickLine(image, x1, y1, x2, y2, thickness, intensity) {
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(y2 - y1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = y1 < y2 ? 1 : -1;
+                let err = dx - dy;
+                
+                let x = x1, y = y1;
+                while (true) {
+                    // Draw thick line by filling surrounding pixels
+                    for (let ty = -thickness; ty <= thickness; ty++) {
+                        for (let tx = -thickness; tx <= thickness; tx++) {
+                            const px = Math.round(x + tx);
+                            const py = Math.round(y + ty);
+                            if (px >= 0 && px < 28 && py >= 0 && py < 28) {
+                                const dist = Math.sqrt(tx*tx + ty*ty);
+                                if (dist <= thickness) {
+                                    const idx = py * 28 + px;
+                                    const falloff = Math.max(0, 1 - dist / thickness);
+                                    image[idx] = Math.max(image[idx], intensity * falloff);
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (x === x2 && y === y2) break;
+                    
+                    const e2 = 2 * err;
+                    if (e2 > -dy) { err -= dy; x += sx; }
+                    if (e2 < dx) { err += dx; y += sy; }
+                }
+            }
+            
+            drawThickCircle(image, cx, cy, radius, thickness, intensity) {
+                for (let y = Math.max(0, cy - radius - thickness); y < Math.min(28, cy + radius + thickness + 1); y++) {
+                    for (let x = Math.max(0, cx - radius - thickness); x < Math.min(28, cx + radius + thickness + 1); x++) {
+                        const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                        if (dist >= radius - thickness && dist <= radius + thickness) {
+                            const idx = y * 28 + x;
+                            const falloff = Math.max(0, 1 - Math.abs(dist - radius) / thickness);
+                            image[idx] = Math.max(image[idx], intensity * falloff);
+                        }
+                    }
+                }
+            }
+            
+            drawThickEllipse(image, cx, cy, rx, ry, thickness, intensity) {
+                for (let y = Math.max(0, cy - ry - thickness); y < Math.min(28, cy + ry + thickness + 1); y++) {
+                    for (let x = Math.max(0, cx - rx - thickness); x < Math.min(28, cx + rx + thickness + 1); x++) {
+                        const dist = Math.sqrt(((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2);
+                        if (dist >= 1 - thickness/rx && dist <= 1 + thickness/rx) {
+                            const idx = y * 28 + x;
+                            const falloff = Math.max(0, 1 - Math.abs(dist - 1) / (thickness/rx));
+                            image[idx] = Math.max(image[idx], intensity * falloff);
+                        }
+                    }
+                }
+            }
+            
+            drawThickCurve(image, x1, y1, x2, y2, x3, y3, thickness, intensity) {
+                // Draw quadratic Bezier curve
+                for (let t = 0; t <= 1; t += 0.02) {
+                    const x = (1-t)*(1-t)*x1 + 2*(1-t)*t*x2 + t*t*x3;
+                    const y = (1-t)*(1-t)*y1 + 2*(1-t)*t*y2 + t*t*y3;
+                    
+                    for (let ty = -thickness; ty <= thickness; ty++) {
+                        for (let tx = -thickness; tx <= thickness; tx++) {
+                            const px = Math.round(x + tx);
+                            const py = Math.round(y + ty);
+                            if (px >= 0 && px < 28 && py >= 0 && py < 28) {
+                                const dist = Math.sqrt(tx*tx + ty*ty);
+                                if (dist <= thickness) {
+                                    const idx = py * 28 + px;
+                                    const falloff = Math.max(0, 1 - dist / thickness);
+                                    image[idx] = Math.max(image[idx], intensity * falloff);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            drawCircle(image, cx, cy, radius, intensity) {
+                for (let y = Math.max(0, cy - radius - 1); y < Math.min(28, cy + radius + 2); y++) {
+                    for (let x = Math.max(0, cx - radius - 1); x < Math.min(28, cx + radius + 2); x++) {
+                        const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                        if (dist <= radius && dist >= radius - 1) {
+                            const idx = y * 28 + x;
+                            image[idx] = Math.max(image[idx], intensity * (1 - (dist - radius + 1)));
+                        }
+                    }
+                }
+            }
+            
+            drawLine(image, x1, y1, x2, y2, intensity) {
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(y2 - y1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = y1 < y2 ? 1 : -1;
+                let err = dx - dy;
+                
+                let x = x1, y = y1;
+                while (true) {
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                    
+                    if (x === x2 && y === y2) break;
+                    
+                    const e2 = 2 * err;
+                    if (e2 > -dy) { err -= dy; x += sx; }
+                    if (e2 < dx) { err += dx; y += sy; }
+                }
+            }
+            
+            drawArc(image, cx, cy, radius, startAngle, endAngle, intensity) {
+                const steps = Math.floor((endAngle - startAngle) * radius * 4);
+                for (let i = 0; i <= steps; i++) {
+                    const angle = startAngle + (endAngle - startAngle) * i / steps;
+                    const x = Math.round(cx + radius * Math.cos(angle));
+                    const y = Math.round(cy + radius * Math.sin(angle));
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        const idx = y * 28 + x;
+                        image[idx] = Math.max(image[idx], intensity);
+                    }
+                }
+            }
+            
+            nextTrainBatch(batchSize) {
+                return this.nextBatch(batchSize, [this.datasetImages, this.datasetLabels], () => {
+                    this.shuffledTrainIndex = (this.shuffledTrainIndex + 1) % this.trainIndices.length;
+                    return this.trainIndices[this.shuffledTrainIndex];
+                });
+            }
+            
+            nextTestBatch(batchSize) {
+                return this.nextBatch(batchSize, [this.datasetImages, this.datasetLabels], () => {
+                    this.shuffledTestIndex = (this.shuffledTestIndex + 1) % this.testIndices.length;
+                    return this.testIndices[this.shuffledTestIndex];
+                });
+            }
+            
+            nextBatch(batchSize, data, index) {
+                const batchImagesArray = new Float32Array(batchSize * this.IMAGE_SIZE);
+                const batchLabelsArray = new Int32Array(batchSize); // Changed to Int32Array for sparse labels
+                
+                for (let i = 0; i < batchSize; i++) {
+                    const idx = index();
+                    
+                    const image = data[0].slice(idx * this.IMAGE_SIZE, idx * this.IMAGE_SIZE + this.IMAGE_SIZE);
+                    batchImagesArray.set(image, i * this.IMAGE_SIZE);
+                    
+                    const label = data[1][idx];
+                    batchLabelsArray[i] = label; // Store label directly as integer
+                }
+                
+                const xs = tf.tensor2d(batchImagesArray, [batchSize, this.IMAGE_SIZE], 'float32');
+                const labels = tf.tensor1d(batchLabelsArray, 'float32'); // TensorFlow.js expects float32 for sparse labels
+                
+                return {xs, labels};
+            }
+            
+            validateDataLabelAlignment() {
+                // Validate that the first few samples match their expected labels
+                console.log('Validating data-label alignment...');
+                for (let i = 0; i < Math.min(20, this.NUM_DATASET_ELEMENTS); i++) {
+                    const expectedDigit = i % 10;
+                    const actualLabel = this.datasetLabels[i];
+                    if (expectedDigit !== actualLabel) {
+                        console.error(`Data-label mismatch at index ${i}: expected ${expectedDigit}, got ${actualLabel}`);
+                    }
+                }
+                console.log('Data-label validation complete');
+            }
+        }
+
+        class CNNTrainer {
+            constructor() {
+                this.model = null;
+                this.trainData = null;
+                this.testData = null;
+                this.isTraining = false;
+                this.trainingChart = null;
+                this.trainingHistory = { loss: [], accuracy: [], valLoss: [], valAccuracy: [] };
+                this.startTime = null;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.setupDrawingCanvas();
+                this.setupPredictionGrid();
+            }
+            
+            initializeElements() {
+                this.learningRateSelect = document.getElementById('learningRate');
+                this.epochsSelect = document.getElementById('epochs');
+                this.batchSizeSelect = document.getElementById('batchSize');
+                this.trainButton = document.getElementById('trainButton');
+                
+                this.datasetStatus = document.getElementById('datasetStatus');
+                this.mnistSamples = document.getElementById('mnistSamples');
+                this.sampleGrid = document.getElementById('sampleGrid');
+                this.datasetTrainSize = document.getElementById('datasetTrainSize');
+                this.datasetTestSize = document.getElementById('datasetTestSize');
+                
+                this.modelStatus = document.getElementById('modelStatus');
+                this.trainingIdle = document.getElementById('trainingIdle');
+                this.trainingProgress = document.getElementById('trainingProgress');
+                this.trainingLog = document.getElementById('trainingLog');
+                
+                this.testingDisabled = document.getElementById('testingDisabled');
+                this.testingInterface = document.getElementById('testingInterface');
+                this.drawingCanvas = document.getElementById('drawingCanvas');
+                this.predictions = document.getElementById('predictions');
+            }
+            
+            bindEvents() {
+                this.trainButton.addEventListener('click', () => this.startTraining());
+                
+                document.getElementById('clearCanvas').addEventListener('click', () => this.clearCanvas());
+                document.getElementById('predictButton').addEventListener('click', () => this.makePrediction());
+            }
+            
+            setupDrawingCanvas() {
+                const canvas = this.drawingCanvas;
+                const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+                
+                // Set up canvas for drawing
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = 20;
+                ctx.strokeStyle = 'white';
+                
+                const startDrawing = (e) => {
+                    isDrawing = true;
+                    [lastX, lastY] = this.getMousePos(canvas, e);
+                };
+                
+                const draw = (e) => {
+                    if (!isDrawing) return;
+                    
+                    const [currentX, currentY] = this.getMousePos(canvas, e);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+                    
+                    [lastX, lastY] = [currentX, currentY];
+                    
+                    // Auto-predict while drawing if model is ready
+                    if (this.model) {
+                        clearTimeout(this.predictionTimeout);
+                        this.predictionTimeout = setTimeout(() => this.makePrediction(), 500);
+                    }
+                };
+                
+                const stopDrawing = () => {
+                    isDrawing = false;
+                };
+                
+                // Mouse events
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseout', stopDrawing);
+                
+                // Touch events for mobile
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    startDrawing(e.touches[0]);
+                });
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    draw(e.touches[0]);
+                });
+                canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    stopDrawing();
+                });
+            }
+            
+            getMousePos(canvas, e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                return [
+                    (e.clientX - rect.left) * scaleX,
+                    (e.clientY - rect.top) * scaleY
+                ];
+            }
+            
+            setupPredictionGrid() {
+                for (let i = 0; i < 10; i++) {
+                    const predictionItem = document.createElement('div');
+                    predictionItem.className = 'prediction-item';
+                    predictionItem.innerHTML = `
+                        <div class="prediction-digit">${i}</div>
+                        <div class="prediction-confidence">0.0%</div>
+                    `;
+                    this.predictions.appendChild(predictionItem);
+                }
+            }
+            
+            clearCanvas() {
+                const ctx = this.drawingCanvas.getContext('2d');
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
+                
+                // Reset predictions
+                const predictionItems = this.predictions.querySelectorAll('.prediction-item');
+                predictionItems.forEach((item, index) => {
+                    item.classList.remove('top-prediction');
+                    item.querySelector('.prediction-confidence').textContent = '0.0%';
+                });
+            }
+            
+            async startTraining() {
+                if (this.isTraining) return;
+                
+                this.isTraining = true;
+                this.trainButton.disabled = true;
+                this.trainButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Training...';
+                this.startTime = Date.now();
+                
+                try {
+                    // Step 1: Load MNIST data
+                    await this.loadMNISTData();
+                    
+                    // Step 2: Create model
+                    this.createModel();
+                    
+                    // Step 3: Train model
+                    await this.trainModel();
+                    
+                    // Step 4: Enable testing
+                    this.enableTesting();
+                    
+                } catch (error) {
+                    console.error('Training failed:', error);
+                    this.addLogEntry('Training failed: ' + error.message, 'error');
+                } finally {
+                    this.isTraining = false;
+                    this.trainButton.disabled = false;
+                    this.trainButton.innerHTML = '<i class="fa fa-check"></i> Training Complete';
+                }
+            }
+            
+            async loadMNISTData() {
+                this.datasetStatus.textContent = 'Preparing MNIST dataset...';
+                this.datasetStatus.className = 'status-message status-info';
+                this.addLogEntry('Starting MNIST dataset preparation...', 'info');
+                
+                // Show loading progress bar
+                this.showDatasetLoadingProgress();
+                
+                try {
+                    await this.loadMNISTDataAlternative();
+                } catch (error) {
+                    console.error('MNIST loading error:', error);
+                    this.hideDatasetLoadingProgress();
+                    throw new Error('Failed to load MNIST dataset');
+                }
+            }
+            
+            showDatasetLoadingProgress() {
+                // Add progress bar to dataset section
+                const progressHtml = `
+                    <div id="datasetProgress" style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Loading MNIST Data...</span>
+                            <span id="datasetProgressText">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                            <div id="datasetProgressBar" style="height: 100%; background: linear-gradient(90deg, #007bff, #0056b3); width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert after dataset status
+                this.datasetStatus.insertAdjacentHTML('afterend', progressHtml);
+            }
+            
+            hideDatasetLoadingProgress() {
+                const progress = document.getElementById('datasetProgress');
+                if (progress) progress.remove();
+            }
+            
+            updateDatasetProgress(percent, message) {
+                const progressBar = document.getElementById('datasetProgressBar');
+                const progressText = document.getElementById('datasetProgressText');
+                
+                if (progressBar && progressText) {
+                    progressBar.style.width = percent + '%';
+                    progressText.textContent = percent + '%';
+                }
+                
+                if (message) {
+                    this.datasetStatus.textContent = message;
+                }
+            }
+            
+            async loadMNISTDataAlternative() {
+                this.addLogEntry('Loading real MNIST dataset...', 'info');
+                this.updateDatasetProgress(0, 'Accessing embedded real MNIST data...');
+                
+                try {
+                    // Use embedded real MNIST data - no fetch required!
+                    this.addLogEntry('Loading embedded real MNIST handwritten digits...', 'info');
+                    this.updateDatasetProgress(20, 'Accessing real handwritten digits...');
+                    
+                    // Check if embedded data is available
+                    if (!window.REAL_MNIST_DATA) {
+                        throw new Error('Real MNIST data not found - check if real_mnist_data.js loaded');
+                    }
+                    
+                    const mnist = window.REAL_MNIST_DATA;
+                    
+                    this.addLogEntry(`Found ${mnist.train.images.length} real training and ${mnist.test.images.length} real test samples`, 'success');
+                    
+                    this.updateDatasetProgress(50, 'Creating training tensors from real data...');
+                    
+                    // Get selected sample counts from sliders
+                    const trainSamples = parseInt(document.getElementById('trainSamples').value);
+                    const testSamples = parseInt(document.getElementById('testSamples').value);
+                    
+                    this.addLogEntry(`Using ${trainSamples} training and ${testSamples} test samples`, 'info');
+                    
+                    // Slice the data to use only selected number of samples
+                    const selectedTrainImages = mnist.train.images.slice(0, trainSamples);
+                    const selectedTrainLabels = mnist.train.labels.slice(0, trainSamples);
+                    const selectedTestImages = mnist.test.images.slice(0, testSamples);
+                    const selectedTestLabels = mnist.test.labels.slice(0, testSamples);
+                    
+                    // Flatten the images data for tensor4d (it expects a flat array when shape is provided)
+                    const trainImagesFlat = new Float32Array(selectedTrainImages.flat());
+                    const testImagesFlat = new Float32Array(selectedTestImages.flat());
+                    
+                    console.log(`Train images shape: ${selectedTrainImages.length} x ${selectedTrainImages[0].length}`);
+                    console.log(`Flattened train images length: ${trainImagesFlat.length}`);
+                    
+                    // Create tensors from embedded real MNIST data
+                    this.trainData = {
+                        images: tf.tensor4d(trainImagesFlat, [selectedTrainImages.length, 28, 28, 1]),
+                        labels: tf.tensor1d(selectedTrainLabels, 'float32')
+                    };
+                    
+                    this.updateDatasetProgress(75, 'Creating test tensors from real data...');
+                    
+                    console.log(`Test images shape: ${selectedTestImages.length} x ${selectedTestImages[0].length}`);
+                    console.log(`Flattened test images length: ${testImagesFlat.length}`);
+                    
+                    this.testData = {
+                        images: tf.tensor4d(testImagesFlat, [selectedTestImages.length, 28, 28, 1]),
+                        labels: tf.tensor1d(selectedTestLabels, 'float32')
+                    };
+                    
+                    this.updateDatasetProgress(90, 'Displaying real MNIST samples...');
+                    
+                    // Display sample images with correct labels
+                    this.displayOrderedSamples();
+                    
+                } catch (error) {
+                    console.error('Failed to load real MNIST data:', error);
+                    this.addLogEntry('Real MNIST loading failed: ' + error.message, 'error');
+                    throw error;
+                }
+                
+                this.updateDatasetProgress(100, 'Real MNIST dataset ready!');
+                
+                // Update UI
+                this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                
+                // Hide progress bar and show success
+                setTimeout(() => {
+                    this.hideDatasetLoadingProgress();
+                    this.datasetStatus.textContent = 'Real MNIST handwritten digits loaded successfully!';
+                    this.datasetStatus.className = 'status-message status-success';
+                    this.mnistSamples.style.display = 'block';
+                }, 1000);
+                
+                this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} real MNIST training and ${this.testData.images.shape[0]} real test examples`, 'success');
+            }
+            
+            async loadSyntheticMNIST() {
+                // Fallback to synthetic MNIST if real data fails
+                this.updateDatasetProgress(50, 'Creating fallback synthetic data...');
+                
+                const mnistData = new MnistData();
+                mnistData.NUM_DATASET_ELEMENTS = 10000;
+                mnistData.NUM_TRAIN_ELEMENTS = 8000;
+                mnistData.NUM_TEST_ELEMENTS = 2000;
+                
+                await mnistData.load((progress, message) => {
+                    this.updateDatasetProgress(50 + progress * 0.4, message);
+                });
+                
+                const trainBatch = mnistData.nextTrainBatch(8000);
+                const testBatch = mnistData.nextTestBatch(2000);
+                
+                this.trainData = { 
+                    images: trainBatch.xs.reshape([8000, 28, 28, 1]), 
+                    labels: trainBatch.labels
+                };
+                this.testData = { 
+                    images: testBatch.xs.reshape([2000, 28, 28, 1]), 
+                    labels: testBatch.labels
+                };
+                
+                this.displayOrderedSamples();
+                
+                this.updateDatasetProgress(100, 'Fallback dataset ready!');
+                
+                // Update UI
+                this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                
+                setTimeout(() => {
+                    this.hideDatasetLoadingProgress();
+                    this.datasetStatus.textContent = 'Fallback synthetic MNIST dataset loaded!';
+                    this.datasetStatus.className = 'status-message status-warning';
+                    this.mnistSamples.style.display = 'block';
+                }, 1000);
+                
+                this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} fallback training and ${this.testData.images.shape[0]} test examples`, 'success');
+            }
+            
+            async loadRealMNISTData() {
+                // Load the actual MNIST dataset using the most reliable method
+                this.updateDatasetProgress(20, 'Loading real MNIST data...');
+                
+                try {
+                    // Try TensorFlow.js built-in MNIST data first (most reliable)
+                    this.addLogEntry('Loading MNIST using TensorFlow.js...', 'info');
+                    await this.loadMNISTViaTensorFlowJS();
+                    
+                } catch (error) {
+                    console.error('TensorFlow.js MNIST failed, trying JSON source:', error);
+                    this.addLogEntry('Trying alternative MNIST source...', 'info');
+                    try {
+                        await this.loadMNISTFromJSON();
+                    } catch (jsonError) {
+                        console.error('All real MNIST sources failed:', jsonError);
+                        this.addLogEntry('Using final fallback dataset...', 'error');
+                        await this.loadMinimalFallbackDataset();
+                    }
+                }
+            }
+            
+            async loadMNISTFromDataSource() {
+                // Load pre-processed MNIST data from a reliable CDN
+                this.updateDatasetProgress(30, 'Loading processed MNIST data...');
+                
+                try {
+                    // Use the MNIST data that's commonly available for web demos
+                    const baseUrl = 'https://storage.googleapis.com/learnjs-data/model-builder/';
+                    
+                    this.updateDatasetProgress(40, 'Downloading training set...');
+                    const trainResponse = await fetch(baseUrl + 'mnist_train_small.csv');
+                    const trainText = await trainResponse.text();
+                    
+                    this.updateDatasetProgress(60, 'Downloading test set...');
+                    const testResponse = await fetch(baseUrl + 'mnist_test.csv');
+                    const testText = await testResponse.text();
+                    
+                    this.updateDatasetProgress(70, 'Parsing CSV data...');
+                    
+                    // Parse CSV data
+                    const trainData = this.parseCSVData(trainText);
+                    const testData = this.parseCSVData(testText);
+                    
+                    this.updateDatasetProgress(85, 'Creating tensors...');
+                    
+                    // Create training data tensors
+                    this.trainData = {
+                        images: tf.tensor4d(trainData.images, [trainData.images.length / 784, 28, 28, 1]),
+                        labels: tf.tensor1d(trainData.labels, 'float32')
+                    };
+                    
+                    // Create test data tensors  
+                    this.testData = {
+                        images: tf.tensor4d(testData.images, [testData.images.length / 784, 28, 28, 1]),
+                        labels: tf.tensor1d(testData.labels, 'float32')
+                    };
+                    
+                    this.updateDatasetProgress(95, 'Displaying real MNIST samples...');
+                    this.displayOrderedSamples();
+                    
+                } catch (error) {
+                    console.error('CSV MNIST loading failed:', error);
+                    throw error;
+                }
+                
+                this.updateDatasetProgress(100, 'Real MNIST dataset loaded!');
+                
+                // Update UI
+                this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                
+                // Hide progress bar and show success
+                setTimeout(() => {
+                    this.hideDatasetLoadingProgress();
+                    this.datasetStatus.textContent = 'Real MNIST dataset loaded successfully!';
+                    this.datasetStatus.className = 'status-message status-success';
+                    this.mnistSamples.style.display = 'block';
+                }, 1000);
+                
+                this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} real training and ${this.testData.images.shape[0]} real test examples from MNIST`, 'success');
+            }
+            
+            async loadMNISTViaTensorFlowJS() {
+                // Use TensorFlow.js built-in capabilities for MNIST
+                this.updateDatasetProgress(30, 'Loading MNIST via TensorFlow.js...');
+                
+                try {
+                    // Create a simple synthetic but high-quality MNIST-style dataset
+                    // This ensures we have real-looking digit patterns without network issues
+                    this.addLogEntry('Creating high-quality MNIST-style dataset...', 'info');
+                    
+                    const mnistData = new MnistData();
+                    // Use a good-sized dataset that loads reliably
+                    mnistData.NUM_DATASET_ELEMENTS = 20000; // 20k samples - good balance
+                    mnistData.NUM_TRAIN_ELEMENTS = 16000;   // 16k training
+                    mnistData.NUM_TEST_ELEMENTS = 4000;     // 4k testing
+                    
+                    this.updateDatasetProgress(40, 'Generating diverse digit patterns...');
+                    
+                    await mnistData.load((progress, message) => {
+                        this.updateDatasetProgress(40 + progress * 0.4, message);
+                    });
+                    
+                    this.updateDatasetProgress(85, 'Creating training batches...');
+                    
+                    // Get full training and test sets
+                    const trainBatch = mnistData.nextTrainBatch(16000);
+                    const testBatch = mnistData.nextTestBatch(4000);
+                    
+                    this.updateDatasetProgress(90, 'Preparing tensors...');
+                    
+                    this.trainData = { 
+                        images: trainBatch.xs.reshape([16000, 28, 28, 1]), 
+                        labels: trainBatch.labels
+                    };
+                    this.testData = { 
+                        images: testBatch.xs.reshape([4000, 28, 28, 1]), 
+                        labels: testBatch.labels
+                    };
+                    
+                    this.updateDatasetProgress(95, 'Displaying samples...');
+                    this.displayOrderedSamples();
+                    
+                    this.updateDatasetProgress(100, 'High-quality dataset ready!');
+                    
+                    // Update UI
+                    this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                    this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                    
+                    // Hide progress bar and show success
+                    setTimeout(() => {
+                        this.hideDatasetLoadingProgress();
+                        this.datasetStatus.textContent = 'High-quality MNIST-style dataset loaded successfully!';
+                        this.datasetStatus.className = 'status-message status-success';
+                        this.mnistSamples.style.display = 'block';
+                    }, 1000);
+                    
+                    this.addLogEntry(`Generated ${this.trainData.images.shape[0]} training and ${this.testData.images.shape[0]} test examples with improved quality`, 'success');
+                    
+                } catch (error) {
+                    console.error('TensorFlow.js MNIST generation failed:', error);
+                    this.addLogEntry('Dataset generation failed, trying external source...', 'error');
+                    throw error;
+                }
+            }
+            
+            async loadMNISTFromJSON() {
+                // Load MNIST from a JSON format - real MNIST data
+                this.updateDatasetProgress(30, 'Downloading real MNIST data...');
+                
+                try {
+                    // Use a reliable source of real MNIST data in JSON format
+                    this.addLogEntry('Fetching real MNIST data from reliable source...', 'info');
+                    // Try a smaller, more reliable MNIST source first
+                    let response;
+                    try {
+                        response = await fetch('https://storage.googleapis.com/tfjs-examples/mnist-node/combined.json');
+                    } catch (e) {
+                        // Fallback to GitHub source
+                        this.addLogEntry('Trying GitHub MNIST source...', 'info');
+                        response = await fetch('https://raw.githubusercontent.com/cazala/mnist/master/dist/mnist.json');
+                    }
+                    
+                    if (!response.ok) {
+                        console.error(`GitHub MNIST fetch failed: ${response.status} ${response.statusText}`);
+                        throw new Error(`Failed to fetch MNIST from GitHub: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    this.updateDatasetProgress(50, 'Parsing real MNIST JSON data...');
+                    
+                    // Add timeout to prevent hanging
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('JSON parsing timeout')), 30000)
+                    );
+                    
+                    const mnist = await Promise.race([response.json(), timeoutPromise]);
+                    
+                    if (!mnist || !mnist.train || !mnist.test) {
+                        throw new Error('Invalid MNIST data structure');
+                    }
+                    
+                    this.addLogEntry(`Successfully loaded ${mnist.train.length} training and ${mnist.test.length} test samples from real MNIST`, 'success');
+                    
+                    this.updateDatasetProgress(70, 'Processing MNIST JSON...');
+                    
+                    // Process the training data
+                    const trainImages = new Float32Array(mnist.train.length * 784);
+                    const trainLabels = new Float32Array(mnist.train.length);
+                    
+                    for (let i = 0; i < mnist.train.length; i++) {
+                        // Copy image data (already normalized)
+                        for (let j = 0; j < 784; j++) {
+                            trainImages[i * 784 + j] = mnist.train[i].input[j];
+                        }
+                        // Get label (convert from one-hot to sparse)
+                        trainLabels[i] = mnist.train[i].output.indexOf(1);
+                    }
+                    
+                    // Process the test data
+                    const testImages = new Float32Array(mnist.test.length * 784);
+                    const testLabels = new Float32Array(mnist.test.length);
+                    
+                    for (let i = 0; i < mnist.test.length; i++) {
+                        // Copy image data (already normalized)
+                        for (let j = 0; j < 784; j++) {
+                            testImages[i * 784 + j] = mnist.test[i].input[j];
+                        }
+                        // Get label (convert from one-hot to sparse)
+                        testLabels[i] = mnist.test[i].output.indexOf(1);
+                    }
+                    
+                    this.updateDatasetProgress(85, 'Creating tensors from real data...');
+                    
+                    // Create tensors from real MNIST data
+                    this.trainData = {
+                        images: tf.tensor4d(trainImages, [mnist.train.length, 28, 28, 1]),
+                        labels: tf.tensor1d(trainLabels, 'float32')
+                    };
+                    
+                    this.testData = {
+                        images: tf.tensor4d(testImages, [mnist.test.length, 28, 28, 1]),
+                        labels: tf.tensor1d(testLabels, 'float32')
+                    };
+                    
+                    this.updateDatasetProgress(95, 'Displaying real MNIST samples...');
+                    this.displayOrderedSamples();
+                    
+                    this.updateDatasetProgress(100, 'Real MNIST dataset loaded!');
+                    
+                    // Update UI
+                    this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                    this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                    
+                    // Hide progress bar and show success
+                    setTimeout(() => {
+                        this.hideDatasetLoadingProgress();
+                        this.datasetStatus.textContent = 'Real MNIST dataset loaded successfully!';
+                        this.datasetStatus.className = 'status-message status-success';
+                        this.mnistSamples.style.display = 'block';
+                    }, 1000);
+                    
+                    this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} real MNIST training and ${this.testData.images.shape[0]} test examples`, 'success');
+                    
+                } catch (error) {
+                    console.error('Primary MNIST JSON loading failed:', error);
+                    this.addLogEntry(`Primary MNIST loading failed: ${error.message}`, 'error');
+                    throw error;
+                }
+            }
+            
+            parseCSVData(csvText) {
+                // Parse CSV format MNIST data (label, pixel1, pixel2, ..., pixel784)
+                const lines = csvText.trim().split('\n');
+                const data = lines.slice(1); // Skip header
+                
+                const images = [];
+                const labels = [];
+                
+                for (const line of data) {
+                    const values = line.split(',').map(Number);
+                    const label = values[0];
+                    const pixels = values.slice(1).map(x => x / 255.0); // Normalize to [0,1]
+                    
+                    labels.push(label);
+                    images.push(...pixels);
+                }
+                
+                return { images: new Float32Array(images), labels: new Float32Array(labels) };
+            }
+            
+            async loadMNISTFromAlternativeSource() {
+                // Fallback: Use a different MNIST source or create a minimal working dataset
+                this.updateDatasetProgress(40, 'Loading fallback MNIST data...');
+                
+                try {
+                    // Try another reliable MNIST JSON source
+                    this.addLogEntry('Trying alternative MNIST source...', 'info');
+                    const response = await fetch('https://storage.googleapis.com/tfjs-examples/mnist/data/mnist.json');
+                    
+                    if (!response.ok) {
+                        throw new Error('Alternative source also failed');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Process the alternative format
+                    this.updateDatasetProgress(70, 'Processing alternative MNIST format...');
+                    
+                    // Create training data
+                    const trainImages = new Float32Array(data.train.images);
+                    const trainLabels = new Float32Array(data.train.labels);
+                    const testImages = new Float32Array(data.test.images);
+                    const testLabels = new Float32Array(data.test.labels);
+                    
+                    this.updateDatasetProgress(85, 'Creating tensors from alternative source...');
+                    
+                    this.trainData = {
+                        images: tf.tensor4d(trainImages, [trainImages.length / 784, 28, 28, 1]),
+                        labels: tf.tensor1d(trainLabels, 'float32')
+                    };
+                    
+                    this.testData = {
+                        images: tf.tensor4d(testImages, [testImages.length / 784, 28, 28, 1]),
+                        labels: tf.tensor1d(testLabels, 'float32')
+                    };
+                    
+                    this.updateDatasetProgress(95, 'Displaying alternative MNIST samples...');
+                    this.displayOrderedSamples();
+                    
+                    this.updateDatasetProgress(100, 'Alternative MNIST dataset loaded!');
+                    
+                    // Update UI
+                    this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                    this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                    
+                    // Hide progress bar and show success
+                    setTimeout(() => {
+                        this.hideDatasetLoadingProgress();
+                        this.datasetStatus.textContent = 'MNIST dataset loaded from alternative source!';
+                        this.datasetStatus.className = 'status-message status-success';
+                        this.mnistSamples.style.display = 'block';
+                    }, 1000);
+                    
+                    this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} training and ${this.testData.images.shape[0]} test examples from alternative source`, 'success');
+                    
+                } catch (error) {
+                    console.error('All MNIST sources failed:', error);
+                    this.addLogEntry('All MNIST sources failed. Using minimal synthetic dataset as final fallback.', 'error');
+                    await this.loadMinimalFallbackDataset();
+                }
+            }
+            
+            async loadMinimalFallbackDataset() {
+                // Final fallback: Create a minimal but functional dataset for testing
+                this.updateDatasetProgress(60, 'Creating minimal test dataset...');
+                
+                this.addLogEntry('Creating minimal MNIST-style dataset for testing...', 'info');
+                
+                // Create a very small but functional dataset
+                const mnistData = new MnistData();
+                mnistData.NUM_DATASET_ELEMENTS = 1000;
+                mnistData.NUM_TRAIN_ELEMENTS = 800;
+                mnistData.NUM_TEST_ELEMENTS = 200;
+                
+                await mnistData.load((progress, message) => {
+                    this.updateDatasetProgress(60 + progress * 0.3, message);
+                });
+                
+                // Get small training and test sets
+                const trainBatch = mnistData.nextTrainBatch(800);
+                const testBatch = mnistData.nextTestBatch(200);
+                
+                this.updateDatasetProgress(95, 'Preparing fallback tensors...');
+                
+                this.trainData = { 
+                    images: trainBatch.xs.reshape([800, 28, 28, 1]), 
+                    labels: trainBatch.labels
+                };
+                this.testData = { 
+                    images: testBatch.xs.reshape([200, 28, 28, 1]), 
+                    labels: testBatch.labels
+                };
+                
+                this.updateDatasetProgress(100, 'Fallback dataset ready!');
+                
+                // Update UI
+                this.datasetTrainSize.textContent = this.trainData.images.shape[0].toLocaleString();
+                this.datasetTestSize.textContent = this.testData.images.shape[0].toLocaleString();
+                
+                // Hide progress bar and show success
+                setTimeout(() => {
+                    this.hideDatasetLoadingProgress();
+                    this.datasetStatus.textContent = 'Fallback dataset loaded for testing!';
+                    this.datasetStatus.className = 'status-message status-warning';
+                    this.mnistSamples.style.display = 'block';
+                }, 1000);
+                
+                this.displayOrderedSamples();
+                this.addLogEntry(`Loaded ${this.trainData.images.shape[0]} fallback training and ${this.testData.images.shape[0]} test examples`, 'success');
+            }
+            
+            async loadMNISTImages(url, numImages) {
+                const response = await fetch(url);
+                const buffer = await response.arrayBuffer();
+                const uint8Array = new Uint8Array(buffer);
+                
+                // Skip header (16 bytes) and convert to float32
+                const imageData = new Float32Array(numImages * 784);
+                for (let i = 0; i < numImages * 784; i++) {
+                    imageData[i] = uint8Array[i + 16] / 255.0; // Normalize to [0,1]
+                }
+                
+                return tf.tensor2d(imageData, [numImages, 784], 'float32');
+            }
+            
+            async loadMNISTLabels(url, numLabels) {
+                const response = await fetch(url);
+                const buffer = await response.arrayBuffer();
+                const uint8Array = new Uint8Array(buffer);
+                
+                // Skip header (8 bytes) and convert to float32
+                const labelData = new Float32Array(numLabels);
+                for (let i = 0; i < numLabels; i++) {
+                    labelData[i] = uint8Array[i + 8];
+                }
+                
+                return tf.tensor1d(labelData, 'float32');
+            }
+            
+            async loadSyntheticMNIST() {
+                // Fallback synthetic data (smaller dataset)
+                const mnistData = new MnistData();
+                await mnistData.load((progress, message) => {
+                    this.updateDatasetProgress(Math.floor(40 + progress * 0.5), message);
+                });
+                
+                const trainBatch = mnistData.nextTrainBatch(800);
+                const testBatch = mnistData.nextTestBatch(200);
+                
+                this.trainData = { 
+                    images: trainBatch.xs.reshape([800, 28, 28, 1]), 
+                    labels: trainBatch.labels
+                };
+                this.testData = { 
+                    images: testBatch.xs.reshape([200, 28, 28, 1]), 
+                    labels: testBatch.labels
+                };
+            }
+            
+            generateRealisticDigits(count) {
+                // Generate more realistic looking digit patterns
+                const images = [];
+                for (let i = 0; i < count; i++) {
+                    const digit = i % 10;
+                    const image = this.createDigitPattern(digit);
+                    images.push(image);
+                }
+                return tf.tensor4d(images, [count, 28, 28, 1]);
+            }
+            
+            createDigitPattern(digit) {
+                // Create simple patterns that loosely resemble digits
+                const pattern = new Array(28 * 28).fill(0);
+                const centerX = 14, centerY = 14;
+                
+                switch(digit) {
+                    case 0:
+                        // Oval shape
+                        for (let y = 8; y < 20; y++) {
+                            for (let x = 10; x < 18; x++) {
+                                const dist = Math.sqrt((x-14)**2 + (y-14)**2 * 1.5);
+                                if (dist > 4 && dist < 7) pattern[y*28 + x] = Math.random() * 0.8 + 0.2;
+                            }
+                        }
+                        break;
+                    case 1:
+                        // Vertical line
+                        for (let y = 6; y < 22; y++) {
+                            pattern[y*28 + 14] = Math.random() * 0.8 + 0.2;
+                            pattern[y*28 + 13] = Math.random() * 0.4 + 0.1;
+                        }
+                        break;
+                    case 2:
+                        // S-like curve
+                        for (let y = 8; y < 20; y++) {
+                            const x = 14 + Math.sin((y-8) * 0.5) * 3;
+                            const idx = Math.floor(y*28 + x);
+                            pattern[idx] = Math.random() * 0.8 + 0.2;
+                        }
+                        break;
+                    default:
+                        // Random pattern for other digits
+                        for (let y = 8; y < 20; y++) {
+                            for (let x = 10; x < 18; x++) {
+                                if (Math.random() > 0.7) {
+                                    pattern[y*28 + x] = Math.random() * 0.8 + 0.2;
+                                }
+                            }
+                        }
+                }
+                
+                return pattern;
+            }
+            
+            displayMNISTSamples(imageData, labelData = null) {
+                this.sampleGrid.innerHTML = '';
+                
+                for (let i = 0; i < 10; i++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 28;
+                    canvas.height = 28;
+                    canvas.className = 'mnist-canvas';
+                    canvas.style.border = '1px solid #ddd';
+                    canvas.style.borderRadius = '4px';
+                    
+                    const ctx = canvas.getContext('2d');
+                    const imageArray = imageData.slice([i, 0], [1, 784]).dataSync();
+                    const imageData2D = ctx.createImageData(28, 28);
+                    
+                    for (let j = 0; j < 784; j++) {
+                        const pixel = imageArray[j] * 255;
+                        const idx = j * 4;
+                        imageData2D.data[idx] = pixel;     // R
+                        imageData2D.data[idx + 1] = pixel; // G
+                        imageData2D.data[idx + 2] = pixel; // B
+                        imageData2D.data[idx + 3] = 255;   // A
+                    }
+                    
+                    ctx.putImageData(imageData2D, 0, 0);
+                    
+                    // Add digit label below
+                    const container = document.createElement('div');
+                    container.style.textAlign = 'center';
+                    container.appendChild(canvas);
+                    
+                    const label = document.createElement('div');
+                    // Get the actual label from the label data if available
+                    if (labelData) {
+                        const actualLabel = Math.round(labelData.slice([i], [1]).dataSync()[0]);
+                        label.textContent = actualLabel;
+                    } else {
+                        // Fallback: use the index (for ordered samples)
+                        label.textContent = i % 10;
+                    }
+                    label.style.fontSize = '10px';
+                    label.style.marginTop = '2px';
+                    label.style.color = '#666';
+                    container.appendChild(label);
+                    
+                    this.sampleGrid.appendChild(container);
+                }
+            }
+            
+            displayRealMNISTSamples(imageData, labelData) {
+                // Legacy function - redirects to new implementation
+                this.displayMNISTSamples(imageData);
+            }
+            
+            displayOrderedSamples() {
+                // Display actual training samples with their correct labels
+                this.sampleGrid.innerHTML = '';
+                
+                // Find one example of each digit (0-9) from the training data
+                const digitExamples = new Array(10).fill(null);
+                const labelsArray = this.trainData.labels.dataSync();
+                
+                // Find first occurrence of each digit
+                for (let i = 0; i < labelsArray.length && digitExamples.some(ex => ex === null); i++) {
+                    const label = Math.round(labelsArray[i]);
+                    if (label >= 0 && label <= 9 && digitExamples[label] === null) {
+                        digitExamples[label] = i;
+                    }
+                }
+                
+                // Display examples for digits 0-9
+                for (let digit = 0; digit < 10; digit++) {
+                    const sampleIndex = digitExamples[digit];
+                    if (sampleIndex !== null) {
+                        // Get the actual image data for this sample
+                        const imageSlice = this.trainData.images.slice([sampleIndex, 0, 0, 0], [1, 28, 28, 1]);
+                        const imageArray = imageSlice.dataSync();
+                        
+                        // Create canvas to display the image
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 28;
+                        canvas.height = 28;
+                        canvas.className = 'mnist-canvas';
+                        canvas.style.border = '1px solid #ddd';
+                        canvas.style.borderRadius = '4px';
+                        
+                        const ctx = canvas.getContext('2d');
+                        const imageData = ctx.createImageData(28, 28);
+                        
+                        // Convert grayscale to RGBA
+                        for (let j = 0; j < 784; j++) {
+                            const pixel = imageArray[j] * 255;
+                            const idx = j * 4;
+                            imageData.data[idx] = pixel;     // R
+                            imageData.data[idx + 1] = pixel; // G
+                            imageData.data[idx + 2] = pixel; // B
+                            imageData.data[idx + 3] = 255;   // A
+                        }
+                        
+                        ctx.putImageData(imageData, 0, 0);
+                        
+                        // Create container with label
+                        const container = document.createElement('div');
+                        container.style.textAlign = 'center';
+                        container.appendChild(canvas);
+                        
+                        const label = document.createElement('div');
+                        label.textContent = digit;
+                        label.style.fontSize = '10px';
+                        label.style.marginTop = '2px';
+                        label.style.color = '#666';
+                        label.style.fontWeight = 'bold';
+                        container.appendChild(label);
+                        
+                        this.sampleGrid.appendChild(container);
+                        
+                        // Clean up tensor
+                        imageSlice.dispose();
+                    } else {
+                        // Fallback if digit not found - create placeholder
+                        const container = document.createElement('div');
+                        container.style.textAlign = 'center';
+                        
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'mnist-sample';
+                        placeholder.textContent = '?';
+                        placeholder.style.background = '#f0f0f0';
+                        placeholder.style.color = '#999';
+                        container.appendChild(placeholder);
+                        
+                        const label = document.createElement('div');
+                        label.textContent = digit;
+                        label.style.fontSize = '10px';
+                        label.style.marginTop = '2px';
+                        label.style.color = '#999';
+                        container.appendChild(label);
+                        
+                        this.sampleGrid.appendChild(container);
+                    }
+                }
+            }
+
+            displaySampleImages() {
+                this.sampleGrid.innerHTML = '';
+                
+                // Create 10 sample digit displays (0-9)
+                for (let i = 0; i < 10; i++) {
+                    const sample = document.createElement('div');
+                    sample.className = 'mnist-sample';
+                    sample.textContent = i;
+                    sample.style.background = `hsl(${i * 36}, 70%, 85%)`;
+                    this.sampleGrid.appendChild(sample);
+                }
+            }
+            
+            createModel() {
+                this.addLogEntry('Creating CNN model architecture...', 'info');
+                
+                this.model = tf.sequential({
+                    layers: [
+                        tf.layers.conv2d({
+                            inputShape: [28, 28, 1],
+                            filters: 32,
+                            kernelSize: 3,
+                            activation: 'relu'
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.conv2d({
+                            filters: 64,
+                            kernelSize: 3,
+                            activation: 'relu'
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.flatten(),
+                        tf.layers.dense({
+                            units: 128,
+                            activation: 'relu'
+                        }),
+                        tf.layers.dropout({ rate: 0.2 }),
+                        tf.layers.dense({
+                            units: 10,
+                            activation: 'softmax'
+                        })
+                    ]
+                });
+                
+                const learningRate = parseFloat(this.learningRateSelect.value);
+                
+                this.model.compile({
+                    optimizer: tf.train.adam(learningRate),
+                    loss: 'sparseCategoricalCrossentropy',
+                    metrics: ['accuracy']
+                });
+                
+                this.modelStatus.textContent = `Model created with ${this.model.countParams().toLocaleString()} parameters`;
+                this.modelStatus.className = 'status-message status-success';
+                
+                this.addLogEntry(`CNN model compiled with learning rate ${learningRate}`, 'success');
+            }
+            
+            async trainModel() {
+                this.addLogEntry('Starting CNN training...', 'info');
+                
+                // Show training progress
+                this.trainingIdle.style.display = 'none';
+                this.trainingProgress.classList.add('show');
+                this.setupTrainingChart();
+                
+                const epochs = parseInt(this.epochsSelect.value);
+                const batchSize = parseInt(this.batchSizeSelect.value);
+                
+                // Debug tensor info
+                this.addLogEntry(`Training data - Images: ${this.trainData.images.shape}, dtype: ${this.trainData.images.dtype}`, 'info');
+                this.addLogEntry(`Training data - Labels: ${this.trainData.labels.shape}, dtype: ${this.trainData.labels.dtype}`, 'info');
+                this.addLogEntry(`Test data - Images: ${this.testData.images.shape}, dtype: ${this.testData.images.dtype}`, 'info');
+                this.addLogEntry(`Test data - Labels: ${this.testData.labels.shape}, dtype: ${this.testData.labels.dtype}`, 'info');
+                
+                try {
+                    // Ensure TensorFlow.js backend is ready
+                    await tf.ready();
+                    this.addLogEntry(`TensorFlow.js backend: ${tf.getBackend()}`, 'info');
+                    
+                    // Use raw integer labels directly (sparseCategoricalCrossentropy expects integers, not one-hot)
+                    const history = await this.model.fit(this.trainData.images, this.trainData.labels, {
+                        epochs: epochs,
+                        batchSize: batchSize,
+                        validationData: [this.testData.images, this.testData.labels],
+                        verbose: 1,
+                        callbacks: {
+                            onEpochEnd: (epoch, logs) => {
+                                this.updateTrainingProgress(epoch + 1, epochs, logs);
+                            },
+                            onBatchEnd: (batch, logs) => {
+                                // Optional: update during batches
+                            }
+                        }
+                    });
+                    
+                    this.addLogEntry('Training completed successfully!', 'success');
+                    
+                } catch (error) {
+                    this.addLogEntry(`Training error: ${error.message}`, 'error');
+                    console.error('Full training error:', error);
+                    throw error;
+                }
+            }
+            
+            setupTrainingChart() {
+                const ctx = document.getElementById('trainingChart').getContext('2d');
+                
+                this.trainingChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Training Loss',
+                                data: [],
+                                borderColor: '#dc3545',
+                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Validation Loss',
+                                data: [],
+                                borderColor: '#fd7e14',
+                                backgroundColor: 'rgba(253, 126, 20, 0.1)', 
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Training Accuracy',
+                                data: [],
+                                borderColor: '#28a745',
+                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                fill: false,
+                                tension: 0.1,
+                                yAxisID: 'y1'
+                            },
+                            {
+                                label: 'Validation Accuracy',
+                                data: [],
+                                borderColor: '#20c997',
+                                backgroundColor: 'rgba(32, 201, 151, 0.1)',
+                                fill: false,
+                                tension: 0.1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Loss'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Accuracy'
+                                },
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            updateTrainingProgress(epoch, totalEpochs, logs) {
+                console.log('Training Progress - Epoch:', epoch, 'Logs:', logs); // Debug
+                
+                // Calculate progress percentage
+                const progressPercent = (epoch / totalEpochs) * 100;
+                
+                // Update progress indicators
+                document.getElementById('currentEpoch').textContent = `${epoch}/${totalEpochs}`;
+                document.getElementById('epochProgress').style.width = `${progressPercent}%`;
+                
+                // Update circular progress bar
+                const circularProgress = document.getElementById('circularProgress');
+                const circularProgressText = document.getElementById('circularProgressText');
+                const circumference = 2 * Math.PI * 45; // radius = 45
+                const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+                circularProgress.style.strokeDashoffset = strokeDashoffset;
+                circularProgressText.textContent = `${Math.round(progressPercent)}%`;
+                
+                // Update time
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const eta = Math.floor((elapsed / epoch) * (totalEpochs - epoch));
+                document.getElementById('timeElapsed').textContent = this.formatTime(elapsed);
+                document.getElementById('eta').textContent = this.formatTime(eta);
+                
+                // TensorFlow.js may use different property names - check all variations
+                const trainLoss = logs.loss || logs.training_loss || 0;
+                const trainAcc = logs.acc || logs.accuracy || logs.training_accuracy || 0;
+                const valLoss = logs.val_loss || logs.validation_loss || logs.val_training_loss || 0;
+                const valAcc = logs.val_acc || logs.val_accuracy || logs.validation_accuracy || 0;
+                
+                // Update metrics with fallbacks
+                document.getElementById('trainLoss').textContent = trainLoss.toFixed(4);
+                document.getElementById('trainAccuracy').textContent = (trainAcc * 100).toFixed(1) + '%';
+                document.getElementById('valLoss').textContent = valLoss.toFixed(4);
+                document.getElementById('valAccuracy').textContent = (valAcc * 100).toFixed(1) + '%';
+                
+                // Update chart
+                if (this.trainingChart) {
+                    this.trainingChart.data.labels.push(`Epoch ${epoch}`);
+                    this.trainingChart.data.datasets[0].data.push(trainLoss);
+                    this.trainingChart.data.datasets[1].data.push(valLoss);
+                    this.trainingChart.data.datasets[2].data.push(trainAcc);
+                    this.trainingChart.data.datasets[3].data.push(valAcc);
+                    this.trainingChart.update('none');
+                }
+                
+                // Add log entry
+                this.addLogEntry(
+                    `Epoch ${epoch}/${totalEpochs} - Loss: ${trainLoss.toFixed(4)} - Acc: ${(trainAcc * 100).toFixed(1)}% - Val Loss: ${valLoss.toFixed(4)} - Val Acc: ${(valAcc * 100).toFixed(1)}%`,
+                    'success'
+                );
+            }
+            
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            addLogEntry(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                this.trainingLog.appendChild(entry);
+                this.trainingLog.scrollTop = this.trainingLog.scrollHeight;
+            }
+            
+            enableTesting() {
+                this.testingDisabled.style.display = 'none';
+                this.testingInterface.style.display = 'block';
+                this.clearCanvas();
+                this.addLogEntry('Model ready for testing! Draw digits on the canvas.', 'success');
+            }
+            
+            async makePrediction() {
+                if (!this.model) return;
+                
+                // Get image data from canvas
+                const canvas = this.drawingCanvas;
+                const ctx = canvas.getContext('2d');
+                
+                // Create a temporary canvas at 28x28 resolution
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 28;
+                tempCanvas.height = 28;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // Draw scaled down version
+                tempCtx.drawImage(canvas, 0, 0, 280, 280, 0, 0, 28, 28);
+                
+                // Get image data and convert to tensor
+                const imageData = tempCtx.getImageData(0, 0, 28, 28);
+                const pixels = imageData.data;
+                
+                // Convert to grayscale and normalize - match training data format
+                const input = [];
+                for (let i = 0; i < pixels.length; i += 4) {
+                    // Get RGB values (white strokes on black background)
+                    const r = pixels[i];
+                    const g = pixels[i + 1]; 
+                    const b = pixels[i + 2];
+                    // Convert to grayscale and normalize to [0,1]
+                    const gray = (r + g + b) / (3 * 255.0);
+                    input.push(gray);
+                }
+                
+                // Add some debugging to check input values
+                const maxVal = Math.max(...input);
+                const minVal = Math.min(...input);
+                const avgVal = input.reduce((a, b) => a + b, 0) / input.length;
+                console.log(`Input stats - Min: ${minVal.toFixed(3)}, Max: ${maxVal.toFixed(3)}, Avg: ${avgVal.toFixed(3)}`);
+                
+                // Apply some smoothing and thresholding to make it more like training data
+                const processedInput = input.map(val => {
+                    // Apply slight smoothing and thresholding
+                    return val > 0.1 ? Math.min(1.0, val * 1.2) : 0;
+                });
+                
+                // Show debug visualization of what the model sees
+                this.showDebugInput(processedInput);
+                
+                // Create tensor and make prediction
+                const tensor = tf.tensor4d(processedInput, [1, 28, 28, 1]);
+                const prediction = this.model.predict(tensor);
+                const probabilities = await prediction.data();
+                
+                // Update prediction display
+                const predictionItems = this.predictions.querySelectorAll('.prediction-item');
+                let maxProb = 0;
+                let maxIndex = 0;
+                
+                predictionItems.forEach((item, index) => {
+                    const confidence = probabilities[index] * 100;
+                    item.querySelector('.prediction-confidence').textContent = confidence.toFixed(1) + '%';
+                    
+                    if (probabilities[index] > maxProb) {
+                        maxProb = probabilities[index];
+                        maxIndex = index;
+                    }
+                    
+                    item.classList.remove('top-prediction');
+                });
+                
+                // Highlight top prediction
+                predictionItems[maxIndex].classList.add('top-prediction');
+                
+                // Clean up tensors
+                tensor.dispose();
+                prediction.dispose();
+            }
+            
+            showDebugInput(inputArray) {
+                // Show what the model actually sees as input
+                const debugCanvas = document.getElementById('debugCanvas');
+                if (!debugCanvas) return;
+                
+                const ctx = debugCanvas.getContext('2d');
+                const imageData = ctx.createImageData(28, 28);
+                
+                // Convert input array to RGBA
+                for (let i = 0; i < 784; i++) {
+                    const pixel = inputArray[i] * 255;
+                    const idx = i * 4;
+                    imageData.data[idx] = pixel;     // R
+                    imageData.data[idx + 1] = pixel; // G
+                    imageData.data[idx + 2] = pixel; // B
+                    imageData.data[idx + 3] = 255;   // A
+                }
+                
+                // Draw to a temporary 28x28 canvas first
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 28;
+                tempCanvas.height = 28;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.putImageData(imageData, 0, 0);
+                
+                // Scale up to debug canvas
+                ctx.clearRect(0, 0, debugCanvas.width, debugCanvas.height);
+                ctx.imageSmoothingEnabled = false; // Pixelated scaling
+                ctx.drawImage(tempCanvas, 0, 0, 28, 28, 0, 0, 140, 140);
+            }
+        }
+        
+        // Initialize the CNN trainer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cnnTrainer = new CNNTrainer();
+            
+            // Setup slider event handlers
+            const trainSamplesSlider = document.getElementById('trainSamples');
+            const trainSamplesValue = document.getElementById('trainSamplesValue');
+            const testSamplesSlider = document.getElementById('testSamples');
+            const testSamplesValue = document.getElementById('testSamplesValue');
+            
+            trainSamplesSlider.addEventListener('input', (e) => {
+                trainSamplesValue.textContent = e.target.value;
+            });
+            
+            testSamplesSlider.addEventListener('input', (e) => {
+                testSamplesValue.textContent = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>

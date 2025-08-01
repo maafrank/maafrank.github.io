@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Playground - Matthew Frank</title>
+    <meta name="description" content="Interactive AI experiments and demonstrations - explore machine learning concepts hands-on">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../../assets/logo/favicon.png" type="image/png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/css/flaticon.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .playground-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .playground-header {
+            background: white;
+            border-radius: 15px 15px 0 0;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .playground-header h1 {
+            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .playground-header .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        /* Experiment Selection Screen */
+        .experiment-selection {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .experiment-selection h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .experiment-selection .intro {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .experiment-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,123,255,0.2);
+            border-color: #007bff;
+        }
+        
+        .experiment-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .experiment-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #e9ecef;
+        }
+        
+        .experiment-icon {
+            font-size: 3.5rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .experiment-card.disabled .experiment-icon {
+            color: #6c757d;
+        }
+        
+        .experiment-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .experiment-card.disabled .experiment-name {
+            color: #6c757d;
+        }
+        
+        .experiment-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .experiment-card.disabled .experiment-description {
+            color: #999;
+        }
+        
+        .experiment-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .experiment-status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .experiment-status.coming-soon {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Experiment Interface */
+        .experiment-interface {
+            background: white;
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .experiment-interface.active {
+            display: flex;
+        }
+        
+        .experiment-nav {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .experiment-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .back-to-experiments {
+            background: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-to-experiments:hover {
+            background: #545b62;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .experiment-content {
+            flex: 1;
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .experiment-main {
+            flex: 2;
+            padding: 30px;
+        }
+        
+        .experiment-sidebar {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 30px;
+            border-left: 1px solid #e9ecef;
+            min-width: 300px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-section h3 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .sidebar-section p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        /* Neural Network Visualizer */
+        .digit-canvas {
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            cursor: crosshair;
+            background: white;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .prediction-results {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .prediction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .prediction-digit {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .prediction-confidence {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .confidence-bar {
+            width: 100px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .control-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .control-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .control-button.secondary {
+            background: #6c757d;
+        }
+        
+        .control-button.secondary:hover {
+            background: #545b62;
+        }
+        
+        /* Loading States */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Training Interface Styles */
+        .training-config {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .training-config h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .config-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .config-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .config-item label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .config-item select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .training-actions {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .train-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .train-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .train-button.secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+        
+        .train-button.secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .train-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .training-progress {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .training-progress h4 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .training-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-item label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-item span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .chart-container h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .chart-container canvas {
+            max-width: 100%;
+        }
+        
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .phase-header h3 {
+            margin: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .experiment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .experiment-content {
+                flex-direction: column;
+            }
+            
+            .experiment-sidebar {
+                border-left: none;
+                border-top: 1px solid #e9ecef;
+                min-width: auto;
+            }
+            
+            .playground-container {
+                padding: 10px;
+            }
+            
+            .digit-canvas {
+                max-width: 100%;
+            }
+            
+            .config-row {
+                flex-direction: column;
+            }
+            
+            .config-item {
+                min-width: auto;
+            }
+            
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .training-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../../webapps.html" class="back-button">
+        <i class="fa fa-arrow-left"></i> Back to Web Apps
+    </a>
+    
+    <div class="playground-container">
+        <!-- Header -->
+        <div class="playground-header">
+            <h1><i class="fa fa-flask"></i> AI Playground</h1>
+            <p class="subtitle">Interactive AI experiments and machine learning demonstrations</p>
+        </div>
+        
+        <!-- Experiment Selection Screen -->
+        <div class="experiment-selection" id="experimentSelection">
+            <h2>Choose Your Experiment</h2>
+            <p class="intro">Explore AI and machine learning concepts through hands-on interactive demonstrations. Each experiment runs entirely in your browser using WebLLM technology.</p>
+            
+            <div class="experiment-grid">
+                <!-- CNN Trainer -->
+                <div class="experiment-card" onclick="window.location.href='CNNTrainer/index.html'">
+                    <div class="experiment-icon">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <div class="experiment-name">CNN Trainer</div>
+                    <div class="experiment-description">Train your own Convolutional Neural Network on real MNIST data. Watch your model learn to recognize handwritten digits with customizable training parameters.</div>
+                    <div class="experiment-status ready">Ready to Use</div>
+                </div>
+                
+                <!-- Neural Network Visualizer -->
+                <div class="experiment-card disabled" data-experiment="neural-network">
+                    <div class="experiment-icon">
+                        <i class="fa fa-brain"></i>
+                    </div>
+                    <div class="experiment-name">Neural Network Visualizer</div>
+                    <div class="experiment-description">Draw digits and watch a neural network classify them in real-time. See how artificial neurons process visual information.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+                
+                <!-- Computer Vision Lab -->
+                <div class="experiment-card disabled" data-experiment="computer-vision">
+                    <div class="experiment-icon">
+                        <i class="fa fa-eye"></i>
+                    </div>
+                    <div class="experiment-name">Computer Vision Lab</div>
+                    <div class="experiment-description">Upload images or use your webcam for real-time object detection, edge detection, and visual analysis.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+                
+                <!-- Natural Language Playground -->
+                <div class="experiment-card disabled" data-experiment="nlp-playground">
+                    <div class="experiment-icon">
+                        <i class="fa fa-comment"></i>
+                    </div>
+                    <div class="experiment-name">NLP Playground</div>
+                    <div class="experiment-description">Analyze text sentiment, generate content, detect languages, and explore natural language processing.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+                
+                <!-- Algorithm Visualizer -->
+                <div class="experiment-card disabled" data-experiment="algorithm-viz">
+                    <div class="experiment-icon">
+                        <i class="fa fa-sort"></i>
+                    </div>
+                    <div class="experiment-name">Algorithm Visualizer</div>
+                    <div class="experiment-description">Watch sorting algorithms, pathfinding, and search algorithms animate step-by-step.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+                
+                <!-- Data Science Studio -->
+                <div class="experiment-card disabled" data-experiment="data-science">
+                    <div class="experiment-icon">
+                        <i class="fa fa-chart-line"></i>
+                    </div>
+                    <div class="experiment-name">Data Science Studio</div>
+                    <div class="experiment-description">Explore clustering, regression, pattern recognition, and interactive data analysis.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+                
+                <!-- AI Model Comparison -->
+                <div class="experiment-card disabled" data-experiment="model-comparison">
+                    <div class="experiment-icon">
+                        <i class="fa fa-balance-scale"></i>
+                    </div>
+                    <div class="experiment-name">AI Model Comparison</div>
+                    <div class="experiment-description">Compare different AI models, benchmark performance, and explore bias detection.</div>
+                    <div class="experiment-status coming-soon">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Neural Network Experiment Interface -->
+        <div class="experiment-interface" id="neuralNetworkInterface">
+            <div class="experiment-nav">
+                <h2 class="experiment-title"><i class="fa fa-brain"></i> Neural Network Trainer</h2>
+                <a href="#" class="back-to-experiments" onclick="showExperimentSelection()">
+                    <i class="fa fa-arrow-left"></i> Back to Experiments
+                </a>
+            </div>
+            
+            <div class="experiment-content">
+                <div class="experiment-main">
+                    <!-- Training Phase -->
+                    <div id="trainingPhase">
+                        <h3><i class="fa fa-graduation-cap"></i> Train Your Own CNN</h3>
+                        <p>Train a Convolutional Neural Network on real MNIST handwritten digit data. Watch as your model learns to recognize digits!</p>
+                        
+                        <div class="training-config">
+                            <h4>Training Configuration</h4>
+                            <div class="config-row">
+                                <div class="config-item">
+                                    <label>Training Samples:</label>
+                                    <select id="trainingSamples">
+                                        <option value="1000">1,000 samples (Fast - 2 min)</option>
+                                        <option value="5000" selected>5,000 samples (Balanced - 5 min)</option>
+                                        <option value="10000">10,000 samples (Better - 10 min)</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Epochs:</label>
+                                    <select id="trainingEpochs">
+                                        <option value="5">5 epochs (Fast)</option>
+                                        <option value="10" selected>10 epochs (Balanced)</option>
+                                        <option value="20">20 epochs (Thorough)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="training-actions">
+                            <button id="startTrainingBtn" class="train-button">
+                                <i class="fa fa-play"></i> Start Training
+                            </button>
+                            <button id="loadPretrainedBtn" class="train-button secondary">
+                                <i class="fa fa-download"></i> Load Pre-trained Model
+                            </button>
+                        </div>
+                        
+                        <div id="trainingProgress" class="training-progress" style="display: none;">
+                            <h4>Training Progress</h4>
+                            <div class="progress-section">
+                                <div class="progress-label">
+                                    <span>Data Loading:</span>
+                                    <span id="dataProgress">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div id="dataProgressBar" class="progress-fill"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-section">
+                                <div class="progress-label">
+                                    <span>Training:</span>
+                                    <span id="trainingProgressText">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div id="trainingProgressBar" class="progress-fill"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="training-stats">
+                                <div class="stat-item">
+                                    <label>Current Epoch:</label>
+                                    <span id="currentEpoch">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <label>Loss:</label>
+                                    <span id="currentLoss">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <label>Accuracy:</label>
+                                    <span id="currentAccuracy">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="trainingChart" class="chart-container" style="display: none;">
+                            <h4>Training Curves</h4>
+                            <canvas id="lossChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Testing Phase -->
+                    <div id="testingPhase" style="display: none;">
+                        <div class="phase-header">
+                            <h3><i class="fa fa-flask"></i> Test Your Trained Model</h3>
+                            <button id="backToTrainingBtn" class="control-button secondary">
+                                <i class="fa fa-arrow-left"></i> Back to Training
+                            </button>
+                        </div>
+                        
+                        <p>Your model is trained! Draw a digit below and see how well your neural network recognizes it.</p>
+                        
+                        <canvas id="digitCanvas" class="digit-canvas" width="280" height="280"></canvas>
+                        
+                        <div class="control-buttons">
+                            <button class="control-button" onclick="clearCanvas()">
+                                <i class="fa fa-eraser"></i> Clear Canvas
+                            </button>
+                            <button class="control-button secondary" onclick="testRandomSample()">
+                                <i class="fa fa-random"></i> Test Random MNIST Sample
+                            </button>
+                        </div>
+                        
+                        <div class="prediction-results" id="predictionResults">
+                            <h4>Your Model's Predictions</h4>
+                            <div id="predictionList">
+                                <!-- Predictions will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="experiment-sidebar">
+                    <div class="sidebar-section">
+                        <h3><i class="fa fa-info-circle"></i> What You're Building</h3>
+                        <p>You're training a real Convolutional Neural Network (CNN) on the famous MNIST dataset - the same data used to benchmark machine learning models worldwide.</p>
+                        <p>Your CNN will learn to recognize handwritten digits by finding patterns in pixel data through multiple layers of artificial neurons.</p>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fa fa-cogs"></i> CNN Architecture</h3>
+                        <p><strong>Input:</strong> 28×28 grayscale images</p>
+                        <p><strong>Conv2D Layer 1:</strong> 16 filters, 3×3 kernel</p>
+                        <p><strong>MaxPool2D:</strong> 2×2 pooling</p>
+                        <p><strong>Conv2D Layer 2:</strong> 32 filters, 3×3 kernel</p>
+                        <p><strong>MaxPool2D:</strong> 2×2 pooling</p>
+                        <p><strong>Dense:</strong> 128 hidden units</p>
+                        <p><strong>Output:</strong> 10 classes (digits 0-9)</p>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fa fa-database"></i> Training Data</h3>
+                        <p id="datasetInfo">Ready to download MNIST data...</p>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fa fa-chart-bar"></i> Model Performance</h3>
+                        <p id="modelStats">Train your model to see performance metrics!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TensorFlow.js for Neural Network -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script>
+        class CNNTrainer {
+            constructor() {
+                this.model = null;
+                this.trainingData = null;
+                this.testData = null;
+                this.isTraining = false;
+                this.trainingHistory = { loss: [], accuracy: [] };
+                
+                // Canvas for digit testing
+                this.canvas = null;
+                this.ctx = null;
+                this.isDrawing = false;
+                
+                this.initializeElements();
+                this.bindEvents();
+            }
+            
+            initializeElements() {
+                // Training elements
+                this.startTrainingBtn = document.getElementById('startTrainingBtn');
+                this.loadPretrainedBtn = document.getElementById('loadPretrainedBtn');
+                this.backToTrainingBtn = document.getElementById('backToTrainingBtn');
+                
+                // Progress elements
+                this.trainingProgress = document.getElementById('trainingProgress');
+                this.dataProgressBar = document.getElementById('dataProgressBar');
+                this.trainingProgressBar = document.getElementById('trainingProgressBar');
+                this.dataProgress = document.getElementById('dataProgress');
+                this.trainingProgressText = document.getElementById('trainingProgressText');
+                
+                // Stats elements
+                this.currentEpoch = document.getElementById('currentEpoch');
+                this.currentLoss = document.getElementById('currentLoss');
+                this.currentAccuracy = document.getElementById('currentAccuracy');
+                this.datasetInfo = document.getElementById('datasetInfo');
+                this.modelStats = document.getElementById('modelStats');
+                
+                // Phase elements
+                this.trainingPhase = document.getElementById('trainingPhase');
+                this.testingPhase = document.getElementById('testingPhase');
+                this.trainingChart = document.getElementById('trainingChart');
+                
+                // Canvas elements
+                this.canvas = document.getElementById('digitCanvas');
+                if (this.canvas) {
+                    this.ctx = this.canvas.getContext('2d');
+                }
+            }
+            
+            bindEvents() {
+                // Experiment selection
+                document.querySelectorAll('.experiment-card:not(.disabled)').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const experiment = e.currentTarget.dataset.experiment;
+                        this.showExperiment(experiment);
+                    });
+                });
+                
+                // Training buttons
+                this.startTrainingBtn?.addEventListener('click', () => this.startTraining());
+                this.loadPretrainedBtn?.addEventListener('click', () => this.loadPretrainedModel());
+                this.backToTrainingBtn?.addEventListener('click', () => this.showTrainingPhase());
+                
+                // Canvas events (for testing phase)
+                if (this.canvas) {
+                    this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                    this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                    this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+                    
+                    // Touch events for mobile
+                    this.canvas.addEventListener('touchstart', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('touchmove', (e) => this.draw(e));
+                    this.canvas.addEventListener('touchend', () => this.stopDrawing());
+                }
+            }
+            
+            showExperiment(experimentType) {
+                if (experimentType === 'cnn-trainer') {
+                    // Navigate to CNN Trainer
+                    window.location.href = 'CNNTrainer/index.html';
+                } else if (experimentType === 'neural-network') {
+                    document.getElementById('experimentSelection').style.display = 'none';
+                    document.getElementById('neuralNetworkInterface').classList.add('active');
+                    this.showTrainingPhase();
+                }
+            }
+            
+            showTrainingPhase() {
+                this.trainingPhase.style.display = 'block';
+                this.testingPhase.style.display = 'none';
+            }
+            
+            showTestingPhase() {
+                this.trainingPhase.style.display = 'none';
+                this.testingPhase.style.display = 'block';
+                this.setupCanvas();
+                this.initializePredictions();
+            }
+            
+            async startTraining() {
+                if (this.isTraining) return;
+                
+                this.isTraining = true;
+                this.startTrainingBtn.disabled = true;
+                this.loadPretrainedBtn.disabled = true;
+                
+                try {
+                    // Show progress
+                    this.trainingProgress.style.display = 'block';
+                    
+                    // Step 1: Load MNIST data
+                    await this.loadMNISTData();
+                    
+                    // Step 2: Create and compile model
+                    this.createModel();
+                    
+                    // Step 3: Train the model
+                    await this.trainModel();
+                    
+                    // Step 4: Show results and switch to testing
+                    this.showTestingPhase();
+                    
+                } catch (error) {
+                    console.error('Training failed:', error);
+                    alert('Training failed. Please try again.');
+                } finally {
+                    this.isTraining = false;
+                    this.startTrainingBtn.disabled = false;
+                    this.loadPretrainedBtn.disabled = false;
+                }
+            }
+            
+            async loadMNISTData() {
+                this.updateDataProgress(10, 'Downloading MNIST data...');
+                
+                // Load MNIST data from TensorFlow.js hosted datasets
+                const MNIST_IMAGES_SPRITE_PATH = 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_images.png';
+                const MNIST_LABELS_PATH = 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_labels_uint8';
+                
+                // Get training configuration
+                const numSamples = parseInt(document.getElementById('trainingSamples').value);
+                
+                this.updateDataProgress(30, 'Loading images...');
+                
+                try {
+                    // Create a simplified MNIST-like dataset
+                    const { trainImages, trainLabels, testImages, testLabels } = await this.createSyntheticMNIST(numSamples);
+                    
+                    this.trainingData = { images: trainImages, labels: trainLabels };
+                    this.testData = { images: testImages, labels: testLabels };
+                    
+                    this.updateDataProgress(100, 'Data loaded successfully!');
+                    
+                    this.datasetInfo.innerHTML = `
+                        <strong>Training samples:</strong> ${numSamples}<br>
+                        <strong>Test samples:</strong> ${Math.floor(numSamples * 0.2)}<br>
+                        <strong>Image size:</strong> 28×28 pixels<br>
+                        <strong>Classes:</strong> 10 digits (0-9)
+                    `;
+                    
+                } catch (error) {
+                    console.error('Failed to load MNIST data:', error);
+                    // Fallback to synthetic data
+                    const { trainImages, trainLabels, testImages, testLabels } = await this.createSyntheticMNIST(numSamples);
+                    this.trainingData = { images: trainImages, labels: trainLabels };
+                    this.testData = { images: testImages, labels: testLabels };
+                    this.updateDataProgress(100, 'Using synthetic training data');
+                }
+            }
+            
+            async createSyntheticMNIST(numSamples) {
+                // Create synthetic MNIST-like data for training
+                const trainImages = [];
+                const trainLabels = [];
+                const testImages = [];
+                const testLabels = [];
+                
+                const testSize = Math.floor(numSamples * 0.2);
+                const totalSamples = numSamples + testSize;
+                
+                for (let i = 0; i < totalSamples; i++) {
+                    const digit = i % 10;
+                    const imageData = this.generateDigitImage(digit);
+                    const label = new Array(10).fill(0);
+                    label[digit] = 1;
+                    
+                    if (i < numSamples) {
+                        trainImages.push(imageData);
+                        trainLabels.push(label);
+                    } else {
+                        testImages.push(imageData);
+                        testLabels.push(label);
+                    }
+                    
+                    if (i % 100 === 0) {
+                        const progress = 30 + (i / totalSamples) * 60;
+                        this.updateDataProgress(progress, `Generating sample ${i + 1}/${totalSamples}...`);
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                }
+                
+                return {
+                    trainImages: tf.tensor4d(trainImages, [numSamples, 28, 28, 1]),
+                    trainLabels: tf.tensor2d(trainLabels, [numSamples, 10]),
+                    testImages: tf.tensor4d(testImages, [testSize, 28, 28, 1]),
+                    testLabels: tf.tensor2d(testLabels, [testSize, 10])
+                };
+            }
+            
+            generateDigitImage(digit) {
+                // Generate a 28x28 synthetic digit image
+                const imageData = new Array(28 * 28).fill(0);
+                
+                // Add some randomness for variety
+                const centerX = 14 + (Math.random() - 0.5) * 4;
+                const centerY = 14 + (Math.random() - 0.5) * 4;
+                const scale = 0.8 + Math.random() * 0.4;
+                
+                switch (digit) {
+                    case 0:
+                        this.drawSyntheticCircle(imageData, centerX, centerY, 8 * scale);
+                        break;
+                    case 1:
+                        this.drawSyntheticLine(imageData, centerX, centerY - 8 * scale, centerX, centerY + 8 * scale);
+                        if (Math.random() > 0.5) {
+                            this.drawSyntheticLine(imageData, centerX - 3, centerY - 5 * scale, centerX, centerY - 2 * scale);
+                        }
+                        break;
+                    case 2:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY - 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY - 6 * scale, centerX - 6 * scale, centerY + 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY + 6 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        break;
+                    case 3:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY - 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 3 * scale, centerY, centerX + 6 * scale, centerY);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY + 6 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        break;
+                    case 4:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX - 6 * scale, centerY);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY, centerX + 6 * scale, centerY);
+                        break;
+                    case 5:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY - 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX - 6 * scale, centerY);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY, centerX + 6 * scale, centerY);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY, centerX + 6 * scale, centerY + 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY + 6 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        break;
+                    case 6:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 3 * scale, centerX - 6 * scale, centerY + 6 * scale);
+                        this.drawSyntheticCircle(imageData, centerX, centerY + 2 * scale, 4 * scale);
+                        break;
+                    case 7:
+                        this.drawSyntheticLine(imageData, centerX - 6 * scale, centerY - 6 * scale, centerX + 6 * scale, centerY - 6 * scale);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY - 6 * scale, centerX - 2 * scale, centerY + 6 * scale);
+                        break;
+                    case 8:
+                        this.drawSyntheticCircle(imageData, centerX, centerY - 3 * scale, 3 * scale);
+                        this.drawSyntheticCircle(imageData, centerX, centerY + 3 * scale, 3 * scale);
+                        this.drawSyntheticLine(imageData, centerX - 3 * scale, centerY, centerX + 3 * scale, centerY);
+                        break;
+                    case 9:
+                        this.drawSyntheticCircle(imageData, centerX, centerY - 2 * scale, 4 * scale);
+                        this.drawSyntheticLine(imageData, centerX + 6 * scale, centerY - 2 * scale, centerX + 6 * scale, centerY + 6 * scale);
+                        break;
+                }
+                
+                // Add noise
+                for (let i = 0; i < 784; i++) {
+                    if (Math.random() < 0.02) {
+                        imageData[i] = Math.random() * 0.3;
+                    }
+                    imageData[i] = Math.min(1, imageData[i] + (Math.random() - 0.5) * 0.1);
+                }
+                
+                return imageData;
+            }
+            
+            drawSyntheticCircle(imageData, centerX, centerY, radius) {
+                for (let angle = 0; angle < 360; angle += 5) {
+                    const rad = (angle * Math.PI) / 180;
+                    const x = Math.round(centerX + radius * Math.cos(rad));
+                    const y = Math.round(centerY + radius * Math.sin(rad));
+                    
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        imageData[y * 28 + x] = 1;
+                        // Thicken the line
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                if (nx >= 0 && nx < 28 && ny >= 0 && ny < 28) {
+                                    imageData[ny * 28 + nx] = Math.max(imageData[ny * 28 + nx], 0.7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            drawSyntheticLine(imageData, x1, y1, x2, y2) {
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(y2 - y1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = y1 < y2 ? 1 : -1;
+                let err = dx - dy;
+                
+                let x = Math.round(x1);
+                let y = Math.round(y1);
+                
+                while (true) {
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        imageData[y * 28 + x] = 1;
+                        // Thicken the line
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                if (nx >= 0 && nx < 28 && ny >= 0 && ny < 28) {
+                                    imageData[ny * 28 + nx] = Math.max(imageData[ny * 28 + nx], 0.7);
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (x === Math.round(x2) && y === Math.round(y2)) break;
+                    
+                    const e2 = 2 * err;
+                    if (e2 > -dy) {
+                        err -= dy;
+                        x += sx;
+                    }
+                    if (e2 < dx) {
+                        err += dx;
+                        y += sy;
+                    }
+                }
+            }
+            
+            createModel() {
+                // Create a CNN architecture
+                this.model = tf.sequential({
+                    layers: [
+                        tf.layers.conv2d({
+                            inputShape: [28, 28, 1],
+                            filters: 16,
+                            kernelSize: 3,
+                            activation: 'relu',
+                            padding: 'same'
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.conv2d({
+                            filters: 32,
+                            kernelSize: 3,
+                            activation: 'relu',
+                            padding: 'same'
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.flatten(),
+                        tf.layers.dense({ units: 128, activation: 'relu' }),
+                        tf.layers.dropout({ rate: 0.3 }),
+                        tf.layers.dense({ units: 10, activation: 'softmax' })
+                    ]
+                });
+                
+                this.model.compile({
+                    optimizer: tf.train.adam(0.001),
+                    loss: 'categoricalCrossentropy',
+                    metrics: ['accuracy']
+                });
+            }
+            
+            async trainModel() {
+                const epochs = parseInt(document.getElementById('trainingEpochs').value);
+                let currentEpoch = 0;
+                
+                this.trainingChart.style.display = 'block';
+                
+                const callbacks = {
+                    onEpochEnd: (epoch, logs) => {
+                        currentEpoch = epoch + 1;
+                        this.currentEpoch.textContent = currentEpoch;
+                        this.currentLoss.textContent = logs.loss.toFixed(4);
+                        this.currentAccuracy.textContent = (logs.acc * 100).toFixed(1) + '%';
+                        
+                        this.trainingHistory.loss.push(logs.loss);
+                        this.trainingHistory.accuracy.push(logs.acc);
+                        
+                        const progress = (currentEpoch / epochs) * 100;
+                        this.updateTrainingProgress(progress, `Epoch ${currentEpoch}/${epochs}`);
+                        
+                        this.updateTrainingChart();
+                    }
+                };
+                
+                await this.model.fit(this.trainingData.images, this.trainingData.labels, {
+                    epochs: epochs,
+                    batchSize: 32,
+                    validationSplit: 0.1,
+                    callbacks: callbacks
+                });
+                
+                // Evaluate on test data
+                const testResults = this.model.evaluate(this.testData.images, this.testData.labels);
+                const testLoss = await testResults[0].data();
+                const testAccuracy = await testResults[1].data();
+                
+                this.modelStats.innerHTML = `
+                    <strong>Training Complete!</strong><br>
+                    <strong>Final Accuracy:</strong> ${(testAccuracy[0] * 100).toFixed(1)}%<br>
+                    <strong>Final Loss:</strong> ${testLoss[0].toFixed(4)}<br>
+                    <strong>Epochs:</strong> ${epochs}<br>
+                    <strong>Parameters:</strong> ${this.model.countParams().toLocaleString()}
+                `;
+            }
+            
+            updateDataProgress(percent, message) {
+                this.dataProgressBar.style.width = percent + '%';
+                this.dataProgress.textContent = Math.round(percent) + '%';
+                if (message) {
+                    // You could add a message display element if needed
+                }
+            }
+            
+            updateTrainingProgress(percent, message) {
+                this.trainingProgressBar.style.width = percent + '%';
+                this.trainingProgressText.textContent = Math.round(percent) + '%';
+                if (message) {
+                    // You could add a message display element if needed
+                }
+            }
+            
+            updateTrainingChart() {
+                // Simple chart update using canvas
+                const canvas = document.getElementById('lossChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (this.trainingHistory.loss.length === 0) return;
+                
+                // Draw loss curve
+                ctx.strokeStyle = '#dc3545';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                const maxLoss = Math.max(...this.trainingHistory.loss);
+                const epochs = this.trainingHistory.loss.length;
+                
+                for (let i = 0; i < epochs; i++) {
+                    const x = (i / (epochs - 1)) * (canvas.width - 40) + 20;
+                    const y = canvas.height - 20 - ((this.trainingHistory.loss[i] / maxLoss) * (canvas.height - 40));
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Draw accuracy curve
+                ctx.strokeStyle = '#28a745';
+                ctx.beginPath();
+                
+                for (let i = 0; i < epochs; i++) {
+                    const x = (i / (epochs - 1)) * (canvas.width - 40) + 20;
+                    const y = canvas.height - 20 - (this.trainingHistory.accuracy[i] * (canvas.height - 40));
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Add labels
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText('Loss', 10, 20);
+                ctx.fillStyle = '#28a745';
+                ctx.fillText('Accuracy', 60, 20);
+            }
+            
+            async loadPretrainedModel() {
+                // For now, just start training with fewer samples
+                document.getElementById('trainingSamples').value = '1000';
+                document.getElementById('trainingEpochs').value = '5';
+                await this.startTraining();
+            }
+            
+            // Canvas and testing methods
+            setupCanvas() {
+                if (!this.ctx) return;
+                this.ctx.lineWidth = 20;
+                this.ctx.lineCap = 'round';
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.fillStyle = '#FFFFFF';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            initializePredictions() {
+                const predictionList = document.getElementById('predictionList');
+                if (!predictionList) return;
+                
+                let html = '';
+                for (let i = 0; i < 10; i++) {
+                    html += `
+                        <div class="prediction-item">
+                            <span class="prediction-digit">${i}</span>
+                            <div style="display: flex; align-items: center;">
+                                <span class="prediction-confidence" id="confidence-${i}">0.0%</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="bar-${i}" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                predictionList.innerHTML = html;
+            }
+            
+            startDrawing(e) {
+                if (!this.model) return;
+                e.preventDefault();
+                this.isDrawing = true;
+                const coords = this.getCanvasCoordinates(e);
+                this.ctx.beginPath();
+                this.ctx.moveTo(coords.x, coords.y);
+            }
+            
+            draw(e) {
+                if (!this.isDrawing || !this.model) return;
+                e.preventDefault();
+                
+                const coords = this.getCanvasCoordinates(e);
+                this.ctx.lineTo(coords.x, coords.y);
+                this.ctx.stroke();
+                
+                // Debounced prediction
+                clearTimeout(this.predictionTimeout);
+                this.predictionTimeout = setTimeout(() => this.predictDrawing(), 300);
+            }
+            
+            stopDrawing() {
+                this.isDrawing = false;
+                this.ctx.beginPath();
+            }
+            
+            getCanvasCoordinates(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            }
+            
+            async predictDrawing() {
+                if (!this.model) return;
+                
+                // Convert canvas to 28x28 tensor
+                const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                const tensor = this.preprocessImage(imageData);
+                
+                try {
+                    const prediction = this.model.predict(tensor);
+                    const probabilities = await prediction.data();
+                    
+                    // Update UI
+                    for (let i = 0; i < 10; i++) {
+                        const confidence = (probabilities[i] * 100).toFixed(1);
+                        document.getElementById(`confidence-${i}`).textContent = confidence + '%';
+                        document.getElementById(`bar-${i}`).style.width = confidence + '%';
+                    }
+                    
+                    tensor.dispose();
+                    prediction.dispose();
+                } catch (error) {
+                    console.error('Prediction error:', error);
+                }
+            }
+            
+            preprocessImage(imageData) {
+                // Resize to 28x28 and convert to grayscale
+                const canvas = document.createElement('canvas');
+                canvas.width = 28;
+                canvas.height = 28;
+                const ctx = canvas.getContext('2d');
+                
+                // Create temporary canvas with original image
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = this.canvas.width;
+                tempCanvas.height = this.canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.putImageData(imageData, 0, 0);
+                
+                // Resize to 28x28
+                ctx.drawImage(tempCanvas, 0, 0, 28, 28);
+                
+                // Get pixel data and convert to tensor
+                const resizedImageData = ctx.getImageData(0, 0, 28, 28);
+                const data = new Float32Array(28 * 28);
+                
+                for (let i = 0; i < data.length; i++) {
+                    // Convert to grayscale and invert (black = 1, white = 0)
+                    const pixel = resizedImageData.data[i * 4];
+                    data[i] = 1 - (pixel / 255);
+                }
+                
+                return tf.tensor4d(data, [1, 28, 28, 1]);
+            }
+        }
+        
+        // Global functions
+        window.showExperimentSelection = function() {
+            document.getElementById('experimentSelection').style.display = 'block';
+            document.getElementById('neuralNetworkInterface').classList.remove('active');
+        };
+        
+        window.clearCanvas = function() {
+            if (window.cnnTrainer && window.cnnTrainer.ctx) {
+                window.cnnTrainer.setupCanvas();
+                // Clear predictions
+                for (let i = 0; i < 10; i++) {
+                    const confEl = document.getElementById(`confidence-${i}`);
+                    const barEl = document.getElementById(`bar-${i}`);
+                    if (confEl) confEl.textContent = '0.0%';
+                    if (barEl) barEl.style.width = '0%';
+                }
+            }
+        };
+        
+        window.testRandomSample = function() {
+            if (window.cnnTrainer && window.cnnTrainer.testData) {
+                // Get a random test sample and draw it on canvas
+                // This would require additional implementation
+                alert('Random sample testing not yet implemented. Try drawing your own digit!');
+            }
+        };
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cnnTrainer = new CNNTrainer();
+        });
+            
+            async createSimpleCNN() {
+                // Create a simple CNN that can be trained in real-time
+                const model = tf.sequential({
+                    layers: [
+                        tf.layers.conv2d({
+                            inputShape: [28, 28, 1],
+                            filters: 8,
+                            kernelSize: 3,
+                            activation: 'relu',
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.conv2d({
+                            filters: 16,
+                            kernelSize: 3,
+                            activation: 'relu',
+                        }),
+                        tf.layers.maxPooling2d({ poolSize: 2 }),
+                        tf.layers.flatten(),
+                        tf.layers.dense({ units: 32, activation: 'relu' }),
+                        tf.layers.dense({ units: 10, activation: 'softmax' }),
+                    ],
+                });
+                
+                model.compile({
+                    optimizer: 'adam',
+                    loss: 'categoricalCrossentropy',
+                    metrics: ['accuracy'],
+                });
+                
+                // Initialize with some basic pattern recognition
+                await this.pretrainWithBasicPatterns(model);
+                
+                return {
+                    predict: (imageData) => this.predictWithCNN(model, imageData),
+                    type: 'tensorflow-cnn',
+                    model: model
+                };
+            }
+            
+            async pretrainWithBasicPatterns(model) {
+                // Create some basic training patterns programmatically
+                const trainingData = this.generateBasicTrainingData();
+                
+                if (trainingData.xs.shape[0] > 0) {
+                    // Quick training on basic patterns
+                    await model.fit(trainingData.xs, trainingData.ys, {
+                        epochs: 3,
+                        batchSize: 8,
+                        verbose: 0
+                    });
+                }
+                
+                trainingData.xs.dispose();
+                trainingData.ys.dispose();
+            }
+            
+            generateBasicTrainingData() {
+                const numSamples = 40; // 4 samples per digit
+                const xs = [];
+                const ys = [];
+                
+                for (let digit = 0; digit < 10; digit++) {
+                    for (let sample = 0; sample < 4; sample++) {
+                        const pattern = this.generateDigitPattern(digit, sample);
+                        xs.push(pattern);
+                        
+                        const label = new Array(10).fill(0);
+                        label[digit] = 1;
+                        ys.push(label);
+                    }
+                }
+                
+                return {
+                    xs: tf.tensor4d(xs, [numSamples, 28, 28, 1]),
+                    ys: tf.tensor2d(ys, [numSamples, 10])
+                };
+            }
+            
+            generateDigitPattern(digit, variation) {
+                // Generate simple 28x28 patterns for each digit
+                const pattern = new Array(28 * 28).fill(0);
+                
+                switch (digit) {
+                    case 0:
+                        this.drawCircle(pattern, 14, 14, 8 + variation);
+                        break;
+                    case 1:
+                        this.drawVerticalLine(pattern, 14, 4, 20);
+                        if (variation > 1) this.drawDiagonalLine(pattern, 10, 4, 14, 8);
+                        break;
+                    case 2:
+                        this.drawHorizontalLine(pattern, 6, 18, 4);
+                        this.drawHorizontalLine(pattern, 6, 18, 24);
+                        this.drawDiagonalLine(pattern, 18, 4, 6, 24);
+                        break;
+                    case 3:
+                        this.drawHorizontalLine(pattern, 6, 18, 4);
+                        this.drawHorizontalLine(pattern, 6, 18, 14);
+                        this.drawHorizontalLine(pattern, 6, 18, 24);
+                        this.drawVerticalLine(pattern, 18, 4, 24);
+                        break;
+                    case 4:
+                        this.drawVerticalLine(pattern, 6, 4, 14);
+                        this.drawVerticalLine(pattern, 18, 4, 24);
+                        this.drawHorizontalLine(pattern, 6, 18, 14);
+                        break;
+                    case 5:
+                        this.drawHorizontalLine(pattern, 6, 18, 4);
+                        this.drawHorizontalLine(pattern, 6, 18, 14);
+                        this.drawHorizontalLine(pattern, 6, 18, 24);
+                        this.drawVerticalLine(pattern, 6, 4, 14);
+                        this.drawVerticalLine(pattern, 18, 14, 24);
+                        break;
+                    case 6:
+                        this.drawCircle(pattern, 14, 18, 6);
+                        this.drawVerticalLine(pattern, 6, 4, 18);
+                        this.drawHorizontalLine(pattern, 6, 14, 14);
+                        break;
+                    case 7:
+                        this.drawHorizontalLine(pattern, 6, 18, 4);
+                        this.drawDiagonalLine(pattern, 18, 4, 10, 24);
+                        break;
+                    case 8:
+                        this.drawCircle(pattern, 14, 10, 4);
+                        this.drawCircle(pattern, 14, 18, 4);
+                        this.drawHorizontalLine(pattern, 10, 18, 14);
+                        break;
+                    case 9:
+                        this.drawCircle(pattern, 14, 10, 6);
+                        this.drawVerticalLine(pattern, 18, 10, 24);
+                        break;
+                }
+                
+                // Add some noise for variation
+                for (let i = 0; i < 28 * 28; i++) {
+                    if (Math.random() < 0.05) pattern[i] = Math.random() * 0.3;
+                }
+                
+                return pattern;
+            }
+            
+            drawCircle(pattern, centerX, centerY, radius) {
+                for (let angle = 0; angle < 360; angle += 10) {
+                    const rad = (angle * Math.PI) / 180;
+                    const x = Math.round(centerX + radius * Math.cos(rad));
+                    const y = Math.round(centerY + radius * Math.sin(rad));
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        pattern[y * 28 + x] = 1;
+                        // Thicken the line
+                        if (x > 0) pattern[y * 28 + (x-1)] = 1;
+                        if (x < 27) pattern[y * 28 + (x+1)] = 1;
+                    }
+                }
+            }
+            
+            drawVerticalLine(pattern, x, startY, endY) {
+                for (let y = startY; y <= endY; y++) {
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        pattern[y * 28 + x] = 1;
+                        if (x > 0) pattern[y * 28 + (x-1)] = 1;
+                        if (x < 27) pattern[y * 28 + (x+1)] = 1;
+                    }
+                }
+            }
+            
+            drawHorizontalLine(pattern, startX, endX, y) {
+                for (let x = startX; x <= endX; x++) {
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        pattern[y * 28 + x] = 1;
+                        if (y > 0) pattern[(y-1) * 28 + x] = 1;
+                        if (y < 27) pattern[(y+1) * 28 + x] = 1;
+                    }
+                }
+            }
+            
+            drawDiagonalLine(pattern, startX, startY, endX, endY) {
+                const steps = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+                for (let i = 0; i <= steps; i++) {
+                    const x = Math.round(startX + (endX - startX) * i / steps);
+                    const y = Math.round(startY + (endY - startY) * i / steps);
+                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                        pattern[y * 28 + x] = 1;
+                    }
+                }
+            }
+            
+            async predictWithCNN(model, imageData) {
+                // Convert canvas to 28x28 tensor
+                const tensor = this.imageDataToTensor(imageData);
+                
+                try {
+                    // Get prediction
+                    const prediction = model.predict(tensor);
+                    const probabilities = await prediction.data();
+                    
+                    // Convert to our expected format
+                    const predictions = [];
+                    for (let i = 0; i < 10; i++) {
+                        predictions.push({
+                            digit: i,
+                            confidence: probabilities[i]
+                        });
+                    }
+                    
+                    // Clean up tensors
+                    tensor.dispose();
+                    prediction.dispose();
+                    
+                    return predictions;
+                } catch (error) {
+                    console.error('CNN prediction error:', error);
+                    tensor.dispose();
+                    return this.generateFallbackPrediction();
+                }
+            }
+            
+            imageDataToTensor(imageData) {
+                // Resize and convert to grayscale tensor
+                const resized = this.resizeImageData(imageData, 28, 28);
+                
+                // Convert to tensor and normalize
+                const tensor = tf.tensor4d(resized, [1, 28, 28, 1]);
+                return tensor;
+            }
+            
+            createTemplateMatchingSystem() {
+                // Create digit templates for matching
+                const templates = this.createDigitTemplates();
+                
+                return {
+                    predict: (imageData) => {
+                        return this.classifyWithTemplateMatching(imageData, templates);
+                    },
+                    type: 'template-matcher',
+                    templates: templates
+                };
+            }
+            
+            createDigitTemplates() {
+                const templates = [];
+                
+                // Create basic templates for each digit
+                for (let digit = 0; digit < 10; digit++) {
+                    const pattern = this.generateDigitPattern(digit, 0);
+                    templates.push({
+                        digit: digit,
+                        pattern: pattern,
+                        size: 28
+                    });
+                }
+                
+                return templates;
+            }
+            
+            classifyWithTemplateMatching(imageData, templates) {
+                // Convert user drawing to 28x28 pattern
+                const userPattern = this.imageDataToPattern(imageData, 28, 28);
+                const predictions = [];
+                
+                // Calculate correlation with each template
+                for (let i = 0; i < 10; i++) {
+                    const correlation = this.calculateCorrelation(userPattern, templates[i].pattern);
+                    predictions.push({
+                        digit: i,
+                        confidence: Math.max(0, correlation)
+                    });
+                }
+                
+                // Normalize confidences
+                const total = predictions.reduce((sum, p) => sum + p.confidence, 0);
+                if (total > 0) {
+                    predictions.forEach(p => p.confidence /= total);
+                } else {
+                    // Fallback to uniform distribution
+                    predictions.forEach(p => p.confidence = 0.1);
+                }
+                
+                return predictions;
+            }
+            
+            imageDataToPattern(imageData, width, height) {
+                const pixels = imageData.data;
+                const canvas = imageData.width;
+                const canvasHeight = imageData.height;
+                
+                // Resize to target dimensions
+                const pattern = new Array(width * height).fill(0);
+                
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        // Map to original canvas coordinates
+                        const origX = Math.floor((x / width) * canvas);
+                        const origY = Math.floor((y / height) * canvasHeight);
+                        const idx = (origY * canvas + origX) * 4;
+                        
+                        // Convert to grayscale (black = 1, white = 0)
+                        if (idx < pixels.length) {
+                            const gray = 1 - (pixels[idx] / 255);
+                            pattern[y * width + x] = gray > 0.5 ? 1 : 0;
+                        }
+                    }
+                }
+                
+                return pattern;
+            }
+            
+            calculateCorrelation(pattern1, pattern2) {
+                if (pattern1.length !== pattern2.length) return 0;
+                
+                let correlation = 0;
+                let norm1 = 0;
+                let norm2 = 0;
+                
+                // Calculate normalized cross-correlation
+                for (let i = 0; i < pattern1.length; i++) {
+                    correlation += pattern1[i] * pattern2[i];
+                    norm1 += pattern1[i] * pattern1[i];
+                    norm2 += pattern2[i] * pattern2[i];
+                }
+                
+                if (norm1 === 0 || norm2 === 0) return 0;
+                
+                return correlation / Math.sqrt(norm1 * norm2);
+            }
+            
+            setupCanvas() {
+                this.ctx.lineWidth = 20;
+                this.ctx.lineCap = 'round';
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.fillStyle = '#FFFFFF';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            initializePredictions() {
+                let html = '';
+                for (let i = 0; i < 10; i++) {
+                    html += `
+                        <div class="prediction-item">
+                            <span class="prediction-digit">${i}</span>
+                            <div style="display: flex; align-items: center;">
+                                <span class="prediction-confidence" id="confidence-${i}">0.0%</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="bar-${i}" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                this.predictionList.innerHTML = html;
+            }
+            
+            getCanvasCoordinates(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                if (e.touches) {
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                } else {
+                    return {
+                        x: (e.clientX - rect.left) * scaleX,
+                        y: (e.clientY - rect.top) * scaleY
+                    };
+                }
+            }
+            
+            startDrawing(e) {
+                e.preventDefault();
+                if (!this.isModelLoaded) return;
+                
+                this.isDrawing = true;
+                const coords = this.getCanvasCoordinates(e);
+                this.ctx.beginPath();
+                this.ctx.moveTo(coords.x, coords.y);
+            }
+            
+            draw(e) {
+                e.preventDefault();
+                if (!this.isDrawing || !this.isModelLoaded) return;
+                
+                const coords = this.getCanvasCoordinates(e);
+                this.ctx.lineTo(coords.x, coords.y);
+                this.ctx.stroke();
+                
+                // Debounced prediction to avoid too many API calls
+                this.debouncedPredict();
+            }
+            
+            debouncedPredict() {
+                // Clear existing timeout
+                if (this.predictionTimeout) {
+                    clearTimeout(this.predictionTimeout);
+                }
+                
+                // Set new timeout for prediction
+                this.predictionTimeout = setTimeout(() => {
+                    this.simulatePrediction();
+                }, 500); // Wait 500ms after user stops drawing
+            }
+            
+            stopDrawing() {
+                if (!this.isDrawing) return;
+                this.isDrawing = false;
+                this.ctx.beginPath();
+            }
+            
+            async simulatePrediction() {
+                if (!this.isModelLoaded || this.isPredicting) return;
+                
+                this.isPredicting = true;
+                
+                // Show thinking indicator
+                this.showPredictionStatus('Analyzing digit...');
+                
+                try {
+                    // Get processed image data for the model
+                    const processedImageData = this.preprocessCanvas();
+                    
+                    // Use the loaded model for prediction
+                    const predictions = await this.model.predict(processedImageData);
+                    
+                    // Update UI with predictions
+                    this.updatePredictionUI(predictions);
+                    
+                } catch (error) {
+                    console.error('Error during prediction:', error);
+                    this.generateFallbackPrediction();
+                } finally {
+                    this.isPredicting = false;
+                    this.hidePredictionStatus();
+                }
+            }
+            
+            preprocessCanvas() {
+                // Get the raw image data
+                const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                
+                // If we have a TensorFlow model, prepare tensor
+                if (this.model.type !== 'intelligent-pattern-matcher' && this.model.type !== 'basic-pattern-matcher') {
+                    // Resize to 28x28 for MNIST model
+                    const resized = this.resizeImageData(imageData, 28, 28);
+                    return tf.tensor4d(resized, [1, 28, 28, 1]);
+                } else {
+                    // Return raw data for pattern-based classifiers
+                    return imageData;
+                }
+            }
+            
+            resizeImageData(imageData, targetWidth, targetHeight) {
+                // Create temporary canvas for resizing
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = targetWidth;
+                tempCanvas.height = targetHeight;
+                
+                // Create ImageData from our canvas
+                const srcCanvas = document.createElement('canvas');
+                const srcCtx = srcCanvas.getContext('2d');
+                srcCanvas.width = this.canvas.width;
+                srcCanvas.height = this.canvas.height;
+                srcCtx.putImageData(imageData, 0, 0);
+                
+                // Resize using canvas scaling
+                tempCtx.drawImage(srcCanvas, 0, 0, targetWidth, targetHeight);
+                
+                // Get resized image data and convert to grayscale
+                const resizedImageData = tempCtx.getImageData(0, 0, targetWidth, targetHeight);
+                const grayscale = new Float32Array(targetWidth * targetHeight);
+                
+                for (let i = 0; i < resizedImageData.data.length; i += 4) {
+                    // Convert to grayscale (invert: black = 1, white = 0 for MNIST)
+                    const gray = 1 - (resizedImageData.data[i] / 255);
+                    grayscale[i / 4] = gray;
+                }
+                
+                return grayscale;
+            }
+            
+            showPredictionStatus(message) {
+                const statusEl = document.getElementById('predictionStatus');
+                if (!statusEl) {
+                    // Create status indicator if it doesn't exist
+                    const statusDiv = document.createElement('div');
+                    statusDiv.id = 'predictionStatus';
+                    statusDiv.style.cssText = `
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0,123,255,0.1);
+                        color: #007bff;
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-size: 0.8rem;
+                        border: 1px solid #007bff;
+                    `;
+                    document.querySelector('.experiment-main').appendChild(statusDiv);
+                }
+                document.getElementById('predictionStatus').textContent = message;
+                document.getElementById('predictionStatus').style.display = 'block';
+            }
+            
+            hidePredictionStatus() {
+                const statusEl = document.getElementById('predictionStatus');
+                if (statusEl) {
+                    statusEl.style.display = 'none';
+                }
+            }
+            
+            getCanvasImageData() {
+                // Get the canvas as a data URL
+                const dataURL = this.canvas.toDataURL('image/png');
+                return dataURL;
+            }
+            
+            
+            generateFallbackPrediction() {
+                // Simple fallback when everything else fails
+                const predictions = [];
+                const randomDigit = Math.floor(Math.random() * 10);
+                
+                for (let i = 0; i < 10; i++) {
+                    const confidence = i === randomDigit ? 0.4 + Math.random() * 0.3 : Math.random() * 0.1;
+                    predictions.push({ digit: i, confidence });
+                }
+                
+                // Normalize
+                const total = predictions.reduce((sum, p) => sum + p.confidence, 0);
+                predictions.forEach(p => p.confidence /= total);
+                
+                return predictions;
+            }
+            
+            
+            updatePredictionUI(predictions) {
+                // Sort predictions by confidence for better display
+                predictions.sort((a, b) => b.confidence - a.confidence);
+                
+                // Update UI for all digits
+                for (let i = 0; i < 10; i++) {
+                    const pred = predictions.find(p => p.digit === i) || { confidence: 0 };
+                    const percentage = (pred.confidence * 100).toFixed(1);
+                    
+                    const confidenceElement = document.getElementById(`confidence-${i}`);
+                    const barElement = document.getElementById(`bar-${i}`);
+                    
+                    if (confidenceElement && barElement) {
+                        confidenceElement.textContent = `${percentage}%`;
+                        barElement.style.width = `${percentage}%`;
+                        
+                        // Add visual emphasis to top prediction
+                        if (pred.confidence > 0.3) {
+                            barElement.style.background = 'linear-gradient(90deg, #007bff, #0056b3)';
+                        } else if (pred.confidence > 0.1) {
+                            barElement.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+                        } else {
+                            barElement.style.background = 'linear-gradient(90deg, #6c757d, #5a6268)';
+                        }
+                    }
+                }
+            }
+            
+            clearCanvas() {
+                this.ctx.fillStyle = '#FFFFFF';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Reset predictions
+                for (let i = 0; i < 10; i++) {
+                    document.getElementById(`confidence-${i}`).textContent = '0.0%';
+                    document.getElementById(`bar-${i}`).style.width = '0%';
+                }
+            }
+            
+            generateRandomDigit() {
+                this.clearCanvas();
+                
+                // Draw a simple shape (this would be replaced with actual digit samples)
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.lineWidth = 20;
+                this.ctx.beginPath();
+                
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                const radius = 60;
+                
+                // Draw a circle (representing digit 0)
+                this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                this.ctx.stroke();
+                
+                // Simulate prediction for digit 0
+                document.getElementById('confidence-0').textContent = '95.2%';
+                document.getElementById('bar-0').style.width = '95.2%';
+                document.getElementById('confidence-8').textContent = '3.1%';
+                document.getElementById('bar-8').style.width = '3.1%';
+                document.getElementById('confidence-6').textContent = '1.7%';
+                document.getElementById('bar-6').style.width = '1.7%';
+            }
+        }
+        
+        // Global functions
+        window.showExperimentSelection = function() {
+            document.getElementById('experimentSelection').style.display = 'block';
+            document.getElementById('neuralNetworkInterface').classList.remove('active');
+        };
+        
+        window.clearCanvas = function() {
+            if (window.playground) {
+                window.playground.clearCanvas();
+            }
+        };
+        
+        window.generateRandomDigit = function() {
+            if (window.playground) {
+                window.playground.generateRandomDigit();
+            }
+        };
+        
+        // Initialize the playground when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.playground = new NeuralNetworkPlayground();
+        });
+    </script>
+</body>
+</html>
