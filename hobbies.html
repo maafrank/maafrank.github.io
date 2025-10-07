@@ -1,0 +1,595 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <!-- meta data -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+
+    <!-- title of site -->
+    <title>Hobbies - Matthew Frank</title>
+    <meta name="description" content="Explore Matthew Frank's hobbies including golf, surfing, snowboarding, skateboarding, fishing, and outdoor adventures with his Porsche and 4Runner.">
+
+    <!-- For favicon png -->
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png"/>
+
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+
+    <!--flat icon css-->
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+
+    <!--animate.css-->
+    <link rel="stylesheet" href="assets/css/animate.css">
+
+    <!--owl.carousel.css-->
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="assets/css/bootsnav.css" >
+
+    <!--style.css-->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!--responsive.css-->
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <style>
+      .hobbies-hero {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        padding: 100px 0 80px;
+        color: white;
+        text-align: center;
+      }
+
+      .hobbies-hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .hobbies-hero p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+      }
+
+      .back-to-portfolio {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.3);
+      }
+
+      .back-to-portfolio:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        text-decoration: none;
+      }
+
+      .hobbies-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+      }
+
+      .hobby-section {
+        margin-bottom: 80px;
+      }
+
+      .hobby-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-heading {
+        margin-bottom: 50px;
+        text-align: center;
+      }
+
+      .section-heading h2 {
+        font-size: 2.8rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .section-heading .subtitle {
+        font-size: 1.2rem;
+        color: #666;
+      }
+
+      .hobby-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        height: 100%;
+      }
+
+      .hobby-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      }
+
+      .hobby-card h3 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .hobby-card h3 i {
+        color: #11998e;
+        font-size: 2.5rem;
+      }
+
+      .hobby-card h4 {
+        font-size: 1.5rem;
+        color: #11998e;
+        margin: 30px 0 15px;
+      }
+
+      .hobby-card p {
+        color: #666;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+      }
+
+      .hobby-stats {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+
+      .hobby-stats .stat-item {
+        margin-bottom: 10px;
+      }
+
+      .hobby-stats .stat-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .hobby-stats strong {
+        color: #11998e;
+      }
+
+      .photo-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+      }
+
+      .photo-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+      }
+
+      .photo-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+
+      .photo-item img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .photo-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+        padding: 20px 15px 15px;
+        font-size: 0.9rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+
+      .photo-item:hover .photo-caption {
+        transform: translateY(0);
+      }
+
+      .video-container {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 30px auto;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      }
+
+      .video-container iframe {
+        width: 100%;
+        height: 700px;
+        border: none;
+        display: block;
+      }
+
+      .combined-section {
+        background: white;
+        border-radius: 20px;
+        padding: 50px 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+
+      .combined-section h3 {
+        font-size: 2.2rem;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .combined-section h3 i {
+        color: #11998e;
+      }
+
+      .combined-section .subtitle-text {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 30px;
+        font-style: italic;
+      }
+
+      .activity-divider {
+        margin: 50px 0;
+        border-top: 2px dashed #dee2e6;
+        position: relative;
+      }
+
+      .activity-divider::after {
+        content: '◆';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0 15px;
+        color: #11998e;
+        font-size: 1.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .hobbies-hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .photo-gallery {
+          grid-template-columns: 1fr;
+        }
+
+        .video-container {
+          max-width: 100%;
+        }
+
+        .video-container iframe {
+          height: 600px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Hobbies Hero Section -->
+    <section class="hobbies-hero">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Life Beyond Code</h1>
+            <p>When I'm not building AI models, you'll find me outdoors pursuing my passions</p>
+            <a href="index.html" class="back-to-portfolio">
+              <i class="fa fa-arrow-left"></i> Back to Portfolio
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hobbies Section -->
+    <section class="hobbies-section">
+      <div class="container">
+
+        <!-- Golf Section -->
+        <div class="hobby-section">
+          <div class="section-heading">
+            <h2><i class="fa fa-flag"></i> Golf</h2>
+            <p class="subtitle">Chasing pars and enjoying the game</p>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="hobby-card">
+                <h3><i class="fa fa-golf-ball"></i> The Swing Life</h3>
+                <p>
+                  Golf has become one of my favorite ways to unwind and challenge myself. There's something meditative about being on the course, analyzing each shot, and constantly working to improve. Whether it's a casual round with friends or a competitive match, golf teaches patience, precision, and the value of practice.
+                </p>
+
+                <div class="hobby-stats">
+                  <div class="stat-item">
+                    <strong>Handicap:</strong> ~16.7
+                  </div>
+                  <div class="stat-item">
+                    <strong>Driver:</strong> ~250 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>5-Wood:</strong> ~220 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>4-Iron:</strong> ~190 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>5-Iron:</strong> ~185 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>6-Iron:</strong> ~175 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>7-Iron:</strong> ~170 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>8-Iron:</strong> ~160 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>9-Iron:</strong> ~150 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>PW:</strong> ~140 yards
+                  </div>
+                  <div class="stat-item">
+                    <strong>60° Wedge:</strong> ~100 yards
+                  </div>
+                </div>
+
+                <p style="margin-top: 20px;">
+                  I love the mental challenge golf provides - it's a constant game of strategy, execution, and recovery. Every round is different, and there's always something new to learn.
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="photo-gallery">
+                <div class="photo-item">
+                  <img src="assets/images/about/PeteDyeCourse.jpg" alt="Pete Dye Golf Course">
+                  <div class="photo-caption">
+                    Beautiful day on a Pete Dye course
+                  </div>
+                </div>
+                <div class="photo-item">
+                  <img src="assets/images/about/SantaCruzGolfBall.jpg" alt="Golf ball at Santa Cruz">
+                  <div class="photo-caption">
+                    Ready to tee off in Santa Cruz
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boardsports Section -->
+        <div class="hobby-section">
+          <div class="section-heading">
+            <h2><i class="fa fa-snowflake-o"></i> Boardsports</h2>
+            <p class="subtitle">Surfing, Snowboarding & Skateboarding</p>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+              <div class="hobby-card">
+                <h3><i class="fa fa-flash"></i> Riding the Elements</h3>
+                <p>
+                  Board sports have been a huge part of my life - from catching waves in the ocean to carving down snow-covered mountains and cruising through city streets. Each discipline offers its own unique thrill and challenge.
+                </p>
+
+                <h4><i class="fa fa-water"></i> Surfing</h4>
+                <p>
+                  Connects me with the ocean's raw power and rhythm. There's nothing quite like paddling out early in the morning and catching that perfect wave. I load up the 4Runner with my board and head to the coast whenever the swell is good.
+                </p>
+
+                <h4><i class="fa fa-snowflake-o"></i> Snowboarding</h4>
+                <p>
+                  Takes me to the mountains where I can experience the rush of speed and the beauty of winter landscapes. The feeling of floating through powder is unmatched. Whether it's a day trip or a camping adventure in the snow, snowboarding never gets old.
+                </p>
+
+                <h4><i class="fa fa-road"></i> Skateboarding</h4>
+                <p>
+                  Keeps me connected to my roots and provides a creative outlet for expression and technical progression. It's the most accessible of my board sports - just grab the board and go.
+                </p>
+
+                <div class="photo-gallery">
+                  <div class="photo-item">
+                    <img src="assets/images/about/SnowboardingSnowDaySnowboarding.jpg" alt="Snowboarding action">
+                    <div class="photo-caption">
+                      Shredding fresh powder
+                    </div>
+                  </div>
+                </div>
+
+                <div class="video-container">
+                  <iframe
+                    src="https://www.youtube.com/embed/75zwrLb_vHQ"
+                    title="Skateboarding and Snowboarding"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                  </iframe>
+                </div>
+
+                <p style="text-align: center; margin-top: 20px; color: #888; font-style: italic;">
+                  Watch me shred on both skateboard and snowboard
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Adventures: Cars, Camping, Fishing & Snow Combined Section -->
+        <div class="hobby-section">
+          <div class="section-heading">
+            <h2><i class="fa fa-compass"></i> The Adventure Life</h2>
+            <p class="subtitle">Exploring California and beyond - from beaches to mountains, deserts to snow</p>
+          </div>
+
+          <div class="combined-section">
+            <div class="row">
+              <div class="col-md-12">
+                <h3><i class="fa fa-car"></i> The Vehicles That Make It Possible</h3>
+                <p class="subtitle-text">Two rides for two different adventures</p>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h4 style="color: #333; margin-bottom: 15px;">🏎️ Porsche 996 - The Weekend Warrior</h4>
+                <p>
+                  My Porsche 996 is pure driving pleasure. Whether it's carving through canyon roads or enjoying a spirited weekend drive along the coast, this sports car delivers an unmatched connection between driver and machine. The flat-six engine note and precise handling make every drive special.
+                </p>
+              </div>
+              <div class="col-md-6">
+                <h4 style="color: #333; margin-bottom: 15px;">🚙 Toyota 4Runner - The Adventure Rig</h4>
+                <p>
+                  My 4Runner is the ultimate adventure vehicle. Equipped with roof racks and ready for anything, it's my gateway to remote camping spots, fishing destinations, surf breaks, and snow-covered mountain roads. From Highway 1 to backcountry trails to ski resorts, it never lets me down. It's been everywhere - beaches, deserts, mountains, and deep snow.
+                </p>
+              </div>
+            </div>
+
+            <div class="photo-gallery" style="margin-top: 30px;">
+              <div class="photo-item">
+                <img src="assets/images/about/FrontPorsche996.jpg" alt="Porsche 996">
+                <div class="photo-caption">
+                  Porsche 996 - Pure driving joy
+                </div>
+              </div>
+              <div class="photo-item">
+                <img src="assets/images/about/Front4RunnerWithRoofStuff.jpg" alt="4Runner with roof rack">
+                <div class="photo-caption">
+                  4Runner ready for adventure
+                </div>
+              </div>
+              <div class="photo-item">
+                <img src="assets/images/about/Side4Runner.jpg" alt="4Runner side view">
+                <div class="photo-caption">
+                  Adventure awaits
+                </div>
+              </div>
+              <div class="photo-item">
+                <img src="assets/images/about/SurfboardOn4Runner.jpg" alt="4Runner with surfboard">
+                <div class="photo-caption">
+                  Surf mission ready
+                </div>
+              </div>
+              <div class="photo-item">
+                <img src="assets/images/about/Snow4Runner.jpg" alt="4Runner in snow">
+                <div class="photo-caption">
+                  Mountain adventures in winter
+                </div>
+              </div>
+            </div>
+
+            <div class="activity-divider"></div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <h3><i class="fa fa-tree"></i> Camping & Outdoor Adventures</h3>
+                <p>
+                  Car camping is my preferred way to disconnect and recharge. The 4Runner gets loaded up with gear, and I head out to explore California's incredible landscapes - from coastal campgrounds to mountain hideaways to snow-covered wilderness areas. There's something therapeutic about setting up camp, cooking over a fire, and sleeping under the stars.
+                </p>
+                <p>
+                  I love the versatility of car camping - whether it's a beach camping trip with the surfboard, a fishing expedition to a remote lake, or a winter camping adventure near the slopes, the 4Runner handles it all. Airing down the tires for sand and snow, setting up camp, and being fully self-sufficient in the backcountry is incredibly rewarding.
+                </p>
+              </div>
+            </div>
+
+            <div class="photo-gallery" style="margin-top: 30px;">
+              <div class="photo-item">
+                <img src="assets/images/about/CampingSetUp4Runner.jpg" alt="Camping setup with 4Runner">
+                <div class="photo-caption">
+                  Camp setup ready for the night
+                </div>
+              </div>
+              <div class="photo-item">
+                <img src="assets/images/about/CampingAirDown.jpg" alt="Airing down tires for camping">
+                <div class="photo-caption">
+                  Airing down for off-road adventures
+                </div>
+              </div>
+            </div>
+
+            <div class="activity-divider"></div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h3><i class="fa fa-anchor"></i> Fishing & Fly Fishing</h3>
+                <p>
+                  Fishing is the perfect complement to my camping trips. Whether I'm casting a fly line in a mountain stream or fishing from shore at a remote lake, the patience and focus required provide a welcome contrast to the fast-paced world of tech. There's a unique satisfaction in reading the water, selecting the right approach, and connecting with nature.
+                </p>
+                <p>
+                  Fly fishing especially appeals to my analytical side - it's part art, part science. Understanding insect hatches, water conditions, and fish behavior makes each outing a learning experience. Some of my best camping trips have been to remote fishing spots where I can cast all day and camp by the water at night.
+                </p>
+              </div>
+              <div class="col-md-6">
+                <div class="photo-item">
+                  <img src="assets/images/about/RainbowTroutOpeningDayBridgeport.jpg" alt="Rainbow trout catch">
+                  <div class="photo-caption">
+                    Opening day rainbow trout in Bridgeport
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel Section -->
+        <div class="hobby-section">
+          <div class="section-heading">
+            <h2><i class="fa fa-globe"></i> Travel</h2>
+            <p class="subtitle">Exploring new places and cultures</p>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+              <div class="hobby-card">
+                <h3><i class="fa fa-plane"></i> Adventures Around the World</h3>
+                <p>
+                  Travel fuels my curiosity and broadens my perspective. Whether it's a road trip up the Pacific Coast Highway in the Porsche, a surf and camping adventure down Baja in the 4Runner, or exploring a new city, I'm always looking for the next adventure. Each destination offers new experiences, different perspectives, and memories that last a lifetime.
+                </p>
+                <p>
+                  I love combining my hobbies with travel - finding the best surf spots, discovering hidden golf courses, exploring backcountry terrain on a snowboard, or finding remote fishing holes. The world is full of incredible places waiting to be explored, and I aim to experience as many as possible.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Include JavaScript -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootsnav.js"></script>
+  </body>
+</html>
