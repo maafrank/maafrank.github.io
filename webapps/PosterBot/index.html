@@ -1,0 +1,453 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <!-- meta data -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+
+    <!-- title of site -->
+    <title>PosterBot - Automated Video Content Creation</title>
+    <meta name="description" content="PosterBot - Automated video content creation and distribution system. Generate viral short-form videos for TikTok, Instagram, YouTube, and more.">
+
+    <!-- For favicon png -->
+    <link rel="shortcut icon" type="image/icon" href="../../assets/logo/favicon.png"/>
+
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+
+    <!--animate.css-->
+    <link rel="stylesheet" href="../../assets/css/animate.css">
+
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="../../assets/css/bootsnav.css">
+
+    <!--style.css-->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+
+    <!--responsive.css-->
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+
+    <style>
+        .posterbot-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0 80px;
+            text-align: center;
+        }
+
+        .posterbot-header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .posterbot-header p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .back-to-portfolio {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            margin-right: 15px;
+        }
+
+        .back-to-portfolio:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .content-section {
+            padding: 60px 0;
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .content-section h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        .content-section h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .content-section p, .content-section li {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .content-section ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-section li {
+            margin-bottom: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .last-updated {
+            font-style: italic;
+            color: #999;
+            font-size: 14px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .important-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .important-note strong {
+            color: #856404;
+        }
+
+        footer {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <section class="posterbot-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1><i class="fa fa-video-camera"></i> PosterBot</h1>
+                    <p>Automated video content creation and distribution system for social media platforms.<br>Generate viral short-form videos for TikTok, Instagram, YouTube, and more using AI-powered content generation.</p>
+                    <a href="../../index.html" class="back-to-portfolio">
+                        <i class="fa fa-arrow-left"></i> Back to Portfolio
+                    </a>
+                    <a href="https://github.com/maafrank/PosterBot" target="_blank" rel="noopener noreferrer" class="github-link">
+                        <i class="fa fa-github"></i> View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2>About PosterBot</h2>
+            <p>PosterBot is an automated system designed to streamline the creation and distribution of short-form video content across multiple social media platforms. Using AI-powered technologies, PosterBot handles the entire content creation pipeline from ideation to distribution.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fa fa-lightbulb-o"></i> AI-Powered Ideation</h4>
+                    <p>Generate viral content concepts automatically using advanced AI algorithms.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fa fa-file-text-o"></i> Script Composition</h4>
+                    <p>Automated script writing tailored for engaging short-form content.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fa fa-volume-up"></i> Text-to-Speech</h4>
+                    <p>Convert scripts to natural-sounding audio with multiple voice options.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fa fa-image"></i> Image Sourcing</h4>
+                    <p>Automatic collection of relevant images to enhance your videos.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fa fa-film"></i> Video Assembly</h4>
+                    <p>Seamless video composition synchronized with audio content.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fa fa-share-alt"></i> Multi-Platform</h4>
+                    <p>Distribution to TikTok, Instagram, YouTube, and other platforms.</p>
+                </div>
+            </div>
+
+            <h3>Technical Stack</h3>
+            <p>PosterBot is built using Python and leverages cutting-edge technologies:</p>
+            <ul>
+                <li><strong>OpenAI API:</strong> Powers AI content generation and ideation</li>
+                <li><strong>FFmpeg:</strong> Handles video processing and composition</li>
+                <li><strong>Modular Architecture:</strong> Organized components for content generation, scripting, speech synthesis, media collection, and distribution</li>
+            </ul>
+
+            <h3>Content Pipeline</h3>
+            <p>The system follows a streamlined six-step workflow:</p>
+            <ol>
+                <li><strong>Concept Generation:</strong> AI generates viral-worthy content ideas</li>
+                <li><strong>Script Writing:</strong> Automated composition of engaging scripts</li>
+                <li><strong>Audio Conversion:</strong> Text-to-speech with natural voice options</li>
+                <li><strong>Image Gathering:</strong> Collection of relevant visual assets</li>
+                <li><strong>Video Composition:</strong> Assembly of final video with synchronized audio</li>
+                <li><strong>Distribution:</strong> Delivery to target platforms (email, social media)</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Terms of Service Section -->
+    <section class="content-section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 id="terms">Terms of Service</h2>
+            <p class="last-updated"><strong>Last Updated:</strong> November 6, 2025</p>
+
+            <h3>1. Acceptance of Terms</h3>
+            <p>By accessing or using PosterBot ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.</p>
+
+            <h3>2. Description of Service</h3>
+            <p>PosterBot is an automated video content creation and distribution system designed to help users generate short-form video content for social media platforms including TikTok, Instagram, and YouTube.</p>
+
+            <h3>3. User Responsibilities</h3>
+            <p>By using PosterBot, you agree to:</p>
+            <ul>
+                <li>Provide accurate information when setting up your account</li>
+                <li>Comply with all applicable laws and regulations</li>
+                <li>Respect intellectual property rights and content ownership</li>
+                <li>Not use the Service for illegal, harmful, or abusive purposes</li>
+                <li>Not attempt to reverse engineer, decompile, or hack the Service</li>
+                <li>Comply with the terms of service of third-party platforms (TikTok, Instagram, YouTube)</li>
+            </ul>
+
+            <h3>4. Content Ownership and Rights</h3>
+            <p>You retain ownership of content you create using PosterBot. However, you grant PosterBot a license to process, store, and distribute your content as necessary to provide the Service.</p>
+            <p><strong>Important:</strong> You are responsible for ensuring that content generated through PosterBot complies with platform-specific guidelines and copyright laws. PosterBot is a tool that assists in content creation, but ultimate responsibility for content lies with the user.</p>
+
+            <h3>5. Third-Party Services</h3>
+            <p>PosterBot integrates with third-party services including:</p>
+            <ul>
+                <li>TikTok</li>
+                <li>Instagram</li>
+                <li>YouTube</li>
+                <li>OpenAI</li>
+            </ul>
+            <p>Your use of these services through PosterBot is subject to their respective terms of service and privacy policies.</p>
+
+            <h3>6. Service Availability</h3>
+            <p>We strive to maintain high availability of PosterBot, but we do not guarantee uninterrupted access. The Service may be temporarily unavailable due to maintenance, updates, or circumstances beyond our control.</p>
+
+            <h3>7. Limitation of Liability</h3>
+            <p>PosterBot is provided "as is" without warranties of any kind. We are not liable for:</p>
+            <ul>
+                <li>Loss of data or content</li>
+                <li>Errors in AI-generated content</li>
+                <li>Account suspension on third-party platforms</li>
+                <li>Direct, indirect, incidental, or consequential damages arising from use of the Service</li>
+            </ul>
+
+            <h3>8. Account Termination</h3>
+            <p>We reserve the right to suspend or terminate accounts that violate these Terms of Service or engage in abusive behavior. Users may also terminate their accounts at any time.</p>
+
+            <h3>9. Changes to Terms</h3>
+            <p>We may modify these Terms of Service at any time. Continued use of the Service after changes constitutes acceptance of the updated terms.</p>
+
+            <h3>10. Contact Information</h3>
+            <p>For questions about these Terms of Service, please contact:</p>
+            <p><strong>Email:</strong> <a href="mailto:mattafrank2439@gmail.com">mattafrank2439@gmail.com</a></p>
+        </div>
+    </section>
+
+    <!-- Privacy Policy Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2 id="privacy">Privacy Policy</h2>
+            <p class="last-updated"><strong>Last Updated:</strong> November 6, 2025</p>
+
+            <h3>1. Introduction</h3>
+            <p>This Privacy Policy explains how PosterBot ("we", "our", or "the Service") collects, uses, and protects your personal information. We are committed to protecting your privacy and handling your data responsibly.</p>
+
+            <h3>2. Information We Collect</h3>
+
+            <h4>2.1 Information You Provide</h4>
+            <ul>
+                <li><strong>Account Information:</strong> Email address, username, and authentication credentials</li>
+                <li><strong>Content Data:</strong> Videos, scripts, images, and other content you create or upload</li>
+                <li><strong>Platform Credentials:</strong> OAuth tokens for TikTok, Instagram, and YouTube (stored securely)</li>
+                <li><strong>Communication:</strong> Messages sent to support or feedback channels</li>
+            </ul>
+
+            <h4>2.2 Automatically Collected Information</h4>
+            <ul>
+                <li><strong>Usage Data:</strong> How you interact with the Service, including features used and content generated</li>
+                <li><strong>Device Information:</strong> IP address, browser type, operating system</li>
+                <li><strong>Log Data:</strong> Access times, error logs, and system activity</li>
+            </ul>
+
+            <h3>3. How We Use Your Information</h3>
+            <p>We use collected information to:</p>
+            <ul>
+                <li>Provide and improve the Service</li>
+                <li>Generate AI-powered content based on your inputs</li>
+                <li>Authenticate and authorize access to third-party platforms</li>
+                <li>Communicate with you about the Service</li>
+                <li>Analyze usage patterns to enhance features</li>
+                <li>Ensure security and prevent abuse</li>
+                <li>Comply with legal obligations</li>
+            </ul>
+
+            <h3>4. Data Sharing and Third Parties</h3>
+
+            <h4>4.1 Third-Party Services</h4>
+            <p>We share data with the following third-party services to provide our functionality:</p>
+            <ul>
+                <li><strong>OpenAI:</strong> Content generation (text and ideas)</li>
+                <li><strong>TikTok:</strong> Video distribution to your TikTok account</li>
+                <li><strong>Instagram:</strong> Video distribution to your Instagram account</li>
+                <li><strong>YouTube:</strong> Video distribution to your YouTube channel</li>
+            </ul>
+
+            <h4>4.2 No Sale of Personal Data</h4>
+            <p>We do not sell, rent, or trade your personal information to third parties for marketing purposes.</p>
+
+            <h4>4.3 Legal Requirements</h4>
+            <p>We may disclose information if required by law, court order, or government regulation.</p>
+
+            <h3>5. Data Storage and Security</h3>
+            <p>We implement industry-standard security measures to protect your data:</p>
+            <ul>
+                <li>Encryption of data in transit and at rest</li>
+                <li>Secure storage of authentication tokens</li>
+                <li>Regular security audits and updates</li>
+                <li>Access controls and authentication requirements</li>
+            </ul>
+            <p><strong>Note:</strong> While we take security seriously, no system is completely secure. You use the Service at your own risk.</p>
+
+            <h3>6. Data Retention</h3>
+            <p>We retain your data for as long as your account is active or as needed to provide services. You may request deletion of your account and associated data at any time.</p>
+
+            <h3>7. Your Rights and Choices</h3>
+            <p>You have the right to:</p>
+            <ul>
+                <li><strong>Access:</strong> Request a copy of your personal data</li>
+                <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+                <li><strong>Deletion:</strong> Request deletion of your account and data</li>
+                <li><strong>Portability:</strong> Request your data in a machine-readable format</li>
+                <li><strong>Opt-Out:</strong> Unsubscribe from marketing communications</li>
+            </ul>
+
+            <h3>8. Cookies and Tracking</h3>
+            <p>We use cookies and similar technologies to:</p>
+            <ul>
+                <li>Maintain your session and login status</li>
+                <li>Remember your preferences</li>
+                <li>Analyze usage patterns and improve the Service</li>
+            </ul>
+            <p>You can control cookie settings through your browser preferences.</p>
+
+            <h3>9. Children's Privacy</h3>
+            <p>PosterBot is not intended for users under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware of such collection, we will delete the information immediately.</p>
+
+            <h3>10. International Data Transfers</h3>
+            <p>Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place for such transfers.</p>
+
+            <h3>11. Changes to Privacy Policy</h3>
+            <p>We may update this Privacy Policy periodically. We will notify users of significant changes via email or through the Service. Continued use after changes constitutes acceptance of the updated policy.</p>
+
+            <h3>12. TikTok-Specific Privacy Information</h3>
+            <div class="important-note">
+                <p><strong>TikTok Integration:</strong> When you connect your TikTok account to PosterBot, we access only the permissions necessary to post videos on your behalf. We do not access your TikTok messages, contacts, or other private information beyond what is required for video distribution.</p>
+            </div>
+
+            <h3>13. Contact Us</h3>
+            <p>For privacy-related questions, concerns, or requests, please contact:</p>
+            <p><strong>Email:</strong> <a href="mailto:mattafrank2439@gmail.com">mattafrank2439@gmail.com</a></p>
+            <p><strong>Response Time:</strong> We aim to respond to all privacy inquiries within 30 days.</p>
+        </div>
+    </section>
+
+    <!--footer-copyright start-->
+    <footer id="footer-copyright" class="footer-copyright">
+        <div class="container">
+            <div class="hm-footer-copyright text-center">
+                <p>&copy; copyright Matthew Frank</p>
+            </div>
+        </div>
+
+        <div id="scroll-Top">
+            <div class="return-to-top">
+                <i class="fa fa-angle-up" id="scroll-top"></i>
+            </div>
+        </div>
+    </footer>
+    <!--footer-copyright end-->
+
+    <!-- Include all js compiled plugins (below), or include individual files as needed -->
+    <script src="../../assets/js/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/bootsnav.js"></script>
+    <script src="../../assets/js/jquery.sticky.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="../../assets/js/custom.js"></script>
+</body>
+
+</html>
